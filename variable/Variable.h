@@ -8,6 +8,7 @@ namespace MiniPython {
 enum class VariableType {
     NONE,
     INT,
+    BOOL,
     FLOAT,
     STRING,
     LIST,
@@ -77,6 +78,30 @@ public:
 
 private:
     IntType value;
+};
+
+class BoolVariable: public GenericVariable {
+public:
+    BoolVariable(bool _value);
+
+    VariableType get_type() override;
+
+    Variable add(const Variable &other) override;
+    Variable sub(const Variable &other) override;
+    Variable mul(const Variable &other) override;
+    Variable div(const Variable &other) override;
+    Variable mod(const Variable &other) override;
+    Variable pow(const Variable &other) override;
+
+    bool to_bool() override;
+    std::string to_str() override;
+
+    bool equal(const Variable &other) override;
+    bool less(const Variable &other) override;
+
+    Variable toIntVar();
+private:
+    bool value;
 };
 
 } // namespace MiniPython

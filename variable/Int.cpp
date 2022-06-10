@@ -16,7 +16,10 @@ Variable IntVariable::add(const Variable &other) {
         auto other_casted = std::dynamic_pointer_cast<IntVariable>(other);
         return std::make_shared<IntVariable>(value + other_casted->value);
     }
-    // TODO: bool
+    case VariableType::BOOL: {
+        auto other_casted = std::dynamic_pointer_cast<BoolVariable>(other);
+        return add(other_casted->toIntVar());
+    }
     // TODO: float
     default:
         throw std::runtime_error("Can't add this to int");
@@ -29,7 +32,10 @@ Variable IntVariable::sub(const Variable &other) {
         auto other_casted = std::dynamic_pointer_cast<IntVariable>(other);
         return std::make_shared<IntVariable>(value - other_casted->value);
     }
-    // TODO: bool
+    case VariableType::BOOL: {
+        auto other_casted = std::dynamic_pointer_cast<BoolVariable>(other);
+        return sub(other_casted->toIntVar());
+    }
     // TODO: float
     default:
         throw std::runtime_error("Can't substract this from int");
@@ -42,7 +48,10 @@ Variable IntVariable::mul(const Variable &other) {
         auto other_casted = std::dynamic_pointer_cast<IntVariable>(other);
         return std::make_shared<IntVariable>(value * other_casted->value);
     }
-    // TODO: bool
+    case VariableType::BOOL: {
+        auto other_casted = std::dynamic_pointer_cast<BoolVariable>(other);
+        return mul(other_casted->toIntVar());
+    }
     // TODO: float
     // TODO: str
     // TODO: list
@@ -54,7 +63,10 @@ Variable IntVariable::mul(const Variable &other) {
 Variable IntVariable::div(const Variable &other) {
     switch (other->get_type()) {
     // TODO: int
-    // TODO: bool
+    case VariableType::BOOL: {
+        auto other_casted = std::dynamic_pointer_cast<BoolVariable>(other);
+        return div(other_casted->toIntVar());
+    }
     // TODO: float
     default:
         throw std::runtime_error("Can't divide int by that");
@@ -70,7 +82,10 @@ Variable IntVariable::mod(const Variable &other) {
         }
         return std::make_shared<IntVariable>(value % other_casted->value);
     }
-    // TODO: bool
+    case VariableType::BOOL: {
+        auto other_casted = std::dynamic_pointer_cast<BoolVariable>(other);
+        return mod(other_casted->toIntVar());
+    }
     // TODO: float
     default:
         throw std::runtime_error("Can't do modular arithmetic with int and that type");
@@ -97,7 +112,10 @@ Variable IntVariable::pow(const Variable &other) {
         }
         return std::make_shared<IntVariable>(result);
     }
-    // TODO: bool
+    case VariableType::BOOL: {
+        auto other_casted = std::dynamic_pointer_cast<BoolVariable>(other);
+        return pow(other_casted->toIntVar());
+    }
     // TODO: float
     default:
         throw std::runtime_error("Can't raise int into power of that type");
@@ -118,7 +136,10 @@ bool IntVariable::equal(const Variable &other) {
         auto other_casted = std::dynamic_pointer_cast<IntVariable>(other);
         return this->value == other_casted->value;
     }
-    // TODO: bool
+    case VariableType::BOOL: {
+        auto other_casted = std::dynamic_pointer_cast<BoolVariable>(other);
+        return equal(other_casted->toIntVar());
+    }
     // TODO: float
     default:
         return false;
@@ -131,7 +152,10 @@ bool IntVariable::less(const Variable &other) {
         auto other_casted = std::dynamic_pointer_cast<IntVariable>(other);
         return this->value < other_casted->value;
     }
-    // TODO: bool
+    case VariableType::BOOL: {
+        auto other_casted = std::dynamic_pointer_cast<BoolVariable>(other);
+        return less(other_casted->toIntVar());
+    }
     // TODO: float
     default:
         return false;

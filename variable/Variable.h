@@ -78,6 +78,8 @@ public:
 
 private:
     IntType value;
+
+    friend class StringVariable;
 };
 
 class BoolVariable: public GenericVariable {
@@ -102,6 +104,30 @@ public:
     Variable toIntVar();
 private:
     bool value;
+};
+
+class StringVariable: public GenericVariable {
+public:
+    using StringType = std::string;
+
+    StringVariable(StringType _value);
+
+    VariableType get_type() override;
+
+    Variable add(const Variable &other) override;
+    Variable sub(const Variable &other) override;
+    Variable mul(const Variable &other) override;
+    Variable div(const Variable &other) override;
+    Variable mod(const Variable &other) override;
+    Variable pow(const Variable &other) override;
+
+    bool to_bool() override;
+    std::string to_str() override;
+
+    bool equal(const Variable &other) override;
+    bool less(const Variable &other) override;
+private:
+    StringType value;
 };
 
 } // namespace MiniPython

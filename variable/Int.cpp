@@ -53,7 +53,10 @@ Variable IntVariable::mul(const Variable &other) {
         return mul(other_casted->toIntVar());
     }
     // TODO: float
-    // TODO: str
+    case VariableType::STRING: {
+        auto other_casted = std::dynamic_pointer_cast<StringVariable>(other);
+        return other_casted->mul(std::make_shared<IntVariable>(value));
+    }
     // TODO: list
     default:
         throw std::runtime_error("Can't multiply that with int");

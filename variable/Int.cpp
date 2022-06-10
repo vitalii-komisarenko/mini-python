@@ -57,7 +57,10 @@ Variable IntVariable::mul(const Variable &other) {
         auto other_casted = std::dynamic_pointer_cast<StringVariable>(other);
         return other_casted->mul(std::make_shared<IntVariable>(value));
     }
-    // TODO: list
+    case VariableType::LIST: {
+        auto other_casted = std::dynamic_pointer_cast<ListVariable>(other);
+        return other_casted->mul(std::make_shared<IntVariable>(value));
+    }
     default:
         throw std::runtime_error("Can't multiply that with int");
     }

@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 namespace MiniPython {
 
@@ -80,6 +81,7 @@ private:
     IntType value;
 
     friend class StringVariable;
+    friend class ListVariable;
 };
 
 class BoolVariable: public GenericVariable {
@@ -128,6 +130,32 @@ public:
     bool less(const Variable &other) override;
 private:
     StringType value;
+};
+
+class ListVariable: public GenericVariable {
+public:
+    using ListType = std::vector<Variable>;
+
+    ListVariable(ListType _list);
+
+    VariableType get_type() override;
+
+    Variable add(const Variable &other) override;
+    Variable sub(const Variable &other) override;
+    Variable mul(const Variable &other) override;
+    Variable div(const Variable &other) override;
+    Variable mod(const Variable &other) override;
+    Variable pow(const Variable &other) override;
+
+    bool to_bool() override;
+    std::string to_str() override;
+
+    bool equal(const Variable &other) override;
+    bool less(const Variable &other) override;
+
+    void append(const Variable &other);
+private:
+    ListType list;
 };
 
 } // namespace MiniPython

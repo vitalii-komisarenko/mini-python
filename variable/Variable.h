@@ -54,4 +54,29 @@ public:
     bool less(const Variable &other) override;
 };
 
+class IntVariable: public GenericVariable {
+public:
+    using IntType = int64_t;
+
+    IntVariable(IntType _value);
+
+    VariableType get_type() override;
+
+    Variable add(const Variable &other) override;
+    Variable sub(const Variable &other) override;
+    Variable mul(const Variable &other) override;
+    Variable div(const Variable &other) override;
+    Variable mod(const Variable &other) override;
+    Variable pow(const Variable &other) override;
+
+    bool to_bool() override;
+    std::string to_str() override;
+
+    bool equal(const Variable &other) override;
+    bool less(const Variable &other) override;
+
+private:
+    IntType value;
+};
+
 } // namespace MiniPython

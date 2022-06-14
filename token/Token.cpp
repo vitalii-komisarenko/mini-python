@@ -46,7 +46,6 @@ static Token tokenizeString(std::stringstream &ss) {
 }
 
 static std::string readUnsignedInteger(std::stringstream &ss) {
-    // TODO: float
     std::string result;
 
     char ch;
@@ -68,27 +67,63 @@ static std::string readUnsignedInteger(std::stringstream &ss) {
 }
 
 static Token tokenizeNumber(std::stringstream &ss) {
-    std::string result = readUnsignedInteger(ss);
+    // TODO: oct & hex numbers
+    std::string result;
+
+    switch (ss.peek()) {
+    case '0' ... '9':
+        goto read_integer_part;
+    case '.':
+        result += ss.get();
+        goto read_fractional_part;
+    default:
+        throw std::runtime_error("Bad first character of the number");
+    }
+
+    read_integer_part:
+
+    result += readUnsignedInteger(ss);
+
+    switch (ss.peek()) {
+    case '.':
+        result += ss.get();
+        goto read_fractional_part;
+    case 'e':
+    case 'E':
+        result += ss.get();
+        goto read_exponent;
+    default:
+        goto exit;
+    }
+
+    read_fractional_part:
+
+    result += readUnsignedInteger(ss);
 
     switch (ss.peek()) {
     case 'e':
+    case 'E':
         result += ss.get();
-        switch (ss.peek()) {
-        case '+':
-        case '-':
-            result += ss.get();
-            result += readUnsignedInteger(ss);
-            break;
-        case '0' ... '9':
-            result += readUnsignedInteger(ss);
-            break;
-        default:
-            throw std::runtime_error("Bad exponent");
-        }
-        break;
-    case '.':
-        throw std::runtime_error(": dot (.) not implemented");
+        goto read_exponent;
+    default:
+        goto exit;
     }
+
+    read_exponent:
+
+    switch (ss.peek()) {
+    case '+':
+    case '-':
+        result += ss.get();
+        // fallthrough
+    case '0' ... '9':
+        result += readUnsignedInteger(ss);
+        goto exit;
+    default:
+        throw std::runtime_error("Can't read exponent");
+    }
+
+    exit:
 
     return {TokenType::NUMBER, result};
 }
@@ -184,6 +219,7 @@ TokenList tokenizeLine(const std::string &line) {
             result.push_back(tokenizeString(ss));
             break;
         case '0' ... '9':
+        case '.':
             result.push_back(tokenizeNumber(ss));
             break;
         case 'a' ... 'z':

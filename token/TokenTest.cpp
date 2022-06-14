@@ -133,6 +133,9 @@ static void test_misc_code() {
         {"2e+1", {{TokenType::NUMBER, "2e+1"}}},
         {"3.1", {{TokenType::NUMBER, "3.1"}}},
         {"56.342e-4", {{TokenType::NUMBER, "56.342e-4"}}},
+        {"2.", {{TokenType::NUMBER, "2."}}},
+        {".33", {{TokenType::NUMBER, ".33"}}},
+        {".33E-45", {{TokenType::NUMBER, ".33E-45"}}},
     };
 
     for (const auto& pair: input) {

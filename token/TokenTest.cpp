@@ -86,8 +86,71 @@ static void test_misc_code() {
             {TokenType::OPERATOR, "+"},
             {TokenType::IDENTIFIER, "c"},
         }},
+        {"if 2 == 1 + 1:", {
+            {TokenType::IDENTIFIER, "if"},
+            {TokenType::NUMBER,     "2"},
+            {TokenType::OPERATOR,   "=="},
+            {TokenType::NUMBER,     "1"},
+            {TokenType::OPERATOR,   "+"},
+            {TokenType::NUMBER,     "1"},
+            {TokenType::COLON,      ""},
+        }},
+        {"myVarialbe123+=\"some string\"", {
+            {TokenType::IDENTIFIER, "myVarialbe123"},
+            {TokenType::OPERATOR,   "+="},
+            {TokenType::STRING,     "some string"},
+        }},
+        {"print('Hello, World!')", {
+            {TokenType::IDENTIFIER, "print"},
+            {TokenType::OPENING_ROUND_BRACKET, ""},
+            {TokenType::STRING, "Hello, World!"},
+            {TokenType::CLOSING_ROUND_BRACKET, ""},
+        }},
+        {"var = ((2+4)-(35-func(5)))//8", {
+            {TokenType::IDENTIFIER, "var"},
+            {TokenType::OPERATOR,   "="},
+            {TokenType::OPENING_ROUND_BRACKET, ""},
+            {TokenType::OPENING_ROUND_BRACKET, ""},
+            {TokenType::NUMBER,     "2"},
+            {TokenType::OPERATOR,   "+"},
+            {TokenType::NUMBER,     "4"},
+            {TokenType::CLOSING_ROUND_BRACKET, ""},
+            {TokenType::OPERATOR,   "-"},
+            {TokenType::OPENING_ROUND_BRACKET, ""},
+            {TokenType::NUMBER,     "35"},
+            {TokenType::OPERATOR,   "-"},
+            {TokenType::IDENTIFIER, "func"},
+            {TokenType::OPENING_ROUND_BRACKET, ""},
+            {TokenType::NUMBER,     "5"},
+            {TokenType::CLOSING_ROUND_BRACKET, ""},
+            {TokenType::CLOSING_ROUND_BRACKET, ""},
+            {TokenType::CLOSING_ROUND_BRACKET, ""},
+            {TokenType::OPERATOR,   "//"},
+            {TokenType::NUMBER,     "8"},
+        }},
+        {"2e1", {{TokenType::NUMBER, "2e1"}}},
+        {"2e-1", {{TokenType::NUMBER, "2e-1"}}},
+        {"2e+1", {{TokenType::NUMBER, "2e+1"}}},
+        {"3.1", {{TokenType::NUMBER, "3.1"}}},
+        {"56.342e-4", {{TokenType::NUMBER, "56.342e-4"}}},
     };
-    //TODO
+
+    for (const auto& pair: input) {
+        std::string line = pair.first;
+
+        try {
+            TokenList actual   = tokenizeLine(line);
+            TokenList expected = pair.second;
+
+            bool equal = std::equal(expected.begin(), expected.end(), actual.begin(), actual.end());
+            if (!equal) {
+                std::cerr << __FUNCTION__ << " failed for line: '" << line << "'\n";
+            }
+        }
+        catch(std::runtime_error &ex) {
+            std::cerr << __FUNCTION__ << " failed for line: '" << line << "'. Exception: " << ex.what() << "\n";
+        }
+    }
 }
 
 int main() {

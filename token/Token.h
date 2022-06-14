@@ -10,6 +10,7 @@ enum class TokenType {
     IDENTIFIER,
     STRING,
     NUMBER,
+    COLON,
     COMMA,
     OPENING_ROUND_BRACKET,
     CLOSING_ROUND_BRACKET,

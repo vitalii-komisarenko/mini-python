@@ -45,7 +45,7 @@ static Token tokenizeString(std::stringstream &ss) {
     throw std::runtime_error("Missing quote to terminate string");
 }
 
-static Token tokenizeNumber(std::stringstream &ss) {
+static std::string readUnsignedInteger(std::stringstream &ss) {
     // TODO: float
     std::string result;
 
@@ -54,6 +54,7 @@ static Token tokenizeNumber(std::stringstream &ss) {
         switch(ch) {
         case '0' ... '9': {
             result += ch;
+            break;
         }
         default: {
             ss.putback(ch);
@@ -63,7 +64,80 @@ static Token tokenizeNumber(std::stringstream &ss) {
     }
 
     exit:
+    return result;
+}
+
+static Token tokenizeNumber(std::stringstream &ss) {
+    std::string result = readUnsignedInteger(ss);
+
+    switch (ss.peek()) {
+    case 'e':
+        result += ss.get();
+        switch (ss.peek()) {
+        case '+':
+        case '-':
+            result += ss.get();
+            result += readUnsignedInteger(ss);
+            break;
+        case '0' ... '9':
+            result += readUnsignedInteger(ss);
+            break;
+        default:
+            throw std::runtime_error("Bad exponent");
+        }
+        break;
+    case '.':
+        throw std::runtime_error(": dot (.) not implemented");
+    }
+
     return {TokenType::NUMBER, result};
+}
+
+static Token tokenizeIdentifier(std::stringstream &ss) {
+    std::string result;
+
+    while (ss) {
+        switch (ss.peek()) {
+        case 'a' ... 'z':
+        case 'A' ... 'Z':
+        case '0' ... '9':
+        case '_':
+            result += ss.get();
+            break;
+        case std::char_traits<char>::eof():
+            goto exit;
+        default:
+            goto exit;
+        }
+    }
+
+    exit:
+    return Token(TokenType::IDENTIFIER, result);
+}
+
+static Token tokenizeOperator(std::stringstream &ss) {
+    std::string result;
+
+    while (ss) {
+        switch (ss.peek()) {
+        case '+':
+        case '-':
+        case '*':
+        case '/':
+        case '=':
+        case '<':
+        case '>':
+            result += ss.get();
+            break;
+        case std::char_traits<char>::eof():
+            goto exit;
+        default:
+            goto exit;
+        }
+    }
+
+    exit:
+    return Token(TokenType::OPERATOR, result);
 }
 
 static void discardCharacter(std::stringstream &ss) {
@@ -111,6 +185,24 @@ TokenList tokenizeLine(const std::string &line) {
             break;
         case '0' ... '9':
             result.push_back(tokenizeNumber(ss));
+            break;
+        case 'a' ... 'z':
+        case 'A' ... 'Z':
+        case '_':
+            result.push_back(tokenizeIdentifier(ss));
+            break;
+        case '+':
+        case '-':
+        case '*':
+        case '/':
+        case '=':
+        case '<':
+        case '>':
+            result.push_back(tokenizeOperator(ss));
+            break;
+        case ':':
+            result.push_back(Token(TokenType::COLON));
+            discardCharacter(ss);
             break;
         case ',':
             result.push_back(Token(TokenType::COMMA));

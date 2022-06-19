@@ -38,7 +38,7 @@ public:
     virtual bool less(const Variable &other) = 0;
 };
 
-class NoneVariable: GenericVariable {
+class NoneVariable: public GenericVariable {
 public:
     VariableType get_type() override;
 

@@ -1,4 +1,4 @@
-#include "Token.h"
+#include "token/Token.h"
 
 #include <iostream>
 
@@ -156,7 +156,7 @@ static void test_misc_code() {
     }
 }
 
-int main() {
+void test_token() {
     test_no_token();
     test_single_string_parsing();
     test_illegal_code();

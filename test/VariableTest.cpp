@@ -5,6 +5,12 @@
 #define VAR(TYPE, VALUE) \
     std::static_pointer_cast<GenericVariable>(std::make_shared<TYPE ## Variable>(VALUE))
 
+#define CHECK_VAR(_VAR, TYPE1, TYPE2, VALUE)                                 \
+    MY_ASSERT(_VAR->get_type()  == VariableType::TYPE1);                     \
+    if (_VAR->get_type()  == VariableType::TYPE1) {                          \
+        auto converted = std::dynamic_pointer_cast<TYPE2 ## Variable>(_VAR); \
+        MY_ASSERT(converted->get_value() == VALUE);                          \
+    }
 
 void test_variable() {
     auto None  = std::static_pointer_cast<GenericVariable>(std::make_shared<NoneVariable>());
@@ -136,4 +142,57 @@ void test_variable() {
 
     MY_ASSERT(IntZero->less(FloatOne));
     MY_ASSERT(FloatZero->less(IntOne));
+
+    MUST_THROW(None->add(None));
+    MUST_THROW(None->add(None2));
+    MUST_THROW(None->add(False));
+    MUST_THROW(None->add(IntZero));
+    MUST_THROW(None->add(FloatTwo));
+
+    MUST_THROW(None->sub(None));
+    MUST_THROW(None->sub(None2));
+    MUST_THROW(None->sub(False));
+    MUST_THROW(None->sub(IntZero));
+    MUST_THROW(None->sub(FloatTwo));
+
+    MUST_THROW(None->mul(None));
+    MUST_THROW(None->mul(None2));
+    MUST_THROW(None->mul(False));
+    MUST_THROW(None->mul(IntZero));
+    MUST_THROW(None->mul(FloatTwo));
+
+    MUST_THROW(None->div(None));
+    MUST_THROW(None->div(None2));
+    MUST_THROW(None->div(False));
+    MUST_THROW(None->div(IntZero));
+    MUST_THROW(None->div(FloatTwo));
+
+    MUST_THROW(None->mod(None));
+    MUST_THROW(None->mod(None2));
+    MUST_THROW(None->mod(False));
+    MUST_THROW(None->mod(IntZero));
+    MUST_THROW(None->mod(FloatTwo));
+
+    MUST_THROW(None->pow(None));
+    MUST_THROW(None->pow(None2));
+    MUST_THROW(None->pow(False));
+    MUST_THROW(None->pow(IntZero));
+    MUST_THROW(None->pow(FloatTwo));
+
+    MY_ASSERT(None->to_bool() == false);
+    MY_ASSERT(None->to_str() == "None");
+
+    MUST_THROW(False->add(None));
+    CHECK_VAR(False->add(False), INT, Int, 0);
+    CHECK_VAR(False->add(False2), INT, Int, 0);
+    CHECK_VAR(False->add(True), INT, Int, 1);
+    CHECK_VAR(False->add(IntTwo), INT, Int, 2);
+    CHECK_VAR(False->add(FloatOne), FLOAT, Float, 1);
+
+    MUST_THROW(False->sub(None));
+    CHECK_VAR(False->sub(False), INT, Int, 0);
+    CHECK_VAR(False->sub(False2), INT, Int, 0);
+    CHECK_VAR(False->sub(True), INT, Int, -1);
+    CHECK_VAR(False->sub(IntTwo), INT, Int, -2);
+    CHECK_VAR(False->sub(FloatOne), FLOAT, Float, -1);
 }

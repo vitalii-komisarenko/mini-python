@@ -4,7 +4,7 @@
 
 namespace MiniPython {
 
-StringVariable::StringVariable(StringType _value): value(_value) {}
+StringVariable::StringVariable(const StringType &_value): value(_value) {}
 
 VariableType StringVariable::get_type() {
     return VariableType::STRING;
@@ -31,7 +31,7 @@ Variable StringVariable::mul(const Variable &other) {
         auto other_casted = std::dynamic_pointer_cast<IntVariable>(other);
 
         std::string result = {};
-        for (IntVariable::IntType i = 0; i < other_casted->value; ++i) {
+        for (IntVariable::IntType i = 0; i < other_casted->get_value(); ++i) {
             result += value;
         }
         return std::make_shared<StringVariable>(result);

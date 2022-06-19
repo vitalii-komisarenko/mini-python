@@ -63,6 +63,7 @@ public:
     IntVariable(IntType _value);
 
     VariableType get_type() override;
+    IntType get_value();
 
     Variable add(const Variable &other) override;
     Variable sub(const Variable &other) override;
@@ -79,9 +80,6 @@ public:
 
 private:
     IntType value;
-
-    friend class StringVariable;
-    friend class ListVariable;
 };
 
 class BoolVariable: public GenericVariable {
@@ -108,11 +106,36 @@ private:
     bool value;
 };
 
+class FloatVariable: public GenericVariable {
+public:
+    using FloatType = double;
+
+    FloatVariable(FloatType _value);
+
+    VariableType get_type() override;
+    FloatType get_value();
+
+    Variable add(const Variable &other) override;
+    Variable sub(const Variable &other) override;
+    Variable mul(const Variable &other) override;
+    Variable div(const Variable &other) override;
+    Variable mod(const Variable &other) override;
+    Variable pow(const Variable &other) override;
+
+    bool to_bool() override;
+    std::string to_str() override;
+
+    bool equal(const Variable &other) override;
+    bool less(const Variable &other) override;
+private:
+    FloatType value;
+};
+
 class StringVariable: public GenericVariable {
 public:
     using StringType = std::string;
 
-    StringVariable(StringType _value);
+    StringVariable(const StringType &_value);
 
     VariableType get_type() override;
 

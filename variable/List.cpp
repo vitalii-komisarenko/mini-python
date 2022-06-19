@@ -33,7 +33,7 @@ Variable ListVariable::mul(const Variable &other) {
         auto other_casted = std::dynamic_pointer_cast<IntVariable>(other);
 
         ListType result;
-        for (IntVariable::IntType i = 0; i < other_casted->value; ++i) {
+        for (IntVariable::IntType i = 0; i < other_casted->get_value(); ++i) {
             result.insert(result.end(), this->list.begin(), this->list.end());
         }
         return std::make_shared<ListVariable>(result);

@@ -7,7 +7,7 @@ namespace MiniPython {
 FloatVariable::FloatVariable(FloatType _value): value(_value) {}
 
 VariableType FloatVariable::get_type() {
-    return VariableType::INT;
+    return VariableType::FLOAT;
 }
 
 FloatVariable::FloatType FloatVariable::get_value() {

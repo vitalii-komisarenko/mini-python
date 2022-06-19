@@ -10,6 +10,10 @@ VariableType StringVariable::get_type() {
     return VariableType::STRING;
 }
 
+StringVariable::StringType StringVariable::get_value() {
+    return value;
+}
+
 Variable StringVariable::add(const Variable &other) {
     switch (other->get_type()) {
     case VariableType::STRING: {

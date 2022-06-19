@@ -143,6 +143,29 @@ void test_variable() {
     MY_ASSERT(IntZero->less(FloatOne));
     MY_ASSERT(FloatZero->less(IntOne));
 
+    auto StrEmpty  = VAR(String, "");
+    auto StrEmpty2 = VAR(String, "");
+    auto StrA      = VAR(String, "some text");
+    auto StrA2     = VAR(String, "some text");
+    auto StrB      = VAR(String, "other text");
+
+    MY_ASSERT(!StrEmpty->equal(None));
+    MY_ASSERT(!StrA->equal(None));
+    MY_ASSERT(!None->equal(StrEmpty));
+    MY_ASSERT(!None->equal(StrA));
+
+    MY_ASSERT(!StrEmpty->equal(False));
+    MY_ASSERT(!StrA->equal(False));
+    MY_ASSERT(!False->equal(StrEmpty));
+    MY_ASSERT(!False->equal(StrA));
+
+    MY_ASSERT(StrEmpty->equal(StrEmpty2));
+    MY_ASSERT(!StrEmpty->equal(StrA));
+    MY_ASSERT(!StrA->equal(StrEmpty));
+    MY_ASSERT(StrA->equal(StrA));
+    MY_ASSERT(StrA->equal(StrA2));
+    MY_ASSERT(!StrA->equal(StrB));
+
     MUST_THROW(None->add(None));
     MUST_THROW(None->add(None2));
     MUST_THROW(None->add(False));
@@ -195,4 +218,55 @@ void test_variable() {
     CHECK_VAR(False->sub(True), INT, Int, -1);
     CHECK_VAR(False->sub(IntTwo), INT, Int, -2);
     CHECK_VAR(False->sub(FloatOne), FLOAT, Float, -1);
+
+    MUST_THROW(StrA->add(None));
+    MUST_THROW(StrA->add(True));
+    MUST_THROW(StrA->add(IntTwo));
+    MUST_THROW(StrA->add(FloatOne));
+    CHECK_VAR(StrA->add(StrEmpty), STRING, String, "some text");
+    CHECK_VAR(StrA->add(StrA), STRING, String, "some textsome text");
+    CHECK_VAR(StrA->add(StrB), STRING, String, "some textother text");
+
+    CHECK_VAR(StrEmpty->add(StrEmpty), STRING, String, "");
+    CHECK_VAR(StrEmpty->add(StrA), STRING, String, "some text");
+
+    MUST_THROW(StrA->sub(None));
+    MUST_THROW(StrA->sub(True));
+    MUST_THROW(StrA->sub(IntTwo));
+    MUST_THROW(StrA->sub(FloatOne));
+    MUST_THROW(StrA->sub(StrA));
+    MUST_THROW(StrA->sub(StrB));
+
+    MUST_THROW(StrA->mul(None));
+    CHECK_VAR(StrA->mul(False), STRING, String, "");
+    CHECK_VAR(StrA->mul(True), STRING, String, "some text");
+    CHECK_VAR(StrA->mul(IntZero), STRING, String, "");
+    CHECK_VAR(StrA->mul(IntOne), STRING, String, "some text");
+    CHECK_VAR(StrA->mul(IntTwo), STRING, String, "some textsome text");
+    MUST_THROW(StrA->mul(FloatZero));
+    MUST_THROW(StrA->mul(FloatOne));
+    MUST_THROW(StrA->mul(StrB));
+
+    MUST_THROW(StrA->div(None));
+    MUST_THROW(StrA->div(True));
+    MUST_THROW(StrA->div(IntTwo));
+    MUST_THROW(StrA->div(FloatOne));
+    MUST_THROW(StrA->div(StrA));
+    MUST_THROW(StrA->div(StrB));
+
+    // TODO: % is an operator for string formatting
+    // Does it mean that % operation is indeed defined for strings as formatting?
+
+    MUST_THROW(StrA->pow(None));
+    MUST_THROW(StrA->pow(True));
+    MUST_THROW(StrA->pow(IntTwo));
+    MUST_THROW(StrA->pow(FloatOne));
+    MUST_THROW(StrA->pow(StrA));
+    MUST_THROW(StrA->pow(StrB));
+
+    MY_ASSERT(StrEmpty->to_bool() == false);
+    MY_ASSERT(StrA->to_bool() == true);
+
+    MY_ASSERT(StrEmpty->to_str() == "");
+    MY_ASSERT(StrA->to_str() == "some text");
 }

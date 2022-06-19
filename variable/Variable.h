@@ -138,6 +138,7 @@ public:
     StringVariable(const StringType &_value);
 
     VariableType get_type() override;
+    StringType get_value();
 
     Variable add(const Variable &other) override;
     Variable sub(const Variable &other) override;

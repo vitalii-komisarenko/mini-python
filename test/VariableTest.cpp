@@ -1,24 +1,12 @@
-#include "Variable.h"
+#include "variable/Variable.h"
 
-#include <iostream>
-
-#define MY_ASSERT(X)                                                                                               \
-    try {                                                                                                          \
-        if (!(X)) {                                                                                                \
-            std::cerr << __FILE__ << ": " << __LINE__ << ": " << #X << " failed\n";                                \
-        }                                                                                                          \
-    }                                                                                                              \
-    catch(std::exception& ex) {                                                                                    \
-        std::cerr << __FILE__ << ": " << __LINE__ << ": " << #X << " failed with exception " << ex.what() << "\n"; \
-    }
+#include "Test.h"
 
 #define VAR(TYPE, VALUE) \
     std::static_pointer_cast<GenericVariable>(std::make_shared<TYPE ## Variable>(VALUE))
 
 
-using namespace MiniPython;
-
-int main() {
+void test_variable() {
     auto None  = std::static_pointer_cast<GenericVariable>(std::make_shared<NoneVariable>());
     auto None2 = std::static_pointer_cast<GenericVariable>(std::make_shared<NoneVariable>());
 

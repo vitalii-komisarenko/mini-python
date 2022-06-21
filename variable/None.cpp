@@ -24,12 +24,16 @@ Variable NoneVariable::div(const Variable &other) {
     throw std::runtime_error("Can't divide None");
 }
 
+Variable NoneVariable::int_div(const Variable &other) {
+    throw std::runtime_error("Can't divide None");
+}
+
 Variable NoneVariable::mod(const Variable &other) {
     throw std::runtime_error("Can't do modular arithmetic on None");
 }
 
 Variable NoneVariable::pow(const Variable &other) {
-    throw std::runtime_error("Can't raise None into any power");
+    throw std::runtime_error("Can't raise None to any power");
 }
 
 bool NoneVariable::to_bool() {

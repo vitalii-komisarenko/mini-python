@@ -30,6 +30,7 @@ public:
     virtual Variable div(const Variable &other) = 0;
     virtual Variable mod(const Variable &other) = 0;
     virtual Variable pow(const Variable &other) = 0;
+    virtual Variable int_div(const Variable &other) = 0;
 
     virtual bool to_bool() = 0;
     virtual std::string to_str() = 0;
@@ -48,6 +49,7 @@ public:
     Variable div(const Variable &other) override;
     Variable mod(const Variable &other) override;
     Variable pow(const Variable &other) override;
+    Variable int_div(const Variable &other) override;
 
     bool to_bool() override;
     std::string to_str() override;
@@ -71,6 +73,7 @@ public:
     Variable div(const Variable &other) override;
     Variable mod(const Variable &other) override;
     Variable pow(const Variable &other) override;
+    Variable int_div(const Variable &other) override;
 
     bool to_bool() override;
     std::string to_str() override;
@@ -95,6 +98,7 @@ public:
     Variable div(const Variable &other) override;
     Variable mod(const Variable &other) override;
     Variable pow(const Variable &other) override;
+    Variable int_div(const Variable &other) override;
 
     bool to_bool() override;
     std::string to_str() override;
@@ -123,6 +127,7 @@ public:
     Variable div(const Variable &other) override;
     Variable mod(const Variable &other) override;
     Variable pow(const Variable &other) override;
+    Variable int_div(const Variable &other) override;
 
     bool to_bool() override;
     std::string to_str() override;
@@ -150,6 +155,7 @@ public:
     Variable div(const Variable &other) override;
     Variable mod(const Variable &other) override;
     Variable pow(const Variable &other) override;
+    Variable int_div(const Variable &other) override;
 
     bool to_bool() override;
     std::string to_str() override;
@@ -174,6 +180,7 @@ public:
     Variable div(const Variable &other) override;
     Variable mod(const Variable &other) override;
     Variable pow(const Variable &other) override;
+    Variable int_div(const Variable &other) override;
 
     bool to_bool() override;
     std::string to_str() override;

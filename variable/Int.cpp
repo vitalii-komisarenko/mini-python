@@ -1,5 +1,6 @@
 #include "Variable.h"
 
+#include <cmath>
 #include <stdexcept>
 
 namespace MiniPython {
@@ -108,6 +109,31 @@ Variable IntVariable::div(const Variable &other) {
     }
 }
 
+Variable IntVariable::int_div(const Variable &other) {
+    switch (other->get_type()) {
+    case VariableType::INT: {
+        auto other_casted = std::dynamic_pointer_cast<IntVariable>(other);
+        if (other_casted->get_value() == 0) {
+            throw std::runtime_error("Division by zero");
+        }
+        return std::make_shared<IntVariable>(value / other_casted->get_value());
+    }
+    case VariableType::BOOL: {
+        auto other_casted = std::dynamic_pointer_cast<BoolVariable>(other);
+        return int_div(other_casted->toIntVar());
+    }
+    case VariableType::FLOAT: {
+        auto other_casted = std::dynamic_pointer_cast<FloatVariable>(other);
+        if (other_casted->get_value() == 0) {
+            throw std::runtime_error("Division by zero");
+        }
+        return std::make_shared<FloatVariable>(std::floor(value / other_casted->get_value()));
+    }
+    default:
+        throw std::runtime_error("Can't divide int by that");
+    }
+}
+
 Variable IntVariable::mod(const Variable &other) {
     switch (other->get_type()) {
     case VariableType::INT: {
@@ -157,7 +183,7 @@ Variable IntVariable::pow(const Variable &other) {
         return toFloatVar()->pow(other);
     }
     default:
-        throw std::runtime_error("Can't raise int into power of that type");
+        throw std::runtime_error("Can't raise int to power of that type");
     }
 }
 

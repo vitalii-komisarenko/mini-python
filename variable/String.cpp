@@ -53,12 +53,16 @@ Variable StringVariable::div(const Variable &other) {
     throw std::runtime_error("Can't divide string by anything");
 }
 
+Variable StringVariable::int_div(const Variable &other) {
+    throw std::runtime_error("Can't divide string by anything");
+}
+
 Variable StringVariable::mod(const Variable &other) {
     throw std::runtime_error("Can't do modular arithmetic on string");
 }
 
 Variable StringVariable::pow(const Variable &other) {
-    throw std::runtime_error("Can't raise None into any power");
+    throw std::runtime_error("Can't raise string to any power");
 }
 
 bool StringVariable::to_bool() {

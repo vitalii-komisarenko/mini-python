@@ -37,6 +37,10 @@ Variable BoolVariable::div(const Variable &other) {
     return toIntVar()->div(other);
 }
 
+Variable BoolVariable::int_div(const Variable &other) {
+    return toIntVar()->int_div(other);
+}
+
 Variable BoolVariable::mod(const Variable &other) {
     return toIntVar()->mod(other);
 }

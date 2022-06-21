@@ -51,12 +51,16 @@ Variable ListVariable::div(const Variable &other) {
     throw std::runtime_error("Can't divide list by anything");
 }
 
+Variable ListVariable::int_div(const Variable &other) {
+    throw std::runtime_error("Can't divide list by anything");
+}
+
 Variable ListVariable::mod(const Variable &other) {
     throw std::runtime_error("Can't do modular arithmetic on list");
 }
 
 Variable ListVariable::pow(const Variable &other) {
-    throw std::runtime_error("Can't raise list into any power");
+    throw std::runtime_error("Can't raise list to any power");
 }
 
 bool ListVariable::to_bool() {

@@ -101,6 +101,12 @@ Variable FloatVariable::div(const Variable &other) {
     }
 }
 
+Variable FloatVariable::int_div(const Variable &other) {
+    auto float_div = div(other);
+    auto float_div_converted = std::dynamic_pointer_cast<FloatVariable>(float_div);
+    return std::make_shared<FloatVariable>(std::floor(float_div_converted->get_value()));
+}
+
 Variable FloatVariable::mod(const Variable &other) {
     switch (other->get_type()) {
     case VariableType::INT: {
@@ -141,7 +147,7 @@ Variable FloatVariable::pow(const Variable &other) {
         return std::make_shared<FloatVariable>(std::pow(value, other_casted->value));
     }
     default:
-        throw std::runtime_error("Can't raise float into power of that type");
+        throw std::runtime_error("Can't raise float to power of that type");
     }
 }
 

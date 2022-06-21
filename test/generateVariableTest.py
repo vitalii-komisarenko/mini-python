@@ -75,100 +75,30 @@ for v1 in vars:
         except:
             print("    MUST_THROW(" + v1[0] + "->less(" + v2[0] + "));")
 
-print("")
-print("    // Addition")
-print("")
 
-for v1 in vars:
-    for v2 in vars:
-        try:
-            res = v1[2] + v2[2]
-            _type = str(type(res)).replace("<class '", "").replace("'>", "")
-            if _type == "str":
-                _type = "string"
-                res = '"' + res + '"'
-            print("    CHECK_VAR(" + v1[0] + "->add(" + v2[0] + "), " + _type.upper() + ", " + _type.capitalize() + ", " + str(res) + ");")
-        except:
-            print("    MUST_THROW(" + v1[0] + "->add(" + v2[0] + "));")
+def generate_for_arithmetic_operation(operation, cpp_name):
+    global vars
 
-print("")
-print("    // Substraction")
-print("")
+    for v1 in vars:
+        for v2 in vars:
+            try:
+                res = eval('v1[2] ' + operation + 'v2[2]')
 
-for v1 in vars:
-    for v2 in vars:
-        try:
-            res = v1[2] - v2[2]
-            _type = str(type(res)).replace("<class '", "").replace("'>", "")
-            if _type == "str":
-                _type = "string"
-                res = '"' + res + '"'
-            print("    CHECK_VAR(" + v1[0] + "->sub(" + v2[0] + "), " + _type.upper() + ", " + _type.capitalize() + ", " + str(res) + ");")
-        except:
-            print("    MUST_THROW(" + v1[0] + "->sub(" + v2[0] + "));")
+                _type = str(type(res)).replace("<class '", "").replace("'>", "")
+                if _type == "str":
+                    _type = "string"
+                    res = '"' + res + '"'
 
-print("")
-print("    // Multiplication")
-print("")
+                print("    CHECK_VAR(" + v1[0] + "->" + cpp_name + "(" + v2[0] + "), " + _type.upper() + ", " + _type.capitalize() + ", " + str(res) + ");")
+            except:
+                print("    MUST_THROW(" + v1[0] + "->" + cpp_name + "(" + v2[0] + "));")
 
-for v1 in vars:
-    for v2 in vars:
-        try:
-            res = v1[2] * v2[2]
-            _type = str(type(res)).replace("<class '", "").replace("'>", "")
-            if _type == "str":
-                _type = "string"
-                res = '"' + res + '"'
-            print("    CHECK_VAR(" + v1[0] + "->mul(" + v2[0] + "), " + _type.upper() + ", " + _type.capitalize() + ", " + str(res) + ");")
-        except:
-            print("    MUST_THROW(" + v1[0] + "->mul(" + v2[0] + "));")
 
-print("")
-print("    // Division")
-print("")
-
-for v1 in vars:
-    for v2 in vars:
-        try:
-            res = v1[2] / v2[2]
-            _type = str(type(res)).replace("<class '", "").replace("'>", "")
-            if _type == "str":
-                _type = "string"
-                res = '"' + res + '"'
-            print("    CHECK_VAR(" + v1[0] + "->div(" + v2[0] + "), " + _type.upper() + ", " + _type.capitalize() + ", " + str(res) + ");")
-        except:
-            print("    MUST_THROW(" + v1[0] + "->div(" + v2[0] + "));")
-
-print("")
-print("    // Power")
-print("")
-
-for v1 in vars:
-    for v2 in vars:
-        try:
-            res = v1[2] ** v2[2]
-            _type = str(type(res)).replace("<class '", "").replace("'>", "")
-            if _type == "str":
-                _type = "string"
-                res = '"' + res + '"'
-            print("    CHECK_VAR(" + v1[0] + "->pow(" + v2[0] + "), " + _type.upper() + ", " + _type.capitalize() + ", " + str(res) + ");")
-        except:
-            print("    MUST_THROW(" + v1[0] + "->pow(" + v2[0] + "));")
-
-print("")
-print("    // Modulo")
-print("")
-
-for v1 in vars:
-    for v2 in vars:
-        try:
-            res = v1[2] % v2[2]
-            _type = str(type(res)).replace("<class '", "").replace("'>", "")
-            if _type == "str":
-                _type = "string"
-                res = '"' + res + '"'
-            print("    CHECK_VAR(" + v1[0] + "->mod(" + v2[0] + "), " + _type.upper() + ", " + _type.capitalize() + ", " + str(res) + ");")
-        except:
-            print("    MUST_THROW(" + v1[0] + "->mod(" + v2[0] + "));")
+generate_for_arithmetic_operation("+", "add");
+generate_for_arithmetic_operation("-", "sub");
+generate_for_arithmetic_operation("*", "mul");
+generate_for_arithmetic_operation("/", "div");
+generate_for_arithmetic_operation("**", "pow");
+generate_for_arithmetic_operation("%", "mod");
 
 print("}")

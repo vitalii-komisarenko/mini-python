@@ -75,6 +75,9 @@ Variable FloatVariable::div(const Variable &other) {
     switch (other->get_type()) {
     case VariableType::INT: {
         auto other_casted = std::dynamic_pointer_cast<IntVariable>(other);
+        if (other_casted->get_value() == 0) {
+            throw std::runtime_error("Division by zero");
+        }
         return std::make_shared<FloatVariable>(value / other_casted->get_value());
     }
     case VariableType::BOOL: {
@@ -83,6 +86,9 @@ Variable FloatVariable::div(const Variable &other) {
     }
     case VariableType::FLOAT: {
         auto other_casted = std::dynamic_pointer_cast<FloatVariable>(other);
+        if (other_casted->get_value() == 0) {
+            throw std::runtime_error("Division by zero");
+        }
         return std::make_shared<FloatVariable>(value / other_casted->value);
     }
     default:
@@ -97,7 +103,7 @@ Variable FloatVariable::mod(const Variable &other) {
         if (other_casted->get_value() == 0) {
             throw std::runtime_error("Modulo by zero");
         }
-        std::runtime_error("Not implemented: float % int");
+        throw std::runtime_error("Not implemented: float % int");
     }
     case VariableType::BOOL: {
         auto other_casted = std::dynamic_pointer_cast<BoolVariable>(other);
@@ -108,7 +114,7 @@ Variable FloatVariable::mod(const Variable &other) {
         if (other_casted->value == 0) {
             throw std::runtime_error("Modulo by zero");
         }
-        std::runtime_error("Not implemented: float % float");
+        throw std::runtime_error("Not implemented: float % float");
     }
     default:
         throw std::runtime_error("Can't do modular arithmetic with float and that type");

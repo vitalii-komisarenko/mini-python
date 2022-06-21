@@ -83,7 +83,10 @@ Variable IntVariable::div(const Variable &other) {
     switch (other->get_type()) {
     case VariableType::INT: {
         auto other_casted = std::dynamic_pointer_cast<IntVariable>(other);
-        return std::make_shared<FloatVariable>(value / other_casted->get_value());
+        if (other_casted->get_value() == 0) {
+            throw std::runtime_error("Division by zero");
+        }
+        return std::make_shared<FloatVariable>((double)value / other_casted->get_value());
     }
     case VariableType::BOOL: {
         auto other_casted = std::dynamic_pointer_cast<BoolVariable>(other);
@@ -91,6 +94,9 @@ Variable IntVariable::div(const Variable &other) {
     }
     case VariableType::FLOAT: {
         auto other_casted = std::dynamic_pointer_cast<FloatVariable>(other);
+        if (other_casted->get_value() == 0) {
+            throw std::runtime_error("Division by zero");
+        }
         return std::make_shared<FloatVariable>(value / other_casted->get_value());
     }
     default:

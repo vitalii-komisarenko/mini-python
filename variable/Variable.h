@@ -78,6 +78,7 @@ public:
     bool equal(const Variable &other) override;
     bool less(const Variable &other) override;
 
+    Variable toFloatVar();
 private:
     IntType value;
 };
@@ -102,6 +103,7 @@ public:
     bool less(const Variable &other) override;
 
     Variable toIntVar();
+    Variable toFloatVar();
 private:
     bool value;
 };
@@ -127,6 +129,8 @@ public:
 
     bool equal(const Variable &other) override;
     bool less(const Variable &other) override;
+
+    Variable toFloatVar();
 private:
     FloatType value;
 };

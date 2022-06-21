@@ -14,6 +14,10 @@ IntVariable::IntType IntVariable::get_value() {
     return value;
 }
 
+Variable IntVariable::toFloatVar() {
+    return std::make_shared<FloatVariable>(value);
+}
+
 Variable IntVariable::add(const Variable &other) {
     switch (other->get_type()) {
     case VariableType::INT: {
@@ -118,12 +122,7 @@ Variable IntVariable::mod(const Variable &other) {
         return mod(other_casted->toIntVar());
     }
     case VariableType::FLOAT: {
-        auto other_casted = std::dynamic_pointer_cast<FloatVariable>(other);
-        if (other_casted->get_value() == 0) {
-            throw std::runtime_error("Modulo by zero");
-        }
-        // TODO
-        throw std::runtime_error("int % float not implemented");
+        return toFloatVar()->mod(other);
     }
     default:
         throw std::runtime_error("Can't do modular arithmetic with int and that type");
@@ -154,7 +153,9 @@ Variable IntVariable::pow(const Variable &other) {
         auto other_casted = std::dynamic_pointer_cast<BoolVariable>(other);
         return pow(other_casted->toIntVar());
     }
-    // TODO: float
+    case VariableType::FLOAT: {
+        return toFloatVar()->pow(other);
+    }
     default:
         throw std::runtime_error("Can't raise int into power of that type");
     }

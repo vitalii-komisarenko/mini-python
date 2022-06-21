@@ -1,5 +1,6 @@
 #include "Variable.h"
 
+#include <cmath>
 #include <stdexcept>
 
 namespace MiniPython {
@@ -12,6 +13,10 @@ VariableType FloatVariable::get_type() {
 
 FloatVariable::FloatType FloatVariable::get_value() {
     return value;
+}
+
+Variable FloatVariable::toFloatVar() {
+    return std::make_shared<FloatVariable>(value);
 }
 
 Variable FloatVariable::add(const Variable &other) {
@@ -100,21 +105,21 @@ Variable FloatVariable::mod(const Variable &other) {
     switch (other->get_type()) {
     case VariableType::INT: {
         auto other_casted = std::dynamic_pointer_cast<IntVariable>(other);
-        if (other_casted->get_value() == 0) {
-            throw std::runtime_error("Modulo by zero");
-        }
-        throw std::runtime_error("Not implemented: float % int");
+        return mod(other_casted->toFloatVar());
     }
     case VariableType::BOOL: {
         auto other_casted = std::dynamic_pointer_cast<BoolVariable>(other);
-        return mod(other_casted->toIntVar());
+        return mod(other_casted->toFloatVar());
     }
     case VariableType::FLOAT: {
         auto other_casted = std::dynamic_pointer_cast<FloatVariable>(other);
         if (other_casted->value == 0) {
             throw std::runtime_error("Modulo by zero");
         }
-        throw std::runtime_error("Not implemented: float % float");
+        // x%y = x - (x//y)*y
+        auto x = value;
+        auto y = other_casted->get_value();
+        return std::make_shared<FloatVariable>(x - (int64_t(x / y)) * y);
     }
     default:
         throw std::runtime_error("Can't do modular arithmetic with float and that type");
@@ -125,28 +130,15 @@ Variable FloatVariable::pow(const Variable &other) {
     switch (other->get_type()) {
     case VariableType::INT: {
         auto other_casted = std::dynamic_pointer_cast<IntVariable>(other);
-
-        FloatType result = 1;
-
-        // Note that according to Python on my computer, 0 ** 0 == 1,
-        // so it is apparently NOT a corner case
-        if (other_casted->get_value() >= 0) {
-            // TODO: faster exponentation
-            for (size_t i = 0; i < other_casted->get_value(); ++i) {
-                result *= this->value;
-            }
-        }
-        else {
-            throw std::runtime_error("Not implemented - negative powers of float");
-        }
-        return std::make_shared<FloatVariable>(result);
+        return pow(other_casted->toFloatVar());
     }
     case VariableType::BOOL: {
         auto other_casted = std::dynamic_pointer_cast<BoolVariable>(other);
-        return pow(other_casted->toIntVar());
+        return pow(other_casted->toFloatVar());
     }
     case VariableType::FLOAT: {
-        throw std::runtime_error("Not implemented - float ** float");
+        auto other_casted = std::dynamic_pointer_cast<FloatVariable>(other);
+        return std::make_shared<FloatVariable>(std::pow(value, other_casted->value));
     }
     default:
         throw std::runtime_error("Can't raise float into power of that type");

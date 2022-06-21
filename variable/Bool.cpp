@@ -11,6 +11,10 @@ Variable BoolVariable::toIntVar() {
     return value ? One : Zero;
 }
 
+Variable BoolVariable::toFloatVar() {
+    return std::make_shared<FloatVariable>(value ? 1 : 0);
+}
+
 BoolVariable::BoolVariable(bool _value): value(_value) {}
 
 VariableType BoolVariable::get_type() {

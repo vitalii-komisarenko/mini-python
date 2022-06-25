@@ -12,11 +12,18 @@ vars = (
     ('IntOne', 'VAR(Int, 1)', 1),
     ('IntTwo', 'VAR(Int, 2)', 2),
     ('IntTwo2', 'VAR(Int, 2)', 2),
+    ('Int8', 'VAR(Int, 8)', 8),
+    ('IntMinusOne', 'VAR(Int, -1)', -1),
+    ('IntMinusOne2', 'VAR(Int, -1)', -1),
+    ('IntMinus12', 'VAR(Int, -12)', -12),
+    ('IntMinus73', 'VAR(Int, -73)', -73),
+    ('FloatMinusOne', 'VAR(Float, -1)', -1.0),
     ('FloatZero', 'VAR(Float, 0)', 0.0),
     ('FloatOne', 'VAR(Float, 1)', 1.0),
     ('FloatTwo', 'VAR(Float, 2)', 2.0),
     ('FloatTwo2', 'VAR(Float, 2)', 2.0),
     ('Float2_5', 'VAR(Float, 2.5)', 2.5),
+    ('Float_23_74', 'VAR(Float, -23.74)', -23.74),
     ('StrEmpty', 'VAR(String, "")', ''),
     ('StrEmpty2', 'VAR(String, "")', ''),
     ('StrA', 'VAR(String, "some text")', 'some text'),
@@ -53,6 +60,9 @@ def generate_for_arithmetic_operation(operation, cpp_name, fh):
                 if _type == "str":
                     _type = "string"
                     res = '"' + res + '"'
+                elif _type == "complex":
+                    # Complex numbers not implemented
+                    continue
 
                 print("    CHECK_VAR(" + v1[0] + "->" + cpp_name + "(" + v2[0] + "), " + _type.upper() + ", " + _type.capitalize() + ", " + str(res) + ");", file=fh)
             except:

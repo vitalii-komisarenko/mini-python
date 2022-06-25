@@ -125,7 +125,17 @@ Variable FloatVariable::mod(const Variable &other) {
         // x%y = x - (x//y)*y
         auto x = value;
         auto y = other_casted->get_value();
-        return std::make_shared<FloatVariable>(x - (int64_t(x / y)) * y);
+
+        auto result = x - (int64_t(x / y)) * y;
+
+        if (x < 0 && y > 0 && result != 0) {
+            result += y;
+        }
+        if (x > 0 && y < 0 && result != 0) {
+            result += y;
+        }
+
+        return std::make_shared<FloatVariable>(result);
     }
     default:
         throw std::runtime_error("Can't do modular arithmetic with float and that type");
@@ -144,6 +154,9 @@ Variable FloatVariable::pow(const Variable &other) {
     }
     case VariableType::FLOAT: {
         auto other_casted = std::dynamic_pointer_cast<FloatVariable>(other);
+        if (value == 0 && other_casted->value < 0) {
+            throw std::runtime_error("ZeroDivisionError: 0.0 cannot be raised to a negative power");
+        }
         return std::make_shared<FloatVariable>(std::pow(value, other_casted->value));
     }
     default:

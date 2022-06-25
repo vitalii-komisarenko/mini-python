@@ -116,7 +116,7 @@ Variable IntVariable::int_div(const Variable &other) {
         if (other_casted->get_value() == 0) {
             throw std::runtime_error("Division by zero");
         }
-        return std::make_shared<IntVariable>(value / other_casted->get_value());
+        return std::make_shared<IntVariable>(std::floor((double)value / other_casted->get_value()));
     }
     case VariableType::BOOL: {
         auto other_casted = std::dynamic_pointer_cast<BoolVariable>(other);
@@ -138,10 +138,24 @@ Variable IntVariable::mod(const Variable &other) {
     switch (other->get_type()) {
     case VariableType::INT: {
         auto other_casted = std::dynamic_pointer_cast<IntVariable>(other);
+
         if (other_casted->value == 0) {
             throw std::runtime_error("Modulo by zero");
         }
-        return std::make_shared<IntVariable>(value % other_casted->value);
+        // x%y = x - (x//y)*y
+        auto x = value;
+        auto y = other_casted->get_value();
+
+        auto result = x - (int64_t(x / y)) * y;
+
+        if (x < 0 && y > 0 && result != 0) {
+            result += y;
+        }
+        if (x > 0 && y < 0 && result != 0) {
+            result += y;
+        }
+
+        return std::make_shared<IntVariable>(result);
     }
     case VariableType::BOOL: {
         auto other_casted = std::dynamic_pointer_cast<BoolVariable>(other);
@@ -171,7 +185,7 @@ Variable IntVariable::pow(const Variable &other) {
             }
         }
         else {
-            throw std::runtime_error("Not implemented - negative powers of int");
+            return toFloatVar()->pow(other);
         }
         return std::make_shared<IntVariable>(result);
     }

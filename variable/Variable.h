@@ -173,6 +173,7 @@ public:
     ListVariable(ListType _list);
 
     VariableType get_type() override;
+    ListType get_value();
 
     Variable add(const Variable &other) override;
     Variable sub(const Variable &other) override;

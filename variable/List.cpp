@@ -10,6 +10,10 @@ VariableType ListVariable::get_type() {
     return VariableType::LIST;
 }
 
+ListVariable::ListType ListVariable::get_value() {
+    return list;
+}
+
 Variable ListVariable::add(const Variable &other) {
     switch (other->get_type()) {
     case VariableType::LIST: {

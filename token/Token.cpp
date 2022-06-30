@@ -265,7 +265,7 @@ TokenList tokenizeLine(const std::string &line) {
             discardCharacter(ss);
             break;
         case '}':
-            result.push_back(Token(TokenType::CLOSING_CURY_BRACKET));
+            result.push_back(Token(TokenType::CLOSING_CURLY_BRACKET));
             discardCharacter(ss);
             break;
         default:

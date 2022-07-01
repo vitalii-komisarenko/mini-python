@@ -22,6 +22,7 @@ enum class TokenType {
 };
 
 struct Token {
+    Token();
     Token(TokenType _type, const std::string &value = {});
     bool operator==(const Token &other);
 

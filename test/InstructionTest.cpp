@@ -14,8 +14,9 @@ void test_instruction() {
 
     MY_ASSERT(simpleAssignmentInstruction.op == Operation::SET);
     MY_ASSERT(simpleAssignmentInstruction.params.size() == 2);
-    MY_ASSERT(simpleAssignmentInstruction.params[0]->type == InstructionOrVariableType::INSTRUCTION);
-    MY_ASSERT(simpleAssignmentInstruction.params[0]->instruction.op == Operation::VAR_NAME);
-    MY_ASSERT(simpleAssignmentInstruction.params[1]->type == InstructionOrVariableType::INSTRUCTION);
-    MY_ASSERT(simpleAssignmentInstruction.params[1]->instruction.op == Operation::RET_VALUE);
+
+    if (simpleAssignmentInstruction.params.size() == 2) {
+        MY_ASSERT(simpleAssignmentInstruction.params[0]->op == Operation::VAR_NAME);
+        MY_ASSERT(simpleAssignmentInstruction.params[1]->op == Operation::RET_VALUE);
+    }
 }

@@ -5,6 +5,10 @@
 
 namespace MiniPython {
 
+Token::Token()
+    : type(TokenType::NONE)
+    {}
+
 Token::Token(TokenType _type, const std::string &_value):
     type(_type),
     value(_value) {}

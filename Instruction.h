@@ -4,6 +4,7 @@
 #include "variable/Variable.h"
 
 #include <memory>
+#include <vector>
 
 namespace MiniPython {
 
@@ -22,44 +23,23 @@ enum class Operation {
     VAR_NAME,
     RET_VALUE,
     // temporary tokens during parsing
-    TOKEN_SEQUENCE_AFTER_BRACKETS_PARSING,
+    TOKEN,
 };
-
-struct InstructionOrVariable;
 
 class Instruction {
 public:
-    Instruction() {};
-    Instruction(Operation _op, std::vector<Instruction> instructions);
+    Instruction();
+    Instruction(Operation _op, std::vector<std::shared_ptr<Instruction>> _instructions);
+    Instruction(const Token &_token);
     static Instruction fromTokenList(const TokenList &tokens);
     static Instruction fromTokenRange(std::vector<Token>::const_iterator &current, std::vector<Token>::const_iterator &end, TokenType endToken);
 
     Variable execute();
     Operation op = Operation::NONE;
-    std::vector<std::shared_ptr<InstructionOrVariable>> params;
+    std::vector<std::shared_ptr<Instruction>> params;
 
     Variable var;
-};
-
-enum class InstructionOrVariableType {
-    NONE,
-    INSTRUCTION,
-    VARIABLE,
-    UNPARSED_TOKEN,
-};
-
-struct InstructionOrVariable {
-    InstructionOrVariable();
-    InstructionOrVariable(const Token &_token);
-    InstructionOrVariable(const Instruction &_instruction);
-
-    InstructionOrVariableType type;
-
-    Instruction instruction;
-    Variable variable;
     Token token;
-
-    Variable execute();
 };
 
 } // namespace MiniPython

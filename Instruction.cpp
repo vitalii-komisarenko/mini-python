@@ -5,40 +5,31 @@
 
 namespace MiniPython {
 
-Instruction::Instruction(Operation _op, std::vector<Instruction> instructions) {
-    op = _op;
-    for (auto& i: instructions) {
-        std::shared_ptr<InstructionOrVariable> iov = std::make_shared<InstructionOrVariable>();
-        iov->type = InstructionOrVariableType::INSTRUCTION;
-        iov->instruction = i;
-        params.push_back(iov);
+Instruction::Instruction() {}
+
+Instruction::Instruction(Operation _op, std::vector<std::shared_ptr<Instruction>> _params)
+    : op(_op)
+    , params(_params)
+    {}
+
+Instruction::Instruction(const Token &_token)
+{
+    switch (_token.type) {
+    case TokenType::IDENTIFIER: {
+        op = Operation::VAR_NAME;
+        var = std::static_pointer_cast<GenericVariable>(std::make_shared<StringVariable>(_token.value));
+        break;
     }
-}
-
-InstructionOrVariable::InstructionOrVariable()
-    : type(InstructionOrVariableType::NONE)
-    , token(TokenType::NONE, "")
-    {}
-
-InstructionOrVariable::InstructionOrVariable(const Token &_token)
-    : type(InstructionOrVariableType::UNPARSED_TOKEN)
-    , token(_token)
-    {}
-
-InstructionOrVariable::InstructionOrVariable(const Instruction &_instruction)
-    : type(InstructionOrVariableType::INSTRUCTION)
-    , instruction(_instruction)
-    , token(TokenType::NONE, "")
-    {}
-
-Variable InstructionOrVariable::execute() {
-    switch (type) {
-    case InstructionOrVariableType::INSTRUCTION:
-        return instruction.execute();
-    case InstructionOrVariableType::VARIABLE:
-        return variable;
-    default:
-        throw std::runtime_error("Bad InstructionOrVariable type");
+    case TokenType::NUMBER:
+    case TokenType::STRING: {
+        op = Operation::RET_VALUE;
+        var = parseTokenToVariable(_token);
+        break;
+    }
+    default: {
+        op = Operation::TOKEN;
+        token = _token;
+    }
     }
 }
 
@@ -59,7 +50,7 @@ Instruction Instruction::fromTokenRange(std::vector<Token>::const_iterator &_cur
 
     while (current != end) {
         if (current->type == endToken) {
-            result.params.push_back(std::make_shared<InstructionOrVariable>(*current));
+            result.params.push_back(std::make_shared<Instruction>(*current));
             ++current;
             return result;
         }
@@ -67,64 +58,29 @@ Instruction Instruction::fromTokenRange(std::vector<Token>::const_iterator &_cur
         switch (current->type) {
         case TokenType::OPENING_ROUND_BRACKET: {
             ++current;
-            result.params.push_back(std::make_shared<InstructionOrVariable>(fromTokenRange(current, end, TokenType::CLOSING_ROUND_BRACKET)));
+            result.params.push_back(std::make_shared<Instruction>(fromTokenRange(current, end, TokenType::CLOSING_ROUND_BRACKET)));
             break;
         }
         case TokenType::OPENING_SQUARE_BRACKET: {
             ++current;
-            result.params.push_back(std::make_shared<InstructionOrVariable>(fromTokenRange(current, end, TokenType::CLOSING_SQUARE_BRACKET)));
+            result.params.push_back(std::make_shared<Instruction>(fromTokenRange(current, end, TokenType::CLOSING_SQUARE_BRACKET)));
             break;
         }
         case TokenType::OPENING_CURLY_BRACKET: {
             ++current;
-            result.params.push_back(std::make_shared<InstructionOrVariable>(fromTokenRange(current, end, TokenType::CLOSING_CURLY_BRACKET)));
+            result.params.push_back(std::make_shared<Instruction>(fromTokenRange(current, end, TokenType::CLOSING_CURLY_BRACKET)));
             break;
         }
         default: {
-            result.params.push_back(std::make_shared<InstructionOrVariable>(Token(*current)));
+            result.params.push_back(std::make_shared<Instruction>(Token(*current)));
             ++current;
         }
         }
     }
 
-    auto canBeArithmeticOperand = [](std::shared_ptr<InstructionOrVariable> &iov) {
-        if (iov->type == InstructionOrVariableType::INSTRUCTION)
-            return true;
-
-        if (iov->type == InstructionOrVariableType::VARIABLE)
-            return true;
-
-        if (iov->type == InstructionOrVariableType::UNPARSED_TOKEN) {
-            if (iov->token.type == TokenType::IDENTIFIER)
-                return true;
-            if (iov->token.type == TokenType::NUMBER)
-                return true;
-            if (iov->token.type == TokenType::STRING)
-                return true;
-        }
-
-        return false;
-    };
-
-    auto fromArithmeticOperandToken = [](const Token &token) {
-        Instruction result;
-        switch (token.type) {
-        case TokenType::IDENTIFIER: {
-            result.op = Operation::VAR_NAME;
-            result.var = std::static_pointer_cast<GenericVariable>(std::make_shared<StringVariable>(token.value));
-            break;
-        }
-        case TokenType::NUMBER:
-        case TokenType::STRING: {
-            result.op = Operation::RET_VALUE;
-            result.var = parseTokenToVariable(token);
-            break;
-        }
-        default: {
-            throw std::runtime_error("Can't turn this token into a single instruction");
-        }
-        }
-        return result;
+    auto canBeArithmeticOperand = [](std::shared_ptr<Instruction> &instr) {
+        return instr->op == Operation::VAR_NAME
+            || instr->op == Operation::RET_VALUE;
     };
 
     // =
@@ -139,28 +95,21 @@ Instruction Instruction::fromTokenRange(std::vector<Token>::const_iterator &_cur
                     && result.params[i]->token.type == TokenType::OPERATOR
                     && result.params[i]->token.value == "=") {
 
-                std::shared_ptr<InstructionOrVariable> iov = std::make_shared<InstructionOrVariable>();
-                iov->type = InstructionOrVariableType::INSTRUCTION;
-                iov->instruction.op = Operation::SET;
-                iov->instruction.params.push_back(result.params[i - 1]);
-                iov->instruction.params.push_back(result.params[i + 1]);
+                std::shared_ptr<Instruction> instr = std::make_shared<Instruction>();
+                instr->op = Operation::SET;
+                instr->params.push_back(result.params[i - 1]);
+                instr->params.push_back(result.params[i + 1]);
 
                 result.params.erase(result.params.begin() + i - 1, result.params.begin() + i + 2);
-                result.params.insert(result.params.begin() + i - 1, iov);
+                result.params.insert(result.params.begin() + i - 1, instr);
 
                 found = true;
             }
         }
     }
 
-    if (result.params.size() == 1 && result.op == Operation::NONE && result.params[0]->type == InstructionOrVariableType::INSTRUCTION) {
-        result = result.params[0]->instruction;
-    }
-
-    if (result.params.size() == 1 && result.op == Operation::NONE && result.params[0]->type == InstructionOrVariableType::UNPARSED_TOKEN) {
-        if (result.params.size() == 1 && canBeArithmeticOperand(result.params[0])) {
-            result = fromArithmeticOperandToken(result.params[0]->token);
-        }
+    if (result.op == Operation::NONE && result.params.size() == 1) {
+        result = *result.params[0].get();
     }
 
     return result;

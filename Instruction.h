@@ -19,6 +19,8 @@ enum class Operation {
     INT_DIV,
     MOD,
     CALL,
+    VAR_NAME,
+    RET_VALUE,
     // temporary tokens during parsing
     TOKEN_SEQUENCE_AFTER_BRACKETS_PARSING,
 };
@@ -33,9 +35,10 @@ public:
     static Instruction fromTokenRange(std::vector<Token>::const_iterator &current, std::vector<Token>::const_iterator &end, TokenType endToken);
 
     Variable execute();
-private:
-    Operation op;
+    Operation op = Operation::NONE;
     std::vector<std::shared_ptr<InstructionOrVariable>> params;
+
+    Variable var;
 };
 
 enum class InstructionOrVariableType {

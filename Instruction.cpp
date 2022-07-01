@@ -1,4 +1,5 @@
 #include "Instruction.h"
+#include "token2variable/TokenToVariable.h"
 
 #include <stdexcept>
 
@@ -58,7 +59,6 @@ Instruction Instruction::fromTokenRange(std::vector<Token>::const_iterator &_cur
 
     while (current != end) {
         if (current->type == endToken) {
-            //result.params.push_back(std::make_shared<InstructionOrVariable>(Token(current->type, current->value)));
             result.params.push_back(std::make_shared<InstructionOrVariable>(*current));
             ++current;
             return result;
@@ -84,6 +84,82 @@ Instruction Instruction::fromTokenRange(std::vector<Token>::const_iterator &_cur
             result.params.push_back(std::make_shared<InstructionOrVariable>(Token(*current)));
             ++current;
         }
+        }
+    }
+
+    auto canBeArithmeticOperand = [](std::shared_ptr<InstructionOrVariable> &iov) {
+        if (iov->type == InstructionOrVariableType::INSTRUCTION)
+            return true;
+
+        if (iov->type == InstructionOrVariableType::VARIABLE)
+            return true;
+
+        if (iov->type == InstructionOrVariableType::UNPARSED_TOKEN) {
+            if (iov->token.type == TokenType::IDENTIFIER)
+                return true;
+            if (iov->token.type == TokenType::NUMBER)
+                return true;
+            if (iov->token.type == TokenType::STRING)
+                return true;
+        }
+
+        return false;
+    };
+
+    auto fromArithmeticOperandToken = [](const Token &token) {
+        Instruction result;
+        switch (token.type) {
+        case TokenType::IDENTIFIER: {
+            result.op = Operation::VAR_NAME;
+            result.var = std::static_pointer_cast<GenericVariable>(std::make_shared<StringVariable>(token.value));
+            break;
+        }
+        case TokenType::NUMBER:
+        case TokenType::STRING: {
+            result.op = Operation::RET_VALUE;
+            result.var = parseTokenToVariable(token);
+            break;
+        }
+        default: {
+            throw std::runtime_error("Can't turn this token into a single instruction");
+        }
+        }
+        return result;
+    };
+
+    // =
+
+    bool found = true;
+    while (found) {
+        found = false;
+
+        for (size_t i = 1; i < result.params.size() - 1; ++i) {
+            if (canBeArithmeticOperand(result.params[i - 1])
+                    && canBeArithmeticOperand(result.params[i + 1])
+                    && result.params[i]->token.type == TokenType::OPERATOR
+                    && result.params[i]->token.value == "=") {
+
+                std::shared_ptr<InstructionOrVariable> iov = std::make_shared<InstructionOrVariable>();
+                iov->type = InstructionOrVariableType::INSTRUCTION;
+                iov->instruction.op = Operation::SET;
+                iov->instruction.params.push_back(result.params[i - 1]);
+                iov->instruction.params.push_back(result.params[i + 1]);
+
+                result.params.erase(result.params.begin() + i - 1, result.params.begin() + i + 2);
+                result.params.insert(result.params.begin() + i - 1, iov);
+
+                found = true;
+            }
+        }
+    }
+
+    if (result.params.size() == 1 && result.op == Operation::NONE && result.params[0]->type == InstructionOrVariableType::INSTRUCTION) {
+        result = result.params[0]->instruction;
+    }
+
+    if (result.params.size() == 1 && result.op == Operation::NONE && result.params[0]->type == InstructionOrVariableType::UNPARSED_TOKEN) {
+        if (result.params.size() == 1 && canBeArithmeticOperand(result.params[0])) {
+            result = fromArithmeticOperandToken(result.params[0]->token);
         }
     }
 

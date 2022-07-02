@@ -134,4 +134,12 @@ bool ListVariable::less(const Variable &other) {
     }
 }
 
+bool ListVariable::strictly_equal(const Variable &other) {
+    if (get_type() != other->get_type()) {
+        return false;
+    }
+
+    return list == std::dynamic_pointer_cast<ListVariable>(other)->list;
+}
+
 } // namespace MiniPython

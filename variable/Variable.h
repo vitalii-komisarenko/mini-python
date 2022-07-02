@@ -37,6 +37,9 @@ public:
 
     virtual bool equal(const Variable &other) = 0;
     virtual bool less(const Variable &other) = 0;
+
+    // for test purposes
+    virtual bool strictly_equal(const Variable &other) = 0;
 };
 
 class NoneVariable: public GenericVariable {
@@ -56,6 +59,8 @@ public:
 
     bool equal(const Variable &other) override;
     bool less(const Variable &other) override;
+
+    bool strictly_equal(const Variable &other) override;
 };
 
 class IntVariable: public GenericVariable {
@@ -81,6 +86,8 @@ public:
     bool equal(const Variable &other) override;
     bool less(const Variable &other) override;
 
+    bool strictly_equal(const Variable &other) override;
+
     Variable toFloatVar();
 private:
     IntType value;
@@ -105,6 +112,8 @@ public:
 
     bool equal(const Variable &other) override;
     bool less(const Variable &other) override;
+
+    bool strictly_equal(const Variable &other) override;
 
     Variable toIntVar();
     Variable toFloatVar();
@@ -135,6 +144,8 @@ public:
     bool equal(const Variable &other) override;
     bool less(const Variable &other) override;
 
+    bool strictly_equal(const Variable &other) override;
+
     Variable toFloatVar();
 private:
     FloatType value;
@@ -162,6 +173,8 @@ public:
 
     bool equal(const Variable &other) override;
     bool less(const Variable &other) override;
+
+    bool strictly_equal(const Variable &other) override;
 private:
     StringType value;
 };
@@ -188,6 +201,8 @@ public:
 
     bool equal(const Variable &other) override;
     bool less(const Variable &other) override;
+
+    bool strictly_equal(const Variable &other) override;
 
     void append(const Variable &other);
 private:

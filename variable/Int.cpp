@@ -247,4 +247,12 @@ bool IntVariable::less(const Variable &other) {
     }
 }
 
+bool IntVariable::strictly_equal(const Variable &other) {
+    if (get_type() != other->get_type()) {
+        return false;
+    }
+
+    return value == std::dynamic_pointer_cast<IntVariable>(other)->value;
+}
+
 } // namespace MiniPython

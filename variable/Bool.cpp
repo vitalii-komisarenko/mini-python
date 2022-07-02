@@ -65,4 +65,12 @@ bool BoolVariable::less(const Variable &other) {
     return toIntVar()->less(other);
 }
 
+bool BoolVariable::strictly_equal(const Variable &other) {
+    if (get_type() != other->get_type()) {
+        return false;
+    }
+
+    return value == std::dynamic_pointer_cast<BoolVariable>(other)->value;
+}
+
 } // namespace MiniPython

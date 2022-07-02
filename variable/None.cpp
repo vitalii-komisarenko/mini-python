@@ -52,4 +52,12 @@ bool NoneVariable::less(const Variable &other) {
     throw std::runtime_error("Can't use < or > with None");
 }
 
+bool NoneVariable::strictly_equal(const Variable &other) {
+    if (get_type() != other->get_type()) {
+        return false;
+    }
+
+    return true;
+}
+
 } // namespace MiniPython

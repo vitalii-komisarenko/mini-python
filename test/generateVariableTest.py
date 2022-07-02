@@ -44,6 +44,55 @@ header = r"""
 #define VAR(TYPE, VALUE) \
     std::static_pointer_cast<GenericVariable>(std::make_shared<TYPE ## Variable>(VALUE))
 
+enum class BinaryOp {
+    add,
+    sub,
+    mul,
+    div,
+    int_div,
+    pow,
+    mod,
+};
+
+enum class AssertResult {
+    PASS,
+    FAIL,
+    EXCEPTION,
+};
+
+static std::ostream& operator<< (std::ostream& os, AssertResult res) {
+    switch (res) {
+    case AssertResult::PASS:       os << "PASS";      break;
+    case AssertResult::FAIL:       os << "FAIL";      break;
+    case AssertResult::EXCEPTION:  os << "EXCEPTION"; break;
+    default:                       os << "???";
+    }
+    return os;
+}
+
+static Variable doBinaryOp(Variable arg1, Variable arg2, BinaryOp op) {
+    switch(op) {
+    case BinaryOp::add: return arg1->add(arg2);
+    case BinaryOp::sub: return arg1->sub(arg2);
+    case BinaryOp::mul: return arg1->mul(arg2);
+    case BinaryOp::div: return arg1->div(arg2);
+    case BinaryOp::int_div: return arg1->int_div(arg2);
+    case BinaryOp::mod: return arg1->mod(arg2);
+    case BinaryOp::pow: return arg1->pow(arg2);
+    default: throw std::runtime_error("Bad op");
+    }
+}
+
+static AssertResult doBinaryOpAndCompareResult(Variable arg1, Variable arg2, BinaryOp op, Variable expected_res) {
+    try {
+        auto res = doBinaryOp(arg1, arg2, op);
+        return res->strictly_equal(expected_res) ? AssertResult::PASS : AssertResult::FAIL;
+    }
+    catch(...) {
+        return AssertResult::EXCEPTION;
+    }
+}
+
 """
 
 for v in vars:
@@ -55,22 +104,34 @@ def generate_for_arithmetic_operation(operation, cpp_name, fh):
 
     for v1 in vars:
         for v2 in vars:
+            assert_result = "PASS"
+            _type = "None"
+            res = ""
             try:
                 res = eval('v1[2] ' + operation + 'v2[2]')
 
-                _type = str(type(res)).replace("<class '", "").replace("'>", "")
-                if _type == "str":
-                    _type = "string"
-                    res = '"' + res + '"'
-                elif _type == "complex":
-                    # Complex numbers not implemented
-                    continue
-                elif _type == 'list':
-                    res.replace('[', '{').replace(']', '}')
-
-                print("    CHECK_VAR(" + v1[0] + "->" + cpp_name + "(" + v2[0] + "), " + _type.upper() + ", " + _type.capitalize() + ", " + str(res) + ");", file=fh)
             except:
-                print("    MUST_THROW(" + v1[0] + "->" + cpp_name + "(" + v2[0] + "));", file=fh)
+                assert_result = "EXCEPTION"
+
+            _type = str(type(res)).replace("<class '", "").replace("'>", "")
+            res_str = ""
+
+            if _type == "None":
+                res_str = "None"
+            if _type == "str":
+                _type = "string"
+                res = '"' + res + '"'
+            elif _type == "complex":
+                # Complex numbers not implemented
+                continue
+            elif _type == 'list':
+                # Only empty lists supported in tests
+                res_str = 'VAR(List, ListVariable::ListType())'
+
+            if not res_str:
+                res_str = "VAR(" + _type.capitalize() + ", " + str(res) + ")"
+
+            print("    MY_ASSERT_EQUAL(doBinaryOpAndCompareResult(" + v1[0] + ", " + v2[0] + ", BinaryOp::" + cpp_name + ", " + res_str + "), AssertResult::" + assert_result + ");", file=fh)
 
 
 ops = (

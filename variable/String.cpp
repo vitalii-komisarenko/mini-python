@@ -95,4 +95,12 @@ bool StringVariable::less(const Variable &other) {
     }
 }
 
+bool StringVariable::strictly_equal(const Variable &other) {
+    if (get_type() != other->get_type()) {
+        return false;
+    }
+
+    return value == std::dynamic_pointer_cast<StringVariable>(other)->value;
+}
+
 } // namespace MiniPython

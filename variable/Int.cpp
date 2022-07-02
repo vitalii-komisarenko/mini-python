@@ -242,11 +242,8 @@ bool IntVariable::less(const Variable &other) {
         auto other_casted = std::dynamic_pointer_cast<FloatVariable>(other);
         return this->value < other_casted->get_value();
     }
-    case VariableType::NONE:
-    case VariableType::STRING:
-        throw std::runtime_error("Can't compare float with this type");
     default:
-        return false;
+        throw std::runtime_error("Can't compare float with this type");
     }
 }
 

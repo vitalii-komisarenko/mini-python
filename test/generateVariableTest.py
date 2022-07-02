@@ -83,13 +83,18 @@ static Variable doBinaryOp(Variable arg1, Variable arg2, BinaryOp op) {
     }
 }
 
-static AssertResult doBinaryOpAndCompareResult(Variable arg1, Variable arg2, BinaryOp op, Variable expected_res) {
+static void doBinaryOpAndCompareResult(Variable arg1, Variable arg2, BinaryOp op, Variable expected_res, AssertResult a_res, const char *descr) {
     try {
-        auto res = doBinaryOp(arg1, arg2, op);
-        return res->strictly_equal(expected_res) ? AssertResult::PASS : AssertResult::FAIL;
+        auto res_var = doBinaryOp(arg1, arg2, op);
+        auto assertion_result = res_var->strictly_equal(expected_res) ? AssertResult::PASS : AssertResult::FAIL;
+        if (assertion_result != a_res) {
+            std::cerr << descr << " returned " << assertion_result << " instead of " << a_res << "\n";
+        }
     }
     catch(...) {
-        return AssertResult::EXCEPTION;
+        if (a_res != AssertResult::EXCEPTION) {
+            std::cerr << descr << " returned EXCEPTION instead of " << a_res << "\n";
+        }
     }
 }
 
@@ -131,7 +136,8 @@ def generate_for_arithmetic_operation(operation, cpp_name, fh):
             if not res_str:
                 res_str = "VAR(" + _type.capitalize() + ", " + str(res) + ")"
 
-            print("    MY_ASSERT_EQUAL(doBinaryOpAndCompareResult(" + v1[0] + ", " + v2[0] + ", BinaryOp::" + cpp_name + ", " + res_str + "), AssertResult::" + assert_result + ");", file=fh)
+            descr = '"' + v1[0] + '->' + cpp_name + '(' + v2[0] + ')"'
+            print("    doBinaryOpAndCompareResult(" + v1[0] + ", " + v2[0] + ", BinaryOp::" + cpp_name + ", " + res_str + ", AssertResult::" + assert_result + ", " + descr + ");", file=fh)
 
 
 ops = (

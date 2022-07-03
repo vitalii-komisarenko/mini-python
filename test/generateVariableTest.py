@@ -44,7 +44,7 @@ header = r"""
 #define VAR(TYPE, VALUE) \
     std::static_pointer_cast<GenericVariable>(std::make_shared<TYPE ## Variable>(VALUE))
 
-enum class BinaryOp {
+enum class OpReturningVar {
     add,
     sub,
     mul,
@@ -70,23 +70,50 @@ static std::ostream& operator<< (std::ostream& os, AssertResult res) {
     return os;
 }
 
-static Variable doBinaryOp(Variable arg1, Variable arg2, BinaryOp op) {
+static Variable doOpReturningVar(Variable arg1, Variable arg2, OpReturningVar op) {
     switch(op) {
-    case BinaryOp::add: return arg1->add(arg2);
-    case BinaryOp::sub: return arg1->sub(arg2);
-    case BinaryOp::mul: return arg1->mul(arg2);
-    case BinaryOp::div: return arg1->div(arg2);
-    case BinaryOp::int_div: return arg1->int_div(arg2);
-    case BinaryOp::mod: return arg1->mod(arg2);
-    case BinaryOp::pow: return arg1->pow(arg2);
+    case OpReturningVar::add: return arg1->add(arg2);
+    case OpReturningVar::sub: return arg1->sub(arg2);
+    case OpReturningVar::mul: return arg1->mul(arg2);
+    case OpReturningVar::div: return arg1->div(arg2);
+    case OpReturningVar::int_div: return arg1->int_div(arg2);
+    case OpReturningVar::mod: return arg1->mod(arg2);
+    case OpReturningVar::pow: return arg1->pow(arg2);
     default: throw std::runtime_error("Bad op");
     }
 }
 
-static void doBinaryOpAndCompareResult(Variable arg1, Variable arg2, BinaryOp op, Variable expected_res, AssertResult a_res, const char *descr) {
+static void doOpReturningVarAndCompareResult(Variable arg1, Variable arg2, OpReturningVar op, Variable expected_res, AssertResult a_res, const char *descr) {
     try {
-        auto res_var = doBinaryOp(arg1, arg2, op);
+        auto res_var = doOpReturningVar(arg1, arg2, op);
         auto assertion_result = res_var->strictly_equal(expected_res) ? AssertResult::PASS : AssertResult::FAIL;
+        if (assertion_result != a_res) {
+            std::cerr << descr << " returned " << assertion_result << " instead of " << a_res << "\n";
+        }
+    }
+    catch(...) {
+        if (a_res != AssertResult::EXCEPTION) {
+            std::cerr << descr << " returned EXCEPTION instead of " << a_res << "\n";
+        }
+    }
+}
+
+enum class OpReturningBool {
+    equal,
+    less,
+};
+
+static bool doOpReturningBool(Variable arg1, Variable arg2, OpReturningBool op) {
+    switch(op) {
+    case OpReturningBool::equal: return arg1->equal(arg2);
+    case OpReturningBool::less: return arg1->less(arg2);
+    default: throw std::runtime_error("Bad op");
+    }
+}
+
+static void doOpReturningBoolAndCompareResult(Variable arg1, Variable arg2, OpReturningBool op, bool expected_res, AssertResult a_res, const char *descr) {
+    try {
+        auto assertion_result = doOpReturningBool(arg1, arg2, op) ? AssertResult::PASS : AssertResult::FAIL;
         if (assertion_result != a_res) {
             std::cerr << descr << " returned " << assertion_result << " instead of " << a_res << "\n";
         }
@@ -137,7 +164,7 @@ def generate_for_arithmetic_operation(operation, cpp_name, fh):
                 res_str = "VAR(" + _type.capitalize() + ", " + str(res) + ")"
 
             descr = '"' + v1[0] + '->' + cpp_name + '(' + v2[0] + ')"'
-            print("    doBinaryOpAndCompareResult(" + v1[0] + ", " + v2[0] + ", BinaryOp::" + cpp_name + ", " + res_str + ", AssertResult::" + assert_result + ", " + descr + ");", file=fh)
+            print("    doOpReturningVarAndCompareResult(" + v1[0] + ", " + v2[0] + ", OpReturningVar::" + cpp_name + ", " + res_str + ", AssertResult::" + assert_result + ", " + descr + ");", file=fh)
 
 
 ops = (
@@ -175,11 +202,19 @@ for o in ops2:
 
         for v1 in vars:
             for v2 in vars:
+                assert_result = "EXCEPTION"
+                res = "false"
                 try:
-                    isNot = "" if eval('v1[2] ' + o[0] + 'v2[2]') else "!"
-                    print("    MY_ASSERT(" + isNot + v1[0] + "->" + o[1] + "(" + v2[0] + "));", file=f)
+                    if eval('v1[2] ' + o[0] + 'v2[2]') == True:
+                        assert_result = "PASS"
+                        res = "true"
+                    else:
+                        assert_result =  "FAIL"
                 except:
-                    print("    MUST_THROW(" + v1[0] + "->" + o[1] + "(" + v2[0] + "));", file=f)
+                    pass
+
+                descr = '"' + v1[0] + '->' + o[1] + '(' + v2[0] + ')"'
+                print("    doOpReturningBoolAndCompareResult(" + v1[0] + ", " + v2[0] + ", OpReturningBool::" + o[1] + ", " + res + ", AssertResult::" + assert_result + ", " + descr + ");", file=f)
 
         print("}", file=f)
 

@@ -19,6 +19,7 @@ enum class Operation {
     DIV,
     INT_DIV,
     MOD,
+    POW,
     CALL,
     VAR_NAME,
     RET_VALUE,

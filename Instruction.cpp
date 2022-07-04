@@ -78,35 +78,52 @@ Instruction Instruction::fromTokenRange(std::vector<Token>::const_iterator &_cur
         }
     }
 
-    auto canBeArithmeticOperand = [](std::shared_ptr<Instruction> &instr) {
-        return instr->op == Operation::VAR_NAME
-            || instr->op == Operation::RET_VALUE;
+    auto groupByOperator = [&result](std::vector<std::pair<const char *, Operation>> ops) {// *op_str, Operation target_op) {
+        auto canBeArithmeticOperand = [](std::shared_ptr<Instruction> &instr) {
+//            return instr->op == Operation::VAR_NAME
+//                || instr->op == Operation::RET_VALUE;
+            return instr->op != Operation::TOKEN;
+        };
+
+        bool found = true;
+        while (found) {
+            found = false;
+
+            for (size_t i = 1; i < result.params.size() - 1; ++i) {
+                if (canBeArithmeticOperand(result.params[i - 1])
+                        && canBeArithmeticOperand(result.params[i + 1])
+                        && result.params[i]->token.type == TokenType::OPERATOR) {
+
+                    for (const auto& pair: ops) {
+                        if (result.params[i]->token.value == pair.first) {
+                            std::shared_ptr<Instruction> instr = std::make_shared<Instruction>();
+                            instr->op = pair.second;
+                            instr->params.push_back(result.params[i - 1]);
+                            instr->params.push_back(result.params[i + 1]);
+
+                            result.params.erase(result.params.begin() + i - 1, result.params.begin() + i + 2);
+                            result.params.insert(result.params.begin() + i - 1, instr);
+
+                            found = true;
+                            goto end_while;
+                        }
+                    }
+                }
+            }
+
+            end_while:
+            ;
+        }
     };
 
-    // =
-
-    bool found = true;
-    while (found) {
-        found = false;
-
-        for (size_t i = 1; i < result.params.size() - 1; ++i) {
-            if (canBeArithmeticOperand(result.params[i - 1])
-                    && canBeArithmeticOperand(result.params[i + 1])
-                    && result.params[i]->token.type == TokenType::OPERATOR
-                    && result.params[i]->token.value == "=") {
-
-                std::shared_ptr<Instruction> instr = std::make_shared<Instruction>();
-                instr->op = Operation::SET;
-                instr->params.push_back(result.params[i - 1]);
-                instr->params.push_back(result.params[i + 1]);
-
-                result.params.erase(result.params.begin() + i - 1, result.params.begin() + i + 2);
-                result.params.insert(result.params.begin() + i - 1, instr);
-
-                found = true;
-            }
-        }
-    }
+    groupByOperator({{"**", Operation::POW}});
+    groupByOperator({{"*", Operation::MUL},
+                     {"/", Operation::DIV},
+                     {"//", Operation::INT_DIV},
+                     {"%", Operation::MOD}});
+    groupByOperator({{"+", Operation::ADD},
+                     {"-", Operation::SUB}});
+    groupByOperator({{"=", Operation::SET}});
 
     if (result.op == Operation::NONE && result.params.size() == 1) {
         result = *result.params[0].get();

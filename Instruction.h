@@ -10,6 +10,7 @@
 namespace MiniPython {
 
 class Instruction;
+using InstructionParams = std::vector<std::shared_ptr<Instruction>>;
 
 enum class Operation {
     NONE,
@@ -40,7 +41,7 @@ public:
 
     Variable execute();
     Operation op = Operation::NONE;
-    std::vector<std::shared_ptr<Instruction>> params;
+    InstructionParams params;
 
     Variable var;
     Token token;

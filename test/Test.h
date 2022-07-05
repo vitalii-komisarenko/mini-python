@@ -14,8 +14,8 @@
     try {                                                                                                          \
         if ((X) != (Y)) {                                                                                          \
             std::cerr << __FILE__ << ": " << __LINE__ << ": " << #X << " != " #Y << "\n";                          \
-            std::cerr << "Left side = " << X << "\n";                                                              \
-            std::cerr << "Right side = " << Y << "\n";                                                             \
+            std::cerr << "  Left side = " << X << "\n";                                                            \
+            std::cerr << "  Right side = " << Y << "\n";                                                           \
         }                                                                                                          \
     }                                                                                                              \
     catch(std::exception& ex) {                                                                                    \

@@ -4,6 +4,7 @@
 #include "variable/Variable.h"
 
 #include <memory>
+#include <string>
 #include <vector>
 
 namespace MiniPython {
@@ -12,7 +13,7 @@ class Instruction;
 
 enum class Operation {
     NONE,
-    SET,
+    ASSIGN,
     ADD,
     SUB,
     MUL,
@@ -26,6 +27,8 @@ enum class Operation {
     // temporary tokens during parsing
     TOKEN,
 };
+
+std::string opToString(Operation op);
 
 class Instruction {
 public:

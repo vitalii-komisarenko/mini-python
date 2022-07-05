@@ -5,6 +5,39 @@
 
 namespace MiniPython {
 
+std::string opToString(Operation op) {
+    switch (op) {
+    case Operation::NONE:
+        return "NONE";
+    case Operation::ASSIGN:
+        return "ASSIGN";
+    case Operation::ADD:
+        return "ADD";
+    case Operation::SUB:
+        return "SUB";
+    case Operation::MUL:
+        return "MUL";
+    case Operation::DIV:
+        return "DIV";
+    case Operation::INT_DIV:
+        return "INT_DIV";
+    case Operation::MOD:
+        return "MOD";
+    case Operation::POW:
+        return "POW";
+    case Operation::CALL:
+        return "CALL";
+    case Operation::VAR_NAME:
+        return "VAR_NAME";
+    case Operation::RET_VALUE:
+        return "RET_VALUE";
+    case Operation::TOKEN:
+        return "TOKEN";
+    default:
+        return "????";
+    }
+}
+
 Instruction::Instruction() {}
 
 Instruction::Instruction(Operation _op, std::vector<std::shared_ptr<Instruction>> _params)
@@ -33,7 +66,50 @@ Instruction::Instruction(const Token &_token)
     }
 }
 
+#define CHECK_PARAM_SIZE(EXPECTED_SIZE) \
+    if (params.size() != EXPECTED_SIZE) { \
+        std::string error = "Wrong number of parameters for operation "; \
+        error += opToString(op) + ": "; \
+        error += std::to_string(EXPECTED_SIZE) + " expected but "; \
+        error += std::to_string(params.size()) + " found."; \
+        throw std::runtime_error(error); \
+    }
+
 Variable Instruction::execute() {
+    switch(op) {
+    case Operation::ADD: {
+        CHECK_PARAM_SIZE(2);
+        return params[0]->execute()->add(params[1]->execute());
+    }
+    case Operation::SUB: {
+        CHECK_PARAM_SIZE(2);
+        return params[0]->execute()->sub(params[1]->execute());
+    }
+    case Operation::MUL: {
+        CHECK_PARAM_SIZE(2);
+        return params[0]->execute()->mul(params[1]->execute());
+    }
+    case Operation::DIV: {
+        CHECK_PARAM_SIZE(2);
+        return params[0]->execute()->div(params[1]->execute());
+    }
+    case Operation::INT_DIV: {
+        CHECK_PARAM_SIZE(2);
+        return params[0]->execute()->int_div(params[1]->execute());
+    }
+    case Operation::MOD: {
+        CHECK_PARAM_SIZE(2);
+        return params[0]->execute()->mod(params[1]->execute());
+    }
+    case Operation::POW: {
+        CHECK_PARAM_SIZE(2);
+        return params[0]->execute()->pow(params[1]->execute());
+    }
+    case Operation::RET_VALUE: {
+        CHECK_PARAM_SIZE(0);
+        return var;
+    }
+    }
     return std::make_shared<NoneVariable>();
 }
 
@@ -123,7 +199,7 @@ Instruction Instruction::fromTokenRange(std::vector<Token>::const_iterator &_cur
                      {"%", Operation::MOD}});
     groupByOperator({{"+", Operation::ADD},
                      {"-", Operation::SUB}});
-    groupByOperator({{"=", Operation::SET}});
+    groupByOperator({{"=", Operation::ASSIGN}});
 
     if (result.op == Operation::NONE && result.params.size() == 1) {
         result = *result.params[0].get();

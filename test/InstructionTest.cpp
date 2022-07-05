@@ -16,22 +16,7 @@
     CHECK_VAR(param->var, TYPE1, TYPE2, VALUE);
 
 std::ostream& operator<< (std::ostream& os, Operation op) {
-    os << "Operation::";
-    switch (op) {
-    case Operation::NONE:      os << "NONE";      break;
-    case Operation::SET:       os << "SET";       break;
-    case Operation::ADD:       os << "ADD";       break;
-    case Operation::SUB:       os << "SUB";       break;
-    case Operation::MUL:       os << "MUL";       break;
-    case Operation::DIV:       os << "DIV";       break;
-    case Operation::INT_DIV:   os << "INT_DIV";   break;
-    case Operation::MOD:       os << "MOD";       break;
-    case Operation::POW:       os << "POW";       break;
-    case Operation::CALL:      os << "CALL";      break;
-    case Operation::VAR_NAME:  os << "VAR_NAME";  break;
-    case Operation::RET_VALUE: os << "RET_VALUE"; break;
-    default:                   os << "???";
-    }
+    os << "Operation::" << opToString(op);
     return os;
 }
 
@@ -46,7 +31,7 @@ void test_instruction() {
 
         Instruction simpleAssignmentInstruction = Instruction::fromTokenList(simpleAssignmentTokens);
 
-        MY_ASSERT_EQUAL(simpleAssignmentInstruction.op, Operation::SET);
+        MY_ASSERT_EQUAL(simpleAssignmentInstruction.op, Operation::ASSIGN);
         MY_ASSERT_EQUAL(simpleAssignmentInstruction.params.size(), 2);
 
         if (simpleAssignmentInstruction.params.size() == 2) {
@@ -69,7 +54,7 @@ void test_instruction() {
 
         Instruction instr = Instruction::fromTokenList(tokens);
 
-        MY_ASSERT_EQUAL(instr.op, Operation::SET);
+        MY_ASSERT_EQUAL(instr.op, Operation::ASSIGN);
         MY_ASSERT_EQUAL(instr.params.size(), 2);
 
         if (instr.params.size() == 2) {

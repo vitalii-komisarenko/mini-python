@@ -13,6 +13,7 @@ class Variables {
 public:
     bool has(const std::string &name);
     Variable get(const std::string &name);
+    void set(const std::string &name, Variable value);
 private:
     std::unordered_map<std::string, Variable> vars;
 };
@@ -36,8 +37,13 @@ public:
     void addBuiltInFunction(const std::string &name, Func function);
     Variable call(const std::string &name, const InstructionParams &params);
 
+    void setVariable(const std::string &name, Variable value);
+    Variable getVariable(const std::string &name);
+
     Variable execute();
 private:
+    std::shared_ptr<ScopeImpl> scopeWithVariable(const std::string &name);
+
     std::shared_ptr<ScopeImpl> impl;
 };
 

@@ -28,5 +28,14 @@ void test_scope() {
         CHECK_VAR(topLevelScope.call("echo", params), INT, Int, 3);
         CHECK_VAR(intermediateScope.call("echo", params), INT, Int, 3);
         CHECK_VAR(bottomLevelScope.call("echo", params), INT, Int, 3);
+
+        intermediateScope.setVariable("foo", std::static_pointer_cast<GenericVariable>(std::make_shared<StringVariable>("Bar")));
+        MUST_THROW(topLevelScope.getVariable("foo"));
+        CHECK_VAR(intermediateScope.getVariable("foo"), STRING, String, "Bar");
+        CHECK_VAR(bottomLevelScope.getVariable("foo"), STRING, String, "Bar");
+
+        MUST_THROW(topLevelScope.getVariable("this_var_not_set"));
+        MUST_THROW(intermediateScope.getVariable("this_var_not_set"));
+        MUST_THROW(bottomLevelScope.getVariable("this_var_not_set"));
     }
 }

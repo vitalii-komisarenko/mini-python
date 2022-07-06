@@ -3,13 +3,14 @@
 #include "Test.h"
 
 void test_scope() {
-    auto echo = +[](const InstructionParams &params) {
+    auto echo = [](const InstructionParams &params) {
         return params[0]->execute();
     };
+    auto echoVar = std::make_shared<FunctionVariable>(*echo);
     {
         Scope topLevelScope;
 
-        topLevelScope.addBuiltInFunction("echo",  echo);
+        topLevelScope.setVariable("echo", echoVar);
 
         Scope intermediateScope;
         topLevelScope.addChild(intermediateScope);

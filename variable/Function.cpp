@@ -4,6 +4,10 @@
 
 namespace MiniPython {
 
+FunctionVariable::FunctionVariable(FunctionType& function)
+    : value(function)
+    {}
+
 VariableType FunctionVariable::get_type() {
     return VariableType::FUNCTION;
 }

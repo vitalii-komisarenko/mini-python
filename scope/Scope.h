@@ -33,7 +33,6 @@ public:
 
     void addChild(const Scope &child);
 
-    void addBuiltInFunction(const std::string &name, FunctionType function);
     Variable call(const std::string &name, const InstructionParams &params);
 
     void setVariable(const std::string &name, Variable value);

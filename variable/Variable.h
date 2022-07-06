@@ -217,7 +217,7 @@ using FunctionType = Variable(const InstructionParams&);
 
 class FunctionVariable: public GenericVariable {
 public:
-    FunctionVariable(FunctionType function);
+    FunctionVariable(FunctionType& function);
 
     VariableType get_type() override;
     FunctionType& get_value();

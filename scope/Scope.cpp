@@ -15,7 +15,6 @@ public:
     Variables vars;
     std::weak_ptr<ScopeImpl> parent;
     std::vector<Scope> children;
-    std::unordered_map<std::string, FunctionType*> builtInFunctions;
 private:
     bool isTopLevelScope();
 
@@ -75,35 +74,28 @@ void Scope::addChild(const Scope &child) {
     child.impl->type = ScopeType::ORDINARY_LINE;
 }
 
-void Scope::addBuiltInFunction(const std::string &name, FunctionType function) {
-    impl->builtInFunctions[name] = function;
-}
-
 bool ScopeImpl::isTopLevelScope() {
     return type == ScopeType::TOP_LEVEL;
 }
 
 Variable Scope::call(const std::string &name, const InstructionParams &params) {
     auto scope = scopeWithVariable(name);
-    if (scope) {
-        if (scope->vars.has(name)) {
-            throw std::runtime_error("Functions stored in variables are not implemented");
-        }
-
-        auto it = scope->builtInFunctions.find(name);
-        if (it != scope->builtInFunctions.end()) {
-            return it->second(params);
-        }
+    if (!scope) {
+        throw std::runtime_error("Function not defined");
     }
 
-    throw std::runtime_error("Function not defined");
-}
+    if (!scope->vars.has(name)) {
+        throw std::runtime_error("Variable is not in scope");
+    }
 
-#define REMOVE_BUILT_IN(SCOPE, NAME) \
-        auto it = SCOPE->builtInFunctions.find(NAME); \
-        if (it != SCOPE->builtInFunctions.end()) { \
-            SCOPE->builtInFunctions.erase(it); \
-        }
+    auto var = scope->vars.get(name);
+    if (var->get_type() != VariableType::FUNCTION) {
+        throw std::runtime_error("Cannot call a variable that is not a function");
+    }
+
+    auto func = std::dynamic_pointer_cast<FunctionVariable>(var);
+    return func->call(params);
+}
 
 void Scope::setVariable(const std::string &name, Variable value) {
     auto scope = scopeWithVariable(name);
@@ -111,12 +103,10 @@ void Scope::setVariable(const std::string &name, Variable value) {
     // If the variable exists in one of the scopes - update it there
     if (scope) {
         scope->vars.set(name, value);
-        REMOVE_BUILT_IN(scope, name);
     }
     // Otherwise create it in the current scope
     else {
         impl->vars.set(name, value);
-        REMOVE_BUILT_IN(impl, name);
     }
 }
 
@@ -135,11 +125,6 @@ std::shared_ptr<ScopeImpl> Scope::scopeWithVariable(const std::string &name) {
 
     while (true) {
         if (curr->vars.has(name)) {
-            return curr;
-        }
-
-        auto it = curr->builtInFunctions.find(name);
-        if (it != curr->builtInFunctions.end()) {
             return curr;
         }
 

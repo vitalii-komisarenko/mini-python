@@ -6,7 +6,6 @@
 
 #include <string>
 #include <unordered_map>
-#include <vector>
 
 namespace MiniPython {
 
@@ -25,25 +24,21 @@ enum class ScopeType {
     ORDINARY_LINE,
 };
 
-class _Scope;
-using Scope = std::shared_ptr<_Scope>;
+class ScopeImpl;
 
-class _Scope {
+class Scope {
 public:
-    void addChild(Scope child);
-    ScopeType type;
+    Scope();
+
+    void addChild(const Scope &child);
+
+    using Func = Variable(const InstructionParams&);
+    void addBuiltInFunction(const std::string &name, Func function);
+    Variable call(const std::string &name, const InstructionParams &params);
 
     Variable execute();
-    Instruction instruction;
-    Variable call(const std::string &name, const InstructionParams &params);
-//private:
-    Variables vars;
-    std::weak_ptr<_Scope> parent;
-    std::vector<Scope> children;
-    using Func = Variable(const InstructionParams&);
-    std::unordered_map<std::string, Func*> builtInFunctions;
 private:
-    bool isTopLevelScope();
+    std::shared_ptr<ScopeImpl> impl;
 };
 
 } // namespace MiniPython

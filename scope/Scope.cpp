@@ -4,6 +4,25 @@
 
 namespace MiniPython {
 
+class ScopeImpl {
+public:
+    ScopeImpl()
+        : type(ScopeType::TOP_LEVEL) {}
+
+    ScopeType type;
+
+    Instruction instruction;
+    Variable call(const std::string &name, const InstructionParams &params);
+    Variables vars;
+    std::weak_ptr<ScopeImpl> parent;
+    std::vector<Scope> children;
+    std::unordered_map<std::string, Scope::Func*> builtInFunctions;
+private:
+    bool isTopLevelScope();
+
+    friend class Scope;
+};
+
 bool Variables::has(const std::string &name) {
     return vars.find(name) != vars.end();
 }
@@ -16,22 +35,26 @@ Variable Variables::get(const std::string &name) {
     return it->second;
 }
 
-Variable _Scope::execute() {
-    auto res = instruction.execute();
-    switch (type) {
+Scope::Scope()
+    : impl(std::make_shared<ScopeImpl>())
+    {}
+
+Variable Scope::execute() {
+    auto res = impl->instruction.execute();
+    switch (impl->type) {
     case ScopeType::TOP_LEVEL:
         break;
     case ScopeType::IF:
         if (res->to_bool()) {
-            for (auto child: children) {
-                res = child->execute();
+            for (auto child: impl->children) {
+                res = child.execute();
             }
         }
         break;
     case ScopeType::WHILE:
         while (res->to_bool()) {
-            for (auto child: children) {
-                res = child->execute();
+            for (auto child: impl->children) {
+                res = child.execute();
             }
         }
         break;
@@ -43,13 +66,18 @@ Variable _Scope::execute() {
     return res;
 }
 
-void _Scope::addChild(Scope child) {
-    children.push_back(child);
+void Scope::addChild(const Scope &child) {
+    impl->children.push_back(child);
+    child.impl->parent = impl;
 }
 
-Variable _Scope::call(const std::string &name, const InstructionParams &params)
+void Scope::addBuiltInFunction(const std::string &name, Func function) {
+    impl->builtInFunctions[name] = function;
+}
+
+Variable ScopeImpl::call(const std::string &name, const InstructionParams &params)
 {
-    _Scope *curr = this;
+    ScopeImpl *curr = this;
     while (true) {
         if (curr->vars.has(name)) {
             throw std::runtime_error("Functions stored in variables are not implemented");
@@ -70,8 +98,12 @@ Variable _Scope::call(const std::string &name, const InstructionParams &params)
     }
 }
 
-bool _Scope::isTopLevelScope() {
+bool ScopeImpl::isTopLevelScope() {
     return type != ScopeType::TOP_LEVEL;
+}
+
+Variable Scope::call(const std::string &name, const InstructionParams &params) {
+    return impl->call(name, params);
 }
 
 } // namespace MiniPython

@@ -7,16 +7,15 @@ void test_scope() {
         return params[0]->execute();
     };
     {
-        Scope topLevelScope = std::make_shared<_Scope>();
-        topLevelScope->type = ScopeType::TOP_LEVEL;
+        Scope topLevelScope;
 
-        topLevelScope->builtInFunctions["echo"] = echo;
+        topLevelScope.addBuiltInFunction("echo",  echo);
 
-        Scope intermediateScope = std::make_shared<_Scope>();
-        topLevelScope->addChild(intermediateScope);
+        Scope intermediateScope;
+        topLevelScope.addChild(intermediateScope);
 
-        Scope bottomLevelScope = std::make_shared<_Scope>();
-        intermediateScope->addChild(bottomLevelScope);
+        Scope bottomLevelScope;
+        intermediateScope.addChild(bottomLevelScope);
 
         Variable x = std::static_pointer_cast<GenericVariable>(std::make_shared<IntVariable>(3));
         auto instr = std::make_shared<Instruction>();
@@ -26,8 +25,8 @@ void test_scope() {
         InstructionParams params;
         params.push_back(instr);
 
-        CHECK_VAR(topLevelScope->call("echo", params), INT, Int, 3);
-        CHECK_VAR(intermediateScope->call("echo", params), INT, Int, 3);
-        CHECK_VAR(bottomLevelScope->call("echo", params), INT, Int, 3);
+        CHECK_VAR(topLevelScope.call("echo", params), INT, Int, 3);
+        CHECK_VAR(intermediateScope.call("echo", params), INT, Int, 3);
+        CHECK_VAR(bottomLevelScope.call("echo", params), INT, Int, 3);
     }
 }

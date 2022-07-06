@@ -15,7 +15,7 @@ public:
     Variables vars;
     std::weak_ptr<ScopeImpl> parent;
     std::vector<Scope> children;
-    std::unordered_map<std::string, Scope::Func*> builtInFunctions;
+    std::unordered_map<std::string, FunctionType*> builtInFunctions;
 private:
     bool isTopLevelScope();
 
@@ -75,7 +75,7 @@ void Scope::addChild(const Scope &child) {
     child.impl->type = ScopeType::ORDINARY_LINE;
 }
 
-void Scope::addBuiltInFunction(const std::string &name, Func function) {
+void Scope::addBuiltInFunction(const std::string &name, FunctionType function) {
     impl->builtInFunctions[name] = function;
 }
 

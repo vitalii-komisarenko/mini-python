@@ -14,6 +14,7 @@ enum class VariableType {
     STRING,
     LIST,
     DICT,
+    FUNCTION,
 };
 
 class GenericVariable;
@@ -209,4 +210,37 @@ private:
     ListType list;
 };
 
+class Instruction;
+using InstructionParams = std::vector<std::shared_ptr<Instruction>>;
+
+using FunctionType = Variable(const InstructionParams&);
+
+class FunctionVariable: public GenericVariable {
+public:
+    FunctionVariable(FunctionType function);
+
+    VariableType get_type() override;
+    FunctionType& get_value();
+    Variable call(const InstructionParams &params);
+
+    Variable add(const Variable &other) override;
+    Variable sub(const Variable &other) override;
+    Variable mul(const Variable &other) override;
+    Variable div(const Variable &other) override;
+    Variable mod(const Variable &other) override;
+    Variable pow(const Variable &other) override;
+    Variable int_div(const Variable &other) override;
+
+    bool to_bool() override;
+    std::string to_str() override;
+
+    bool equal(const Variable &other) override;
+    bool less(const Variable &other) override;
+
+    bool strictly_equal(const Variable &other) override;
+
+    void append(const Variable &other);
+private:
+    FunctionType& value;
+};
 } // namespace MiniPython

@@ -2,7 +2,7 @@ all:
 	mkdir -p build
 	make build_all
 
-build_all: test_variable_add test_variable_sub test_variable_mul test_variable_div test_variable_pow test_variable_mod test_variable_equal test_variable_less test_variable_int_div test_variable_to_bool test_variable instruction scope var_none var_bool var_int var_float var_string var_list instruction_test test_main token_test token scope_test var_function
+build_all: test_variable_add test_variable_sub test_variable_mul test_variable_div test_variable_pow test_variable_mod test_variable_equal test_variable_less test_variable_int_div test_variable_to_bool test_variable instruction scope var_none var_bool var_int var_float var_string var_list instruction_test test_main token_test token scope_test var_function test_line_level_parser line_level_parser
 	g++ \
 	build/*.o \
 	TokenToVariableTest.cpp \
@@ -16,6 +16,18 @@ test_main:
 	test_main.cpp \
 	-I .. \
 	-o build/test_main.o
+
+line_level_parser:
+	g++ -c \
+	../LineLevelParser.cpp \
+	-I .. \
+	-o build/line_level_parser.o
+
+test_line_level_parser:
+	g++ -c \
+	LineLevelParserTest.cpp \
+	-I .. \
+	-o build/test_line_level_parser.o
 
 token:
 	g++ -c \

@@ -1,4 +1,5 @@
 #include "LineLevelParser.h"
+#include "Test.h"
 
 #include <iostream>
 
@@ -155,7 +156,75 @@ bool test_removeLinesWithoutCode_mixed_example() {
     return expected == actual;
 }
 
-int main() {
+static bool test_linetree_empty() {
+    Lines lines = {};
+    LineTree lineTree(lines);
+
+    return lineTree.children.size() == 0;
+}
+
+static bool test_linetree_one_line_no_indent() {
+    Lines lines = {"a = b + c"};
+    LineTree lineTree(lines);
+
+    MY_ASSERT_EQUAL(lineTree.children.size(), 1);
+    MY_ASSERT_EQUAL(lineTree.children[0]->children.size(), 0);
+
+    return true;
+}
+
+static bool test_linetree_tree_line_no_indent() {
+    Lines lines = {"a = b + c",
+                   "print('Hello')",
+                   "a += 2"};
+    LineTree lineTree(lines);
+
+    MY_ASSERT_EQUAL(lineTree.children.size(), 3);
+
+    return true;
+}
+
+static bool test_linetree_simple_indent() {
+    LineTree lineTree{{"if a == b:",
+                       "    print('yes')"}};
+
+    MY_ASSERT_EQUAL(lineTree.children.size(), 1);
+    MY_ASSERT_EQUAL(lineTree.children[0]->children.size(), 0);
+
+    return true;
+}
+
+static bool test_linetree_big_tree() {
+    Lines lines = {
+        "print ('blah')",
+        "if x == 3:",
+        "    pass",
+        "i = 5",
+        "while i > 0:",
+        "\tprint(i)",
+        "\tif i < 3:",
+        "\t print('i is less than 3')",
+        "\t i = i - 0.02",
+        "i=4",
+    };
+    LineTree lineTree(lines);
+
+    MY_ASSERT_EQUAL(lineTree.children.size(), 5);
+    MY_ASSERT_EQUAL(lineTree.children[0]->children.size(), 0);
+    MY_ASSERT_EQUAL(lineTree.children[1]->children.size(), 1);
+    MY_ASSERT_EQUAL(lineTree.children[2]->children.size(), 0);
+    MY_ASSERT_EQUAL(lineTree.children[3]->children.size(), 2);
+    MY_ASSERT_EQUAL(lineTree.children[4]->children.size(), 0);
+
+    MY_ASSERT_EQUAL(lineTree.children[1]->children[0]->children.size(), 0);
+
+    MY_ASSERT_EQUAL(lineTree.children[3]->children[0]->children.size(), 0);
+    MY_ASSERT_EQUAL(lineTree.children[3]->children[1]->children.size(), 2);
+
+    return true;
+}
+
+void test_line_level_parser() {
     // stringToLines
     RUN_TEST(test_stringToLines_no_newline_at_the_end);
     RUN_TEST(test_stringToLines_has_newline_at_the_end);
@@ -179,5 +248,11 @@ int main() {
     RUN_TEST(test_removeLinesWithoutCode_comment_at_the_beginning);
     RUN_TEST(test_removeLinesWithoutCode_trailing_empty_line);
     RUN_TEST(test_removeLinesWithoutCode_mixed_example);
-    return 0;
+
+    // LineTree
+    RUN_TEST(test_linetree_empty);
+    RUN_TEST(test_linetree_one_line_no_indent);
+    RUN_TEST(test_linetree_tree_line_no_indent);
+    RUN_TEST(test_linetree_simple_indent);
+    RUN_TEST(test_linetree_big_tree);
 }

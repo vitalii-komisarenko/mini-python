@@ -76,4 +76,58 @@ Lines removeLinesWithoutCode(const Lines &lines) {
     return result;
 }
 
+static bool isSubIndendation(const std::string &indentation, const std::string &parent_indentation) {
+    if (indentation.rfind(parent_indentation, 0) == 0) {
+        return true;
+    }
+
+    if (parent_indentation.rfind(indentation, 0) == 0) {
+        return true;
+    }
+
+    throw std::runtime_error("Inconsistent indentation");
+}
+
+static std::pair<std::string, std::string> splitLineIntoIndentationAndContent(const std::string &str) {
+    std::string indentation;
+    std::string content;
+
+    bool end_of_indent_found = false;
+
+    for (char ch : str) {
+        if (end_of_indent_found) {
+            content += ch;
+            continue;
+        }
+
+        if (ch == ' ' || ch == '\t') {
+            indentation += ch;
+            continue;
+        }
+
+        end_of_indent_found = true;
+        content += ch;
+    }
+
+    return std::make_pair(indentation, content);
+}
+
+LineTree::LineTree(const Lines &lines) {
+    Lines::const_iterator curr = lines.begin();
+    while (curr != lines.end()) {
+        children.push_back(std::make_shared<LineTree>(curr, lines.end(), ""));
+    }
+}
+
+LineTree::LineTree(Lines::const_iterator &curr, const Lines::const_iterator &end, const std::string &parent_indentation) {
+    //for (auto it = curr; it != end; ++it) {
+    for (; curr != end; ++curr) {
+        auto ind_cont = splitLineIntoIndentationAndContent(*curr);
+        auto indentation = ind_cont.first;
+        if (!isSubIndendation(indentation, parent_indentation)) {
+            children.push_back(std::make_shared<LineTree>(++curr, end, indentation));
+        }
+    }
+}
+
 } // namespace MiniPython

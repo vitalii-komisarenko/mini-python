@@ -119,10 +119,8 @@ Instruction Instruction::fromTokenList(const TokenList &tokens) {
     return fromTokenRange(begin, end, TokenType::NONE);
 }
 
-Instruction Instruction::fromTokenRange(std::vector<Token>::const_iterator &_current, std::vector<Token>::const_iterator &end, TokenType endToken) {
+Instruction Instruction::fromTokenRange(std::vector<Token>::const_iterator &current, std::vector<Token>::const_iterator &end, TokenType endToken) {
     Instruction result;
-
-    auto current = _current;
 
     while (current != end) {
         if (current->type == endToken) {

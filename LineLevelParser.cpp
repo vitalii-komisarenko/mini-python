@@ -77,12 +77,16 @@ Lines removeLinesWithoutCode(const Lines &lines) {
 }
 
 static bool isSubIndendation(const std::string &indentation, const std::string &parent_indentation) {
+    if (indentation == parent_indentation) {
+        return false;
+    }
+
     if (indentation.rfind(parent_indentation, 0) == 0) {
         return true;
     }
 
     if (parent_indentation.rfind(indentation, 0) == 0) {
-        return true;
+        return false;
     }
 
     throw std::runtime_error("Inconsistent indentation");
@@ -114,7 +118,7 @@ static std::pair<std::string, std::string> splitLineIntoIndentationAndContent(co
 
 LineTree::LineTree(const Lines &lines) {
     Lines::const_iterator curr = lines.begin();
-    while (curr != lines.end()) {
+    while (curr < lines.end()) {
         children.push_back(std::make_shared<LineTree>(curr, lines.end(), ""));
     }
 }
@@ -124,11 +128,15 @@ LineTree::LineTree(Lines::const_iterator &curr, const Lines::const_iterator &end
     indentation = pair.first;
     value = pair.second;
 
-    for (; curr != end; ++curr) {
+    while (++curr < end) {
         auto ind_cont = splitLineIntoIndentationAndContent(*curr);
-        auto indentation = ind_cont.first;
-        if (!isSubIndendation(indentation, parent_indentation)) {
-            children.push_back(std::make_shared<LineTree>(++curr, end, indentation));
+        auto child_indentation = ind_cont.first;
+        if (isSubIndendation(child_indentation, indentation)) {
+            children.push_back(std::make_shared<LineTree>(curr, end, indentation));
+            curr--;
+        }
+        else {
+            return;
         }
     }
 }

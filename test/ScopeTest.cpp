@@ -1,4 +1,4 @@
-#include "../scope/Scope.h"
+#include "Scope.h"
 
 #include "Test.h"
 

@@ -6,105 +6,113 @@ build_all: test_variable_add test_variable_sub test_variable_mul test_variable_d
 	g++ \
 	build/*.o \
 	TokenToVariableTest.cpp \
-	../token2variable/TokenToVariable.cpp \
-	-I .. \
+	../src/TokenToVariable.cpp \
+	-I ../src \
 	-I . \
+	-I .. \
 	-o test
 
 test_main:
 	g++ -c \
 	test_main.cpp \
-	-I .. \
+	-I ../src \
 	-o build/test_main.o
 
 line_level_parser:
 	g++ -c \
-	../LineLevelParser.cpp \
-	-I .. \
+	../src/LineLevelParser.cpp \
+	-I ../src \
 	-o build/line_level_parser.o
 
 test_line_level_parser:
 	g++ -c \
 	LineLevelParserTest.cpp \
-	-I .. \
+	-I ../src \
 	-o build/test_line_level_parser.o
 
 token:
 	g++ -c \
-	../token/Token.cpp \
-	-I .. \
+	../src/Token.cpp \
+	-I ../src \
 	-o build/token.o
 
 scope_test:
 	g++ -c \
 	ScopeTest.cpp \
+	-I ../src \
+	-I ../variable \
 	-I .. \
 	-o build/scope_test.o
 
 token_test:
 	g++ -c \
 	TokenTest.cpp \
-	-I .. \
+	-I ../src \
 	-o build/token_test.o
 
 instruction_test:
 	g++ -c \
 	InstructionTest.cpp \
-	-I .. \
+	-I ../src \
+	-I ../variable \
 	-o build/instruction_test.o
 
 instruction:
 	g++ -c \
-	../Instruction.cpp \
+	../src/Instruction.cpp \
+	-I ../src \
+	-I ../variable \
 	-I .. \
 	-o build/instruction.o
 
 scope:
 	g++ -c \
-	../scope/Scope.cpp \
+	../src/Scope.cpp \
+	-I ../src \
+	-I ../variable \
 	-I .. \
 	-o build/scope.o
 
 var_none:
 	g++ -c \
 	../variable/None.cpp \
-	-I .. \
+	-I ../src \
 	-o build/var_none.o
 
 var_bool:
 	g++ -c \
 	../variable/Bool.cpp \
-	-I .. \
+	-I ../src \
 	-o build/var_bool.o
 
 var_int:
 	g++ -c \
 	../variable/Int.cpp \
-	-I .. \
+	-I ../src \
 	-o build/var_int.o
 
 var_float:
 	g++ -c \
 	../variable/Float.cpp \
-	-I .. \
+	-I ../src \
 	-o build/var_float.o
 
 var_string:
 	g++ -c \
 	../variable/String.cpp \
-	-I .. \
+	-I ../src \
 	-o build/var_string.o
 
 var_list:
 	g++ -c \
 	../variable/List.cpp \
-	-I .. \
+	-I ../src \
 	-o build/var_list.o
 
 var_function:
 	g++ -c \
 	../variable/Function.cpp \
-	-I .. \
+	-I ../src \
 	-o build/var_function.o
 
 autogen:

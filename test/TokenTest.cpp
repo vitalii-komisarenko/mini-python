@@ -1,4 +1,4 @@
-#include "token/Token.h"
+#include "Token.h"
 
 #include <iostream>
 

@@ -1,5 +1,5 @@
 #include "variable/Variable.h"
-#include "token/Token.h"
+#include "Token.h"
 
 namespace MiniPython {
 

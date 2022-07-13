@@ -1,5 +1,5 @@
 #include "Instruction.h"
-#include "token2variable/TokenToVariable.h"
+#include "TokenToVariable.h"
 
 #include <stdexcept>
 

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "token/Token.h"
-#include "variable/Variable.h"
+#include "Token.h"
+#include "Variable.h"
 
 #include <memory>
 #include <string>

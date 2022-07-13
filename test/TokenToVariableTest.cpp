@@ -1,4 +1,4 @@
-#include "token2variable/TokenToVariable.h"
+#include "TokenToVariable.h"
 
 #include "Test.h"
 

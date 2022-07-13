@@ -168,6 +168,8 @@ static bool test_linetree_one_line_no_indent() {
     LineTree lineTree(lines);
 
     MY_ASSERT_EQUAL(lineTree.children.size(), 1);
+    MY_ASSERT_EQUAL(lineTree.children[0]->indentation, "");
+    MY_ASSERT_EQUAL(lineTree.children[0]->value, "a = b + c");
     MY_ASSERT_EQUAL(lineTree.children[0]->children.size(), 0);
 
     return true;
@@ -180,6 +182,19 @@ static bool test_linetree_tree_line_no_indent() {
     LineTree lineTree(lines);
 
     MY_ASSERT_EQUAL(lineTree.children.size(), 3);
+
+    MY_ASSERT_EQUAL(lineTree.children[0]->indentation, "");
+    MY_ASSERT_EQUAL(lineTree.children[0]->value, "a = b + c");
+    MY_ASSERT_EQUAL(lineTree.children[0]->children.size(), 0);
+
+    MY_ASSERT_EQUAL(lineTree.children[1]->indentation, "");
+    MY_ASSERT_EQUAL(lineTree.children[1]->value, "print('Hello')");
+    MY_ASSERT_EQUAL(lineTree.children[1]->children.size(), 0);
+
+
+    MY_ASSERT_EQUAL(lineTree.children[2]->indentation, "");
+    MY_ASSERT_EQUAL(lineTree.children[2]->value, "a += 2");
+    MY_ASSERT_EQUAL(lineTree.children[2]->children.size(), 0);
 
     return true;
 }

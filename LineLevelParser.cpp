@@ -120,7 +120,10 @@ LineTree::LineTree(const Lines &lines) {
 }
 
 LineTree::LineTree(Lines::const_iterator &curr, const Lines::const_iterator &end, const std::string &parent_indentation) {
-    //for (auto it = curr; it != end; ++it) {
+    auto pair = splitLineIntoIndentationAndContent(*curr);
+    indentation = pair.first;
+    value = pair.second;
+
     for (; curr != end; ++curr) {
         auto ind_cont = splitLineIntoIndentationAndContent(*curr);
         auto indentation = ind_cont.first;

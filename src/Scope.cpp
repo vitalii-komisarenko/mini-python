@@ -1,25 +1,9 @@
 #include "Scope.h"
+#include "LineLevelParser.h"
 
 #include <stdexcept>
 
 namespace MiniPython {
-
-class ScopeImpl {
-public:
-    ScopeImpl()
-        : type(ScopeType::TOP_LEVEL) {}
-
-    ScopeType type;
-
-    Instruction instruction;
-    Variables vars;
-    std::weak_ptr<ScopeImpl> parent;
-    std::vector<Scope> children;
-private:
-    bool isTopLevelScope();
-
-    friend class Scope;
-};
 
 bool Variables::has(const std::string &name) {
     return vars.find(name) != vars.end();
@@ -40,6 +24,16 @@ void Variables::set(const std::string &name, Variable value) {
 Scope::Scope()
     : impl(std::make_shared<ScopeImpl>())
     {}
+
+Scope::Scope(const LineTree &lineTree)
+    : impl(std::make_shared<ScopeImpl>())
+{
+    auto tokenList = tokenizeLine(lineTree.value);
+    impl->instruction = Instruction::fromTokenList(tokenList);
+    for (const auto& childTree : lineTree.children) {
+        impl->children.push_back(*childTree);
+    }
+}
 
 Variable Scope::execute() {
     auto res = impl->instruction.execute();

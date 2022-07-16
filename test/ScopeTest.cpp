@@ -1,4 +1,5 @@
 #include "Scope.h"
+#include "LineLevelParser.h"
 
 #include "Test.h"
 
@@ -38,5 +39,23 @@ void test_scope() {
         MUST_THROW(topLevelScope.getVariable("this_var_not_set"));
         MUST_THROW(intermediateScope.getVariable("this_var_not_set"));
         MUST_THROW(bottomLevelScope.getVariable("this_var_not_set"));
+    }
+
+    // Parsing test
+    {
+        Lines lines = {
+            "a = 5",
+            "if a == 5:",
+            "    print(5)"
+            "    a = 6"
+        };
+        LineTree lineTree(lines);
+        Scope scope(lineTree);
+
+        MY_ASSERT_EQUAL(scope.impl->children.size(), 2);
+        if (scope.impl->children.size() == 2) {
+            MY_ASSERT_EQUAL(scope.impl->children[0].impl->children.size(), 0);
+            MY_ASSERT_EQUAL(scope.impl->children[1].impl->children.size(), 2);
+        }
     }
 }

@@ -26,10 +26,12 @@ enum class ScopeType {
 };
 
 class ScopeImpl;
+class LineTree;
 
 class Scope {
 public:
     Scope();
+    Scope(const LineTree &lineTree);
 
     void addChild(const Scope &child);
 
@@ -39,10 +41,27 @@ public:
     Variable getVariable(const std::string &name);
 
     Variable execute();
-private:
-    std::shared_ptr<ScopeImpl> scopeWithVariable(const std::string &name);
 
     std::shared_ptr<ScopeImpl> impl;
+private:
+    std::shared_ptr<ScopeImpl> scopeWithVariable(const std::string &name);
+};
+
+class ScopeImpl {
+public:
+    ScopeImpl()
+        : type(ScopeType::TOP_LEVEL) {}
+
+    ScopeType type;
+
+    Instruction instruction;
+    Variables vars;
+    std::weak_ptr<ScopeImpl> parent;
+    std::vector<Scope> children;
+
+    friend class Scope;
+private:
+    bool isTopLevelScope();
 };
 
 } // namespace MiniPython

@@ -163,7 +163,7 @@ Instruction Instruction::fromTokenRange(std::vector<Token>::const_iterator &curr
         while (found) {
             found = false;
 
-            for (size_t i = 1; i < result.params.size() - 1; ++i) {
+            for (size_t i = 1; i + 1 < result.params.size(); ++i) {
                 if (canBeArithmeticOperand(result.params[i - 1])
                         && canBeArithmeticOperand(result.params[i + 1])
                         && result.params[i]->token.type == TokenType::OPERATOR) {

@@ -2,7 +2,10 @@ all:
 	mkdir -p build
 	make build_all
 
-build_all: test_variable_add test_variable_sub test_variable_mul test_variable_div test_variable_pow test_variable_mod test_variable_equal test_variable_less test_variable_int_div test_variable_to_bool test_variable instruction scope var_none var_bool var_int var_float var_string var_list instruction_test test_main token_test token scope_test var_function test_line_level_parser line_level_parser
+TEST_SRC = test_main.cpp LineLevelParserTest.cpp ScopeTest.cpp TokenTest.cpp InstructionTest.cpp
+TEST_OBJ = $(TEST_SRC:.cpp=.o)
+
+build_all: test_variable_add test_variable_sub test_variable_mul test_variable_div test_variable_pow test_variable_mod test_variable_equal test_variable_less test_variable_int_div test_variable_to_bool test_variable instruction scope var_none var_bool var_int var_float var_string var_list $(TEST_OBJ) token var_function line_level_parser
 	g++ \
 	build/*.o \
 	TokenToVariableTest.cpp \
@@ -12,11 +15,13 @@ build_all: test_variable_add test_variable_sub test_variable_mul test_variable_d
 	-I .. \
 	-o test
 
-test_main:
+$(TEST_OBJ): %.o: %.cpp
 	g++ -c \
-	test_main.cpp \
+	$< \
 	-I ../src \
-	-o build/test_main.o
+	-I ../variable \
+	-I .. \
+	-o build/$@
 
 line_level_parser:
 	g++ -c \
@@ -24,38 +29,11 @@ line_level_parser:
 	-I ../src \
 	-o build/line_level_parser.o
 
-test_line_level_parser:
-	g++ -c \
-	LineLevelParserTest.cpp \
-	-I ../src \
-	-o build/test_line_level_parser.o
-
 token:
 	g++ -c \
 	../src/Token.cpp \
 	-I ../src \
 	-o build/token.o
-
-scope_test:
-	g++ -c \
-	ScopeTest.cpp \
-	-I ../src \
-	-I ../variable \
-	-I .. \
-	-o build/scope_test.o
-
-token_test:
-	g++ -c \
-	TokenTest.cpp \
-	-I ../src \
-	-o build/token_test.o
-
-instruction_test:
-	g++ -c \
-	InstructionTest.cpp \
-	-I ../src \
-	-I ../variable \
-	-o build/instruction_test.o
 
 instruction:
 	g++ -c \

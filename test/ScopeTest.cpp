@@ -3,6 +3,19 @@
 
 #include "Test.h"
 
+std::ostream& operator<< (std::ostream& os, ScopeType type) {
+    os << "ScopeType::";
+    switch (type)
+    {
+    case ScopeType::TOP_LEVEL:     os << "TOP_LEVEL";     break;
+    case ScopeType::ORDINARY_LINE: os << "ORDINARY_LINE"; break;
+    case ScopeType::IF:            os << "IF";            break;
+    case ScopeType::WHILE:         os << "WHILE";         break;
+    default:                       os << "???";
+    }
+    return os;
+}
+
 void test_scope() {
     auto echo = [](const InstructionParams &params) {
         return params[0]->execute();
@@ -52,9 +65,13 @@ void test_scope() {
         LineTree lineTree(lines);
         Scope scope(lineTree);
 
+        MY_ASSERT_EQUAL(scope.impl->type, ScopeType::TOP_LEVEL);
         MY_ASSERT_EQUAL(scope.impl->children.size(), 2);
         if (scope.impl->children.size() == 2) {
+            MY_ASSERT_EQUAL(scope.impl->children[0].impl->type, ScopeType::ORDINARY_LINE);
             MY_ASSERT_EQUAL(scope.impl->children[0].impl->children.size(), 0);
+
+            MY_ASSERT_EQUAL(scope.impl->children[1].impl->type, ScopeType::IF);
             MY_ASSERT_EQUAL(scope.impl->children[1].impl->children.size(), 2);
         }
     }

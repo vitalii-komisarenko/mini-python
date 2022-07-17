@@ -19,7 +19,6 @@ app_files: $(LIB_OBJECTS) $(LIB_VARIABLE_OBJECTS)
 
 $(LIB_OBJECTS): %.o: src/%.cpp
 	g++ -c \
-	-fPIC \
 	$< \
 	-I src \
 	-I variable \
@@ -29,6 +28,5 @@ $(LIB_OBJECTS): %.o: src/%.cpp
 
 $(LIB_VARIABLE_OBJECTS): %.o: variable/%.cpp
 	g++ -c \
-	-fPIC \
 	$< \
 	-o build/common/$@

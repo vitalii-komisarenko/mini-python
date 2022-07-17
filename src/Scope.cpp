@@ -28,9 +28,15 @@ Scope::Scope()
 Scope::Scope(const LineTree &lineTree)
     : impl(std::make_shared<ScopeImpl>())
 {
+    Scope(lineTree, true);
+}
+
+Scope::Scope(const LineTree &lineTree, bool isTopLevel)
+    : impl(std::make_shared<ScopeImpl>())
+{
     auto tokenList = tokenizeLine(lineTree.value);
 
-    ScopeType scopeType = ScopeType::ORDINARY_LINE;
+    ScopeType scopeType = isTopLevel ? ScopeType::TOP_LEVEL : ScopeType::ORDINARY_LINE;
     if (tokenList.size() > 0 && tokenList[0].type == TokenType::IDENTIFIER) {
         if (tokenList[0].value == "if") {
             scopeType = ScopeType::IF;

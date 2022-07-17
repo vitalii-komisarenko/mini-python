@@ -44,6 +44,8 @@ public:
 
     std::shared_ptr<ScopeImpl> impl;
 private:
+    Scope(const LineTree &lineTree, bool isTopLevel);
+
     std::shared_ptr<ScopeImpl> scopeWithVariable(const std::string &name);
 };
 

@@ -100,6 +100,11 @@ static void test_misc_code() {
             {TokenType::OPERATOR,   "+="},
             {TokenType::STRING,     "some string"},
         }},
+        {R"(myString = '\n\t\\\r\'\"')", {
+            {TokenType::IDENTIFIER, "myString"},
+            {TokenType::OPERATOR, "="},
+            {TokenType::STRING, "\n\t\\\r'\""},
+        }},
         {"print('Hello, World!')", {
             {TokenType::IDENTIFIER, "print"},
             {TokenType::OPENING_ROUND_BRACKET, ""},

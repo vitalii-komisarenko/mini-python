@@ -59,10 +59,17 @@ void test_scope() {
         Lines lines = {
             "a = 5",
             "if a == 5:",
-            "    print(5)"
-            "    a = 6"
+            "    print(5)",
+            "    a = 6",
         };
         LineTree lineTree(lines);
+
+        MY_ASSERT_EQUAL(lineTree.children.size(), 2);
+        if (lineTree.children.size() == 2) {
+            MY_ASSERT_EQUAL(lineTree.children[0]->children.size(), 0);
+            MY_ASSERT_EQUAL(lineTree.children[1]->children.size(), 2);
+        }
+
         Scope scope(lineTree);
 
         MY_ASSERT_EQUAL(scope.impl->type, ScopeType::TOP_LEVEL);

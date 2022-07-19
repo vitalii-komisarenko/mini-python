@@ -26,10 +26,8 @@ Scope::Scope()
     {}
 
 Scope::Scope(const LineTree &lineTree)
-    : impl(std::make_shared<ScopeImpl>())
-{
-    Scope(lineTree, true);
-}
+    : Scope(lineTree, true)
+    {}
 
 Scope::Scope(const LineTree &lineTree, bool isTopLevel)
     : impl(std::make_shared<ScopeImpl>())
@@ -51,7 +49,7 @@ Scope::Scope(const LineTree &lineTree, bool isTopLevel)
     impl->type = scopeType;
     impl->instruction = Instruction::fromTokenList(tokenList);
     for (const auto& childTree : lineTree.children) {
-        impl->children.push_back(*childTree);
+        impl->children.push_back({*childTree, false});
     }
 }
 

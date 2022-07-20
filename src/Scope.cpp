@@ -25,13 +25,10 @@ Scope::Scope()
     : impl(std::make_shared<ScopeImpl>())
     {}
 
-Scope::Scope(const LineTree &lineTree)
-    : Scope(lineTree, true)
-    {}
+std::shared_ptr<Scope> makeScope(const LineTree &lineTree, bool isTopLevel) {
+    auto scope = std::make_shared<Scope>();
+    scope->impl = std::make_shared<ScopeImpl>();
 
-Scope::Scope(const LineTree &lineTree, bool isTopLevel)
-    : impl(std::make_shared<ScopeImpl>())
-{
     auto tokenList = tokenizeLine(lineTree.value);
 
     ScopeType scopeType = isTopLevel ? ScopeType::TOP_LEVEL : ScopeType::ORDINARY_LINE;
@@ -46,11 +43,15 @@ Scope::Scope(const LineTree &lineTree, bool isTopLevel)
         }
     }
 
-    impl->type = scopeType;
-    impl->instruction = Instruction::fromTokenList(tokenList);
+    scope->impl->type = scopeType;
+    scope->impl->instruction = Instruction::fromTokenList(tokenList);
     for (const auto& childTree : lineTree.children) {
-        impl->children.push_back({*childTree, false});
+        auto newChild = makeScope(*childTree, false);
+        newChild->parentScope = scope;
+        scope->impl->children.push_back(*newChild); // TODO: push shared_ptr, not a copy
     }
+
+    return scope;
 }
 
 Variable Scope::execute() {

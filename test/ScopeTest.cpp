@@ -70,16 +70,16 @@ void test_scope() {
             MY_ASSERT_EQUAL(lineTree.children[1]->children.size(), 2);
         }
 
-        Scope scope(lineTree);
+        auto scope = makeScope(lineTree);
 
-        MY_ASSERT_EQUAL(scope.impl->type, ScopeType::TOP_LEVEL);
-        MY_ASSERT_EQUAL(scope.impl->children.size(), 2);
-        if (scope.impl->children.size() == 2) {
-            MY_ASSERT_EQUAL(scope.impl->children[0].impl->type, ScopeType::ORDINARY_LINE);
-            MY_ASSERT_EQUAL(scope.impl->children[0].impl->children.size(), 0);
+        MY_ASSERT_EQUAL(scope->impl->type, ScopeType::TOP_LEVEL);
+        MY_ASSERT_EQUAL(scope->impl->children.size(), 2);
+        if (scope->impl->children.size() == 2) {
+            MY_ASSERT_EQUAL(scope->impl->children[0].impl->type, ScopeType::ORDINARY_LINE);
+            MY_ASSERT_EQUAL(scope->impl->children[0].impl->children.size(), 0);
 
-            MY_ASSERT_EQUAL(scope.impl->children[1].impl->type, ScopeType::IF);
-            MY_ASSERT_EQUAL(scope.impl->children[1].impl->children.size(), 2);
+            MY_ASSERT_EQUAL(scope->impl->children[1].impl->type, ScopeType::IF);
+            MY_ASSERT_EQUAL(scope->impl->children[1].impl->children.size(), 2);
         }
     }
 }

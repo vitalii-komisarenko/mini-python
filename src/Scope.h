@@ -31,7 +31,6 @@ class LineTree;
 class Scope {
 public:
     Scope();
-    Scope(const LineTree &lineTree);
 
     void addChild(const Scope &child);
 
@@ -43,9 +42,9 @@ public:
     Variable execute();
 
     std::shared_ptr<ScopeImpl> impl;
-private:
-    Scope(const LineTree &lineTree, bool isTopLevel);
 
+    std::weak_ptr<Scope> parentScope;
+private:
     std::shared_ptr<ScopeImpl> scopeWithVariable(const std::string &name);
 };
 
@@ -65,5 +64,7 @@ public:
 private:
     bool isTopLevelScope();
 };
+
+std::shared_ptr<Scope> makeScope(const LineTree &lineTree, bool isTopLevel = true);
 
 } // namespace MiniPython

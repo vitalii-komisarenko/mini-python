@@ -46,6 +46,7 @@ std::shared_ptr<Scope> makeScope(const LineTree &lineTree, bool isTopLevel) {
 
     scope->impl->type = scopeType;
     scope->impl->instruction = Instruction::fromTokenList(tokenList);
+
     for (const auto& childTree : lineTree.children) {
         auto newChild = makeScope(*childTree, false);
         newChild->parentScope = scope;
@@ -59,6 +60,9 @@ Variable Scope::execute() {
     auto res = impl->instruction.execute(std::make_shared<Scope>(*this));
     switch (impl->type) {
     case ScopeType::TOP_LEVEL:
+        for (auto child: impl->children) {
+            res = child.execute();
+        }
         break;
     case ScopeType::IF:
         if (res->to_bool()) {
@@ -73,6 +77,8 @@ Variable Scope::execute() {
                 res = child.execute();
             }
         }
+        break;
+    case ScopeType::ORDINARY_LINE:
         break;
     default: {
         throw std::runtime_error("unsupported scope type");

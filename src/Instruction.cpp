@@ -45,7 +45,7 @@ std::string opToString(Operation op) {
     }
 }
 
-Instruction::Instruction() {}
+Instruction::Instruction(): op(Operation::NONE) {}
 
 Instruction::Instruction(Operation _op, std::vector<std::shared_ptr<Instruction>> _params)
     : op(_op)
@@ -112,9 +112,23 @@ Variable Instruction::execute(std::shared_ptr<Scope> scope) {
         CHECK_PARAM_SIZE(2);
         return params[0]->execute(scope)->pow(params[1]->execute(scope));
     }
+    case Operation::VAR_NAME: {
+        CHECK_PARAM_SIZE(0);
+        if (!scope) {
+            throw std::runtime_error("instruction: scope already destroyed");
+        }
+        return scope->getVariable(var->to_str());
+    }
     case Operation::RET_VALUE: {
         CHECK_PARAM_SIZE(0);
         return var;
+    }
+    case Operation::CALL: {
+        CHECK_PARAM_SIZE(2);
+        InstructionParams call_args;
+        call_args.push_back(params[1]);
+        auto func = std::dynamic_pointer_cast<FunctionVariable>(params[0]->execute(scope));
+        return func->call(call_args, scope);
     }
     }
     return std::make_shared<NoneVariable>();
@@ -164,8 +178,6 @@ Instruction Instruction::fromTokenRange(std::vector<Token>::const_iterator &curr
 
     auto groupByOperator = [&result](std::vector<std::pair<const char *, Operation>> ops) {// *op_str, Operation target_op) {
         auto canBeArithmeticOperand = [](std::shared_ptr<Instruction> &instr) {
-//            return instr->op == Operation::VAR_NAME
-//                || instr->op == Operation::RET_VALUE;
             return instr->op != Operation::TOKEN;
         };
 

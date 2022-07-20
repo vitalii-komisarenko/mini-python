@@ -1,6 +1,7 @@
 #include "mini-python.h"
 #include "LineLevelParser.h"
 #include "Scope.h"
+#include "StandardFunctions.h"
 
 #include <fstream>
 
@@ -12,8 +13,9 @@ void runFromString(const std::string &fileContent) {
     lines = removeLinesWithoutCode(lines);
 
     LineTree lineTree(lines);
-
     auto scope = makeScope(lineTree);
+
+    scope->setVariable("print", std::make_shared<FunctionVariable>(StandardFunctions::print));
 
     scope->execute();
 }

@@ -13,9 +13,9 @@ void runFromString(const std::string &fileContent) {
 
     LineTree lineTree(lines);
 
-    Scope scope(lineTree);
+    auto scope = makeScope(lineTree);
 
-    scope.execute();
+    scope->execute();
 }
 
 void runFromFile(const std::string &filename) {

@@ -27,6 +27,9 @@ enum class Operation {
     RET_VALUE,
     // temporary tokens during parsing
     TOKEN,
+    IN_ROUND_BRACKETS,
+    IN_SQUARE_BRACKETS,
+    IN_CURLY_BRACKETS,
 };
 
 std::string opToString(Operation op);

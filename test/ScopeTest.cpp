@@ -16,6 +16,8 @@ std::ostream& operator<< (std::ostream& os, ScopeType type) {
     return os;
 }
 
+extern std::ostream& operator<< (std::ostream& os, Operation op);
+
 void test_scope() {
     auto echo = [](const InstructionParams &params) {
         return params[0]->execute();
@@ -80,6 +82,20 @@ void test_scope() {
 
             MY_ASSERT_EQUAL(scope->impl->children[1].impl->type, ScopeType::IF);
             MY_ASSERT_EQUAL(scope->impl->children[1].impl->children.size(), 2);
+        }
+    }
+
+    // Hello, World! / Parse 1-arg function call
+    {
+        Lines lines = {"print('Hello, World!')"};
+        LineTree lineTree(lines);
+
+        auto scope = makeScope(lineTree);
+
+        MY_ASSERT_EQUAL(scope->impl->children.size(), 1);
+        if (scope->impl->children.size() == 1) {
+            MY_ASSERT_EQUAL(scope->impl->children[0].impl->type, ScopeType::ORDINARY_LINE);
+            MY_ASSERT_EQUAL(scope->impl->children[0].impl->instruction.op, Operation::CALL);
         }
     }
 }

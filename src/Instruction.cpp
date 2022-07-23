@@ -33,6 +33,12 @@ std::string opToString(Operation op) {
         return "RET_VALUE";
     case Operation::TOKEN:
         return "TOKEN";
+    case Operation::IN_ROUND_BRACKETS:
+        return "IN_ROUND_BRACKETS";
+    case Operation::IN_SQUARE_BRACKETS:
+        return "IN_SQUARE_BRACKETS";
+    case Operation::IN_CURLY_BRACKETS:
+        return "IN_CURLY_BRACKETS";
     default:
         return "????";
     }
@@ -133,16 +139,19 @@ Instruction Instruction::fromTokenRange(std::vector<Token>::const_iterator &curr
         case TokenType::OPENING_ROUND_BRACKET: {
             ++current;
             result.params.push_back(std::make_shared<Instruction>(fromTokenRange(current, end, TokenType::CLOSING_ROUND_BRACKET)));
+            result.params[result.params.size() - 1]->op = Operation::IN_ROUND_BRACKETS;
             break;
         }
         case TokenType::OPENING_SQUARE_BRACKET: {
             ++current;
             result.params.push_back(std::make_shared<Instruction>(fromTokenRange(current, end, TokenType::CLOSING_SQUARE_BRACKET)));
+            result.params[result.params.size() - 1]->op = Operation::IN_SQUARE_BRACKETS;
             break;
         }
         case TokenType::OPENING_CURLY_BRACKET: {
             ++current;
             result.params.push_back(std::make_shared<Instruction>(fromTokenRange(current, end, TokenType::CLOSING_CURLY_BRACKET)));
+            result.params[result.params.size() - 1]->op = Operation::IN_CURLY_BRACKETS;
             break;
         }
         default: {
@@ -201,6 +210,12 @@ Instruction Instruction::fromTokenRange(std::vector<Token>::const_iterator &curr
 
     if (result.op == Operation::NONE && result.params.size() == 1) {
         result = *result.params[0].get();
+    }
+
+    if (result.op == Operation::NONE && result.params.size() == 2 && result.params[0]->op == Operation::VAR_NAME && result.params[1]->op == Operation::IN_ROUND_BRACKETS) {
+        // TODO: a call to a function with more than 1 arg
+        result.op = Operation::CALL;
+        result.params[1] = result.params[1]->params[0];
     }
 
     return result;

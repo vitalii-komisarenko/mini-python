@@ -204,7 +204,14 @@ static bool test_linetree_simple_indent() {
                        "    print('yes')"}};
 
     MY_ASSERT_EQUAL(lineTree.children.size(), 1);
-    MY_ASSERT_EQUAL(lineTree.children[0]->children.size(), 0);
+
+    MY_ASSERT_EQUAL(lineTree.children[0]->indentation, "");
+    MY_ASSERT_EQUAL(lineTree.children[0]->value, "if a == b:");
+    MY_ASSERT_EQUAL(lineTree.children[0]->children.size(), 1);
+
+    MY_ASSERT_EQUAL(lineTree.children[0]->children[0]->indentation, "    ");
+    MY_ASSERT_EQUAL(lineTree.children[0]->children[0]->value, "print('yes')");
+    MY_ASSERT_EQUAL(lineTree.children[0]->children[0]->children.size(), 0);
 
     return true;
 }

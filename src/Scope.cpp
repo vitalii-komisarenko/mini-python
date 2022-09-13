@@ -55,7 +55,7 @@ std::shared_ptr<Scope> makeScope(const LineTree &lineTree, bool isTopLevel) {
 }
 
 Variable Scope::execute() {
-    auto res = impl->instruction.execute();
+    auto res = impl->instruction.execute(std::make_shared<Scope>(*this));
     switch (impl->type) {
     case ScopeType::TOP_LEVEL:
         break;
@@ -107,7 +107,7 @@ Variable Scope::call(const std::string &name, const InstructionParams &params) {
     }
 
     auto func = std::dynamic_pointer_cast<FunctionVariable>(var);
-    return func->call(params);
+    return func->call(params, std::make_shared<Scope>(*this));
 }
 
 void Scope::setVariable(const std::string &name, Variable value) {

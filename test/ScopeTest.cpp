@@ -19,8 +19,8 @@ std::ostream& operator<< (std::ostream& os, ScopeType type) {
 extern std::ostream& operator<< (std::ostream& os, Operation op);
 
 void test_scope() {
-    auto echo = [](const InstructionParams &params) {
-        return params[0]->execute();
+    auto echo = [](const InstructionParams &params, std::shared_ptr<Scope> scope) {
+        return params[0]->execute(scope);
     };
     auto echoVar = std::make_shared<FunctionVariable>(*echo);
     {

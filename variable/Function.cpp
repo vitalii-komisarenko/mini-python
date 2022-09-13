@@ -16,8 +16,8 @@ const FunctionType& FunctionVariable::get_value() {
     return value;
 }
 
-Variable FunctionVariable::call(const InstructionParams &params) {
-    return value(params);
+Variable FunctionVariable::call(const InstructionParams &params, std::shared_ptr<Scope> scope) {
+    return value(params, scope);
 }
 
 #define OP_NOT_SUPPORTED(OPERATION)\

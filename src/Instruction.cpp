@@ -1,4 +1,5 @@
 #include "Instruction.h"
+#include "Scope.h"
 #include "TokenToVariable.h"
 
 #include <stdexcept>
@@ -81,35 +82,35 @@ Instruction::Instruction(const Token &_token)
         throw std::runtime_error(error); \
     }
 
-Variable Instruction::execute() {
+Variable Instruction::execute(std::shared_ptr<Scope> scope) {
     switch(op) {
     case Operation::ADD: {
         CHECK_PARAM_SIZE(2);
-        return params[0]->execute()->add(params[1]->execute());
+        return params[0]->execute(scope)->add(params[1]->execute(scope));
     }
     case Operation::SUB: {
         CHECK_PARAM_SIZE(2);
-        return params[0]->execute()->sub(params[1]->execute());
+        return params[0]->execute(scope)->sub(params[1]->execute(scope));
     }
     case Operation::MUL: {
         CHECK_PARAM_SIZE(2);
-        return params[0]->execute()->mul(params[1]->execute());
+        return params[0]->execute(scope)->mul(params[1]->execute(scope));
     }
     case Operation::DIV: {
         CHECK_PARAM_SIZE(2);
-        return params[0]->execute()->div(params[1]->execute());
+        return params[0]->execute(scope)->div(params[1]->execute(scope));
     }
     case Operation::INT_DIV: {
         CHECK_PARAM_SIZE(2);
-        return params[0]->execute()->int_div(params[1]->execute());
+        return params[0]->execute(scope)->int_div(params[1]->execute(scope));
     }
     case Operation::MOD: {
         CHECK_PARAM_SIZE(2);
-        return params[0]->execute()->mod(params[1]->execute());
+        return params[0]->execute(scope)->mod(params[1]->execute(scope));
     }
     case Operation::POW: {
         CHECK_PARAM_SIZE(2);
-        return params[0]->execute()->pow(params[1]->execute());
+        return params[0]->execute(scope)->pow(params[1]->execute(scope));
     }
     case Operation::RET_VALUE: {
         CHECK_PARAM_SIZE(0);

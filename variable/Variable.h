@@ -211,9 +211,10 @@ private:
 };
 
 class Instruction;
+class Scope;
 using InstructionParams = std::vector<std::shared_ptr<Instruction>>;
 
-using FunctionType = Variable(const InstructionParams&);
+using FunctionType = Variable(const InstructionParams&, std::shared_ptr<Scope> scope);
 
 class FunctionVariable: public GenericVariable {
 public:
@@ -221,7 +222,7 @@ public:
 
     VariableType get_type() override;
     FunctionType& get_value();
-    Variable call(const InstructionParams &params);
+    Variable call(const InstructionParams &params, std::shared_ptr<Scope> scope);
 
     Variable add(const Variable &other) override;
     Variable sub(const Variable &other) override;

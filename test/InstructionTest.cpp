@@ -67,4 +67,102 @@ void test_instruction() {
             }
         }
     }
+
+    {
+        // x = a * b + c
+        TokenList tokens = {
+            {TokenType::IDENTIFIER, "x"},
+            {TokenType::OPERATOR, "="},
+            {TokenType::IDENTIFIER, "a"},
+            {TokenType::OPERATOR, "*"},
+            {TokenType::IDENTIFIER, "b"},
+            {TokenType::OPERATOR, "+"},
+            {TokenType::IDENTIFIER, "c"},
+        };
+
+        Instruction instr = Instruction::fromTokenList(tokens);
+
+        MY_ASSERT_EQUAL(instr.op, Operation::ASSIGN);
+        MY_ASSERT_EQUAL(instr.params.size(), 2);
+
+        if (instr.params.size() == 2) {
+            ASSERT_IS_VAR(instr.params[0], "x");
+            MY_ASSERT_EQUAL(instr.params[1]->op, Operation::ADD);
+            MY_ASSERT_EQUAL(instr.params[1]->params.size(), 2);
+            if (instr.params[1]->params.size() == 2) {
+                MY_ASSERT_EQUAL(instr.params[1]->params[0]->op, Operation::MUL);
+                MY_ASSERT_EQUAL(instr.params[1]->params[0]->params.size(), 2);
+                if (instr.params[1]->params[0]->params.size() == 2) {
+                    ASSERT_IS_VAR(instr.params[1]->params[0]->params[0], "a");
+                    ASSERT_IS_VAR(instr.params[1]->params[0]->params[1], "b");
+                }
+                ASSERT_IS_VAR(instr.params[1]->params[1], "c");
+            }
+        }
+    }
+
+    {
+        // x = a + b * c
+        TokenList tokens = {
+            {TokenType::IDENTIFIER, "x"},
+            {TokenType::OPERATOR, "="},
+            {TokenType::IDENTIFIER, "a"},
+            {TokenType::OPERATOR, "+"},
+            {TokenType::IDENTIFIER, "b"},
+            {TokenType::OPERATOR, "*"},
+            {TokenType::IDENTIFIER, "c"},
+        };
+
+        Instruction instr = Instruction::fromTokenList(tokens);
+
+        MY_ASSERT_EQUAL(instr.op, Operation::ASSIGN);
+        MY_ASSERT_EQUAL(instr.params.size(), 2);
+        if (instr.params.size() == 2) {
+            ASSERT_IS_VAR(instr.params[0], "x");
+            MY_ASSERT_EQUAL(instr.params[1]->op, Operation::ADD);
+            MY_ASSERT_EQUAL(instr.params[1]->params.size(), 2);
+            if (instr.params[1]->params.size() == 2) {
+                ASSERT_IS_VAR(instr.params[1]->params[0], "a");
+                MY_ASSERT_EQUAL(instr.params[1]->params[1]->op, Operation::MUL);
+                MY_ASSERT_EQUAL(instr.params[1]->params[1]->params.size(), 2);
+                if (instr.params[1]->params[1]->params.size() == 2) {
+                    ASSERT_IS_VAR(instr.params[1]->params[1]->params[0], "b");
+                    ASSERT_IS_VAR(instr.params[1]->params[1]->params[1], "c");
+                }
+            }
+        }
+    }
+
+    {
+        // x = a * b + c
+        TokenList tokens = {
+            {TokenType::IDENTIFIER, "x"},
+            {TokenType::OPERATOR, "="},
+            {TokenType::IDENTIFIER, "a"},
+            {TokenType::OPERATOR, "+"},
+            {TokenType::IDENTIFIER, "b"},
+            {TokenType::OPERATOR, "+"},
+            {TokenType::IDENTIFIER, "c"},
+        };
+
+        Instruction instr = Instruction::fromTokenList(tokens);
+
+        MY_ASSERT_EQUAL(instr.op, Operation::ASSIGN);
+        MY_ASSERT_EQUAL(instr.params.size(), 2);
+
+        if (instr.params.size() == 2) {
+            ASSERT_IS_VAR(instr.params[0], "x");
+            MY_ASSERT_EQUAL(instr.params[1]->op, Operation::ADD);
+            MY_ASSERT_EQUAL(instr.params[1]->params.size(), 2);
+            if (instr.params[1]->params.size() == 2) {
+                MY_ASSERT_EQUAL(instr.params[1]->params[0]->op, Operation::ADD);
+                MY_ASSERT_EQUAL(instr.params[1]->params[0]->params.size(), 2);
+                if (instr.params[1]->params[0]->params.size() == 2) {
+                    ASSERT_IS_VAR(instr.params[1]->params[0]->params[0], "a");
+                    ASSERT_IS_VAR(instr.params[1]->params[0]->params[1], "b");
+                }
+                ASSERT_IS_VAR(instr.params[1]->params[1], "c");
+            }
+        }
+    }
 }

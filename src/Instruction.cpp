@@ -210,6 +210,7 @@ Instruction Instruction::fromTokenRange(std::vector<Token>::const_iterator &curr
     groupByOperator({{"=", Operation::ASSIGN}});
 
     if (result.op == Operation::NONE && result.params.size() == 1) {
+        Instruction tmp = result; // TODO: it prevents InstructionTest from corrupting memory. Check what is the root cause
         result = *result.params[0].get();
     }
 

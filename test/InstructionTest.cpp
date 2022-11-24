@@ -165,4 +165,25 @@ void test_instruction() {
             }
         }
     }
+
+    {
+        // print("Hello, World!")
+        TokenList tokens = {
+            {TokenType::IDENTIFIER, "print"},
+            {TokenType::OPENING_ROUND_BRACKET, ""},
+            {TokenType::STRING, "Hello, World!"},
+            {TokenType::CLOSING_ROUND_BRACKET, ""},
+        };
+
+        Instruction instr = Instruction::fromTokenList(tokens);
+
+        MY_ASSERT_EQUAL(instr.op, Operation::CALL);
+        MY_ASSERT_EQUAL(instr.params.size(), 2);
+
+        if (instr.params.size() == 2) {
+            ASSERT_IS_VAR(instr.params[0], "print");
+            MY_ASSERT_EQUAL(instr.params[1]->op, Operation::RET_VALUE);
+            ASSERT_IS_VALUE(instr.params[1], STRING, String, "Hello, World!");
+        }
+    }
 }

@@ -1,6 +1,7 @@
 #include "Scope.h"
 #include "LineLevelParser.h"
 
+#include <array>
 #include <stdexcept>
 
 namespace MiniPython {
@@ -111,6 +112,11 @@ Variable Scope::call(const std::string &name, const InstructionParams &params) {
 }
 
 void Scope::setVariable(const std::string &name, Variable value) {
+    static std::array<std::string, 3> reserved_names = {"None", "False", "True"};
+    if (std::find(std::begin(reserved_names), std::end(reserved_names), name) != std::end(reserved_names)) {
+        throw std::runtime_error("Cannot assing to variable '" + name + "': the name is reserved");
+    }
+
     auto scope = scopeWithVariable(name);
 
     // If the variable exists in one of the scopes - update it there

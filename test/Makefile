@@ -18,6 +18,7 @@ TEST_AUTOGEN_SOURCES = test_variable_equal.cpp \
 					   test_variable_pow.cpp   \
 					   test_variable_int_div.cpp \
 					   test_variable_to_bool.cpp \
+					   test_variable_to_str.cpp \
 					   test_variable.cpp
 
 TEST_AUTOGEN_OBJECTS = $(TEST_AUTOGEN_SOURCES:.cpp=.o)

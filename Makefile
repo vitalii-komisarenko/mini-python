@@ -1,7 +1,12 @@
+OUTPUT_FILE = mini-python
+
 app:
 	make pre-build
 	make app_files
-	g++ mini-python.cpp build/common/*.o -o mini-python
+	g++ mini-python.cpp build/common/*.o -o "${OUTPUT_FILE}"
+
+clean:
+	rm -rf build "${OUTPUT_FILE}"
 
 pre-build:
 	mkdir -p build/common

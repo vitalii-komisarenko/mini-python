@@ -8,7 +8,7 @@ static auto None = std::static_pointer_cast<GenericVariable>(std::make_shared<No
 
 Variable print(const InstructionParams &params, Scope *scope) {
     for (size_t i = 0; i < params.size(); ++i) {
-        std::cout << params[i]->execute(scope);
+        std::cout << params[i]->execute(scope)->to_str();
         bool is_last = i == params.size() - 1;
         std::cout << (is_last ? "\n" : " ");
     }

@@ -1,4 +1,5 @@
 #include "ListComparisonTest.h"
+#include "StrictEqualityTest.h"
 
 extern void test_variable();
 extern void test_token();
@@ -10,6 +11,7 @@ extern void test_line_level_parser();
 int main() {
     test_variable();
     test_list_comparison();
+    test_strict_equality();
     test_token();
     test_token2variable();
     test_instruction();

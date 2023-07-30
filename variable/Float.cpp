@@ -169,7 +169,19 @@ bool FloatVariable::to_bool() {
 }
 
 std::string FloatVariable::to_str() {
-    return std::to_string(value);
+    auto str = std::to_string(value);
+    // C++ adds too many zeros in the fractional part (e.g. 123.000000 while Python uses 123.0)
+    size_t dot_pos = str.find('.');
+    size_t trailing_zero_start = str.length();
+    for (size_t i = str.length() - 1; (i >= 0) && (str[i] == '0'); --i) {
+        trailing_zero_start = i;
+    }
+    // Ensure that there is at least one digit in fractional part (e.g. 123.0, not 123)
+    size_t new_length = trailing_zero_start > dot_pos + 1 ? trailing_zero_start : trailing_zero_start + 1;
+    if (new_length < str.length()) {
+        str.resize(new_length);
+    }
+    return str;
 }
 
 bool FloatVariable::equal(const Variable &other) {

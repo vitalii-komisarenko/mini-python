@@ -50,31 +50,31 @@ std::shared_ptr<Scope> makeScope(const LineTree &lineTree, bool isTopLevel) {
     for (const auto& childTree : lineTree.children) {
         auto newChild = makeScope(*childTree, false);
         newChild->parentScope = scope;
-        scope->impl->children.push_back(*newChild); // TODO: push shared_ptr, not a copy
+        scope->impl->children.push_back(newChild);
     }
 
     return scope;
 }
 
 Variable Scope::execute() {
-    auto res = impl->instruction.execute(std::make_shared<Scope>(*this));
+    auto res = impl->instruction.execute(this);
     switch (impl->type) {
     case ScopeType::TOP_LEVEL:
         for (auto child: impl->children) {
-            res = child.execute();
+            res = child->execute();
         }
         break;
     case ScopeType::IF:
         if (res->to_bool()) {
             for (auto child: impl->children) {
-                res = child.execute();
+                res = child->execute();
             }
         }
         break;
     case ScopeType::WHILE:
         while (res->to_bool()) {
             for (auto child: impl->children) {
-                res = child.execute();
+                res = child->execute();
             }
         }
         break;
@@ -88,10 +88,10 @@ Variable Scope::execute() {
     return res;
 }
 
-void Scope::addChild(const Scope &child) {
+void Scope::addChild(std::shared_ptr<Scope> child) {
     impl->children.push_back(child);
-    child.impl->parent = impl;
-    child.impl->type = ScopeType::ORDINARY_LINE;
+    child->impl->parent = impl;
+    child->impl->type = ScopeType::ORDINARY_LINE;
 }
 
 bool ScopeImpl::isTopLevelScope() {
@@ -114,7 +114,7 @@ Variable Scope::call(const std::string &name, const InstructionParams &params) {
     }
 
     auto func = std::dynamic_pointer_cast<FunctionVariable>(var);
-    return func->call(params, std::make_shared<Scope>(*this));
+    return func->call(params, this);
 }
 
 void Scope::setVariable(const std::string &name, Variable value) {

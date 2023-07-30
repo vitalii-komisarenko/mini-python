@@ -6,6 +6,6 @@
 
 namespace MiniPython::StandardFunctions {
 
-Variable print(const InstructionParams &params, std::shared_ptr<Scope> scope);
+Variable print(const InstructionParams &params, Scope *scope);
 
 } // namespace MiniPython::StandardFunctions

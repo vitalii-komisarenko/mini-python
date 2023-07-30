@@ -16,7 +16,7 @@ const FunctionType& FunctionVariable::get_value() {
     return value;
 }
 
-Variable FunctionVariable::call(const InstructionParams &params, std::shared_ptr<Scope> scope) {
+Variable FunctionVariable::call(const InstructionParams &params, Scope *scope) {
     return value(params, scope);
 }
 

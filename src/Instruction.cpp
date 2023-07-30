@@ -82,7 +82,7 @@ Instruction::Instruction(const Token &_token)
         throw std::runtime_error(error); \
     }
 
-Variable Instruction::execute(std::shared_ptr<Scope> scope) {
+Variable Instruction::execute(Scope *scope) {
     switch(op) {
     case Operation::ADD: {
         CHECK_PARAM_SIZE(2);

@@ -32,7 +32,7 @@ class Scope {
 public:
     Scope();
 
-    void addChild(const Scope &child);
+    void addChild(std::shared_ptr<Scope> child);
 
     Variable call(const std::string &name, const InstructionParams &params);
 
@@ -58,7 +58,7 @@ public:
     Instruction instruction;
     Variables vars;
     std::weak_ptr<ScopeImpl> parent;
-    std::vector<Scope> children;
+    std::vector<std::shared_ptr<Scope>> children;
 
     friend class Scope;
 private:

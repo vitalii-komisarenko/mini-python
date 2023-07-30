@@ -44,7 +44,7 @@ public:
     static Instruction fromTokenList(const TokenList &tokens);
     static Instruction fromTokenRange(std::vector<Token>::const_iterator &current, std::vector<Token>::const_iterator &end, TokenType endToken);
 
-    Variable execute(std::shared_ptr<Scope> scope);
+    Variable execute(Scope *scope);
     Operation op = Operation::NONE;
     InstructionParams params;
 

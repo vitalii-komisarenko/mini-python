@@ -4,7 +4,8 @@ all:
 	make -C .. app_files
 	make build_all
 
-TEST_SOURCES = test_main.cpp LineLevelParserTest.cpp ScopeTest.cpp TokenTest.cpp InstructionTest.cpp TokenToVariableTest.cpp
+TEST_SOURCES = test_main.cpp LineLevelParserTest.cpp ScopeTest.cpp TokenTest.cpp InstructionTest.cpp TokenToVariableTest.cpp \
+               ListComparisonTest.cpp
 TEST_OBJECTS = $(TEST_SOURCES:%.cpp=build/%.o)
 
 

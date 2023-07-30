@@ -184,6 +184,7 @@ class ListVariable: public GenericVariable {
 public:
     using ListType = std::vector<Variable>;
 
+    ListVariable();
     ListVariable(ListType _list);
 
     VariableType get_type() override;

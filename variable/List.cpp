@@ -4,6 +4,7 @@
 
 namespace MiniPython {
 
+ListVariable::ListVariable() {}
 ListVariable::ListVariable(ListType _list): list(_list) {}
 
 VariableType ListVariable::get_type() {

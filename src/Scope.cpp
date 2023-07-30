@@ -50,6 +50,7 @@ std::shared_ptr<Scope> makeScope(const LineTree &lineTree, bool isTopLevel) {
     for (const auto& childTree : lineTree.children) {
         auto newChild = makeScope(*childTree, false);
         newChild->parentScope = scope;
+        newChild->impl->parent = scope->impl;
         scope->impl->children.push_back(newChild);
     }
 

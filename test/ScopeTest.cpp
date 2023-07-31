@@ -19,20 +19,20 @@ std::ostream& operator<< (std::ostream& os, ScopeType type) {
 extern std::ostream& operator<< (std::ostream& os, Operation op);
 
 void test_scope() {
-    auto echo = [](const InstructionParams &params, std::shared_ptr<Scope> scope) {
+    auto echo = [](const InstructionParams &params, Scope *scope) {
         return params[0]->execute(scope);
     };
     auto echoVar = std::make_shared<FunctionVariable>(*echo);
     {
-        Scope topLevelScope;
+        auto topLevelScope = std::make_shared<Scope>();
 
-        topLevelScope.setVariable("echo", echoVar);
+        topLevelScope->setVariable("echo", echoVar);
 
-        Scope intermediateScope;
-        topLevelScope.addChild(intermediateScope);
+        auto intermediateScope = std::make_shared<Scope>();
+        topLevelScope->addChild(intermediateScope);
 
-        Scope bottomLevelScope;
-        intermediateScope.addChild(bottomLevelScope);
+        auto bottomLevelScope = std::make_shared<Scope>();
+        intermediateScope->addChild(bottomLevelScope);
 
         Variable x = std::static_pointer_cast<GenericVariable>(std::make_shared<IntVariable>(3));
         auto instr = std::make_shared<Instruction>();
@@ -42,18 +42,18 @@ void test_scope() {
         InstructionParams params;
         params.push_back(instr);
 
-        CHECK_VAR(topLevelScope.call("echo", params), INT, Int, 3);
-        CHECK_VAR(intermediateScope.call("echo", params), INT, Int, 3);
-        CHECK_VAR(bottomLevelScope.call("echo", params), INT, Int, 3);
+        CHECK_VAR(topLevelScope->call("echo", params), INT, Int, 3);
+        CHECK_VAR(intermediateScope->call("echo", params), INT, Int, 3);
+        CHECK_VAR(bottomLevelScope->call("echo", params), INT, Int, 3);
 
-        intermediateScope.setVariable("foo", std::static_pointer_cast<GenericVariable>(std::make_shared<StringVariable>("Bar")));
-        MUST_THROW(topLevelScope.getVariable("foo"));
-        CHECK_VAR(intermediateScope.getVariable("foo"), STRING, String, "Bar");
-        CHECK_VAR(bottomLevelScope.getVariable("foo"), STRING, String, "Bar");
+        intermediateScope->setVariable("foo", std::static_pointer_cast<GenericVariable>(std::make_shared<StringVariable>("Bar")));
+        MUST_THROW(topLevelScope->getVariable("foo"));
+        CHECK_VAR(intermediateScope->getVariable("foo"), STRING, String, "Bar");
+        CHECK_VAR(bottomLevelScope->getVariable("foo"), STRING, String, "Bar");
 
-        MUST_THROW(topLevelScope.getVariable("this_var_not_set"));
-        MUST_THROW(intermediateScope.getVariable("this_var_not_set"));
-        MUST_THROW(bottomLevelScope.getVariable("this_var_not_set"));
+        MUST_THROW(topLevelScope->getVariable("this_var_not_set"));
+        MUST_THROW(intermediateScope->getVariable("this_var_not_set"));
+        MUST_THROW(bottomLevelScope->getVariable("this_var_not_set"));
     }
 
     // Parsing test
@@ -77,12 +77,12 @@ void test_scope() {
         MY_ASSERT_EQUAL(scope->impl->type, ScopeType::TOP_LEVEL);
         MY_ASSERT_EQUAL(scope->impl->children.size(), 2);
         if (scope->impl->children.size() == 2) {
-            MY_ASSERT_EQUAL(scope->impl->children[0].impl->type, ScopeType::ORDINARY_LINE);
-            MY_ASSERT_EQUAL(scope->impl->children[0].impl->children.size(), 0);
-            MY_ASSERT_EQUAL(scope->impl->children[0].impl->instruction.op, Operation::ASSIGN);
+            MY_ASSERT_EQUAL(scope->impl->children[0]->impl->type, ScopeType::ORDINARY_LINE);
+            MY_ASSERT_EQUAL(scope->impl->children[0]->impl->children.size(), 0);
+            MY_ASSERT_EQUAL(scope->impl->children[0]->impl->instruction.op, Operation::ASSIGN);
 
-            MY_ASSERT_EQUAL(scope->impl->children[1].impl->type, ScopeType::IF);
-            MY_ASSERT_EQUAL(scope->impl->children[1].impl->children.size(), 2);
+            MY_ASSERT_EQUAL(scope->impl->children[1]->impl->type, ScopeType::IF);
+            MY_ASSERT_EQUAL(scope->impl->children[1]->impl->children.size(), 2);
         }
     }
 
@@ -97,8 +97,8 @@ void test_scope() {
 
         MY_ASSERT_EQUAL(scope->impl->children.size(), 1);
         if (scope->impl->children.size() == 1) {
-            MY_ASSERT_EQUAL(scope->impl->children[0].impl->type, ScopeType::ORDINARY_LINE);
-            MY_ASSERT_EQUAL(scope->impl->children[0].impl->instruction.op, Operation::CALL);
+            MY_ASSERT_EQUAL(scope->impl->children[0]->impl->type, ScopeType::ORDINARY_LINE);
+            MY_ASSERT_EQUAL(scope->impl->children[0]->impl->instruction.op, Operation::CALL);
         }
     }
 }

@@ -111,6 +111,14 @@ static void test_misc_code() {
             {TokenType::STRING, "Hello, World!"},
             {TokenType::CLOSING_ROUND_BRACKET, ""},
         }},
+        {"print(1 + 2)", {
+            {TokenType::IDENTIFIER, "print"},
+            {TokenType::OPENING_ROUND_BRACKET, ""},
+            {TokenType::NUMBER,     "1"},
+            {TokenType::OPERATOR,   "+"},
+            {TokenType::NUMBER,     "2"},
+            {TokenType::CLOSING_ROUND_BRACKET, ""},
+        }},
         {"var = ((2+4)-(35-func(5)))//8", {
             {TokenType::IDENTIFIER, "var"},
             {TokenType::OPERATOR,   "="},

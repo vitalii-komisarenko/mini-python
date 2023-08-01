@@ -50,6 +50,8 @@ public:
 
     Variable var;
     Token token;
+
+    std::string debug_string(int indent_level=0);
 };
 
 } // namespace MiniPython

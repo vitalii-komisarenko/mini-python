@@ -153,8 +153,9 @@ Instruction Instruction::fromTokenRange(std::vector<Token>::const_iterator &curr
         switch (current->type) {
         case TokenType::OPENING_ROUND_BRACKET: {
             ++current;
-            result.params.push_back(std::make_shared<Instruction>(fromTokenRange(current, end, TokenType::CLOSING_ROUND_BRACKET)));
-            result.params[result.params.size() - 1]->op = Operation::IN_ROUND_BRACKETS;
+            auto in_round_brackets = std::make_shared<Instruction>(fromTokenRange(current, end, TokenType::CLOSING_ROUND_BRACKET));
+            std::vector<std::shared_ptr<Instruction>> params = {in_round_brackets};
+            result.params.push_back(std::make_shared<Instruction>(Operation::IN_ROUND_BRACKETS, params));
             break;
         }
         case TokenType::OPENING_SQUARE_BRACKET: {
@@ -235,5 +236,16 @@ Instruction Instruction::fromTokenRange(std::vector<Token>::const_iterator &curr
     return result;
 }
 
+std::string Instruction::debug_string(int indent_level) {
+    std::string result = "";
+    for (size_t i = 0; i < indent_level; ++i) {
+        result += "  ";
+    }
+    result += opToString(op) + "\n";
+    for (auto param: params) {
+        result += param->debug_string(indent_level + 1);
+    }
+    return result;
+}
 
 } // namespace MiniPython

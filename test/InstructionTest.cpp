@@ -13,7 +13,9 @@
 #define ASSERT_IS_VALUE(param, TYPE1, TYPE2, VALUE) \
     MY_ASSERT(param->op == Operation::RET_VALUE); \
     MY_ASSERT(param->var != nullptr); \
-    CHECK_VAR(param->var, TYPE1, TYPE2, VALUE);
+    if (param->var) { \
+        CHECK_VAR(param->var, TYPE1, TYPE2, VALUE); \
+    }
 
 std::ostream& operator<< (std::ostream& os, Operation op) {
     os << "Operation::" << opToString(op);
@@ -199,6 +201,7 @@ void test_instruction() {
         };
 
         Instruction instr = Instruction::fromTokenList(tokens);
+        std::cout << instr.debug_string() << "\n";
 
         MY_ASSERT_EQUAL(instr.op, Operation::CALL);
         MY_ASSERT_EQUAL(instr.params.size(), 2);

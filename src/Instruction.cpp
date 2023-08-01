@@ -128,7 +128,7 @@ Variable Instruction::execute(Scope *scope) {
         InstructionParams call_args;
         call_args.push_back(params[1]);
         auto func = std::dynamic_pointer_cast<FunctionVariable>(params[0]->execute(scope));
-        return func->call(call_args, scope);
+        return func->call((const InstructionParams)(params[1]->params), scope);
     }
     }
     return std::make_shared<NoneVariable>();
@@ -145,9 +145,8 @@ Instruction Instruction::fromTokenRange(std::vector<Token>::const_iterator &curr
 
     while (current != end) {
         if (current->type == endToken) {
-            result.params.push_back(std::make_shared<Instruction>(*current));
             ++current;
-            return result;
+            break;
         }
 
         switch (current->type) {
@@ -177,7 +176,7 @@ Instruction Instruction::fromTokenRange(std::vector<Token>::const_iterator &curr
         }
     }
 
-    auto groupByOperator = [&result](std::vector<std::pair<const char *, Operation>> ops) {// *op_str, Operation target_op) {
+    auto groupByOperator = [&result](std::vector<std::pair<const char *, Operation>> ops) {
         auto canBeArithmeticOperand = [](std::shared_ptr<Instruction> &instr) {
             return instr->op != Operation::TOKEN;
         };
@@ -230,7 +229,25 @@ Instruction Instruction::fromTokenRange(std::vector<Token>::const_iterator &curr
     if (result.op == Operation::NONE && result.params.size() == 2 && result.params[0]->op == Operation::VAR_NAME && result.params[1]->op == Operation::IN_ROUND_BRACKETS) {
         // TODO: a call to a function with more than 1 arg
         result.op = Operation::CALL;
+    }
+
+    if ((result.op == Operation::CALL) && (result.params.size() == 2) && (result.params[1]->op == Operation::IN_ROUND_BRACKETS) && (result.params[1]->params.size() == 1) && (result.params[1]->params[0]->op == Operation::NONE)) {
         result.params[1] = result.params[1]->params[0];
+        result.params[1]->op = Operation::IN_ROUND_BRACKETS;
+
+        // Transform param1, <comma>, param2, <comma>, param3, ..., <comma>, paramN --> param1, param2, ..., paramN
+        bool ok = true;
+        for (size_t i = 0; i < result.params[1]->params.size(); ++i) {
+            bool is_comma = result.params[1]->params[i]->op == Operation::TOKEN && result.params[1]->params[i]->token.type == TokenType::COMMA; //value == ",";
+            if ((i % 2) != is_comma) {
+                ok = false;
+            }
+        }
+        if (ok) {
+            for (size_t i = result.params[1]->params.size() / 2; i > 0; --i) {
+                result.params[1]->params.erase(result.params[1]->params.begin() + 2*i-1);
+            }
+        }
     }
 
     return result;

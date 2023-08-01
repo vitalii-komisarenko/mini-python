@@ -184,8 +184,12 @@ void test_instruction() {
 
         if (instr.params.size() == 2) {
             ASSERT_IS_VAR(instr.params[0], "print");
-            MY_ASSERT_EQUAL(instr.params[1]->op, Operation::RET_VALUE);
-            ASSERT_IS_VALUE(instr.params[1], STRING, String, "Hello, World!");
+            MY_ASSERT_EQUAL(instr.params[1]->op, Operation::IN_ROUND_BRACKETS);
+            MY_ASSERT_EQUAL(instr.params[1]->params.size(), 1);
+            if (instr.params[0]->params.size() == 1) {
+                MY_ASSERT_EQUAL(instr.params[1]->params[0]->op, Operation::RET_VALUE);
+                ASSERT_IS_VALUE(instr.params[1]->params[0], STRING, String, "Hello, World!");
+            }
         }
     }
 
@@ -201,14 +205,53 @@ void test_instruction() {
         };
 
         Instruction instr = Instruction::fromTokenList(tokens);
-        std::cout << instr.debug_string() << "\n";
 
         MY_ASSERT_EQUAL(instr.op, Operation::CALL);
         MY_ASSERT_EQUAL(instr.params.size(), 2);
 
         if (instr.params.size() == 2) {
             ASSERT_IS_VAR(instr.params[0], "print");
-            MY_ASSERT_EQUAL(instr.params[1]->op, Operation::ADD);
+            MY_ASSERT_EQUAL(instr.params[1]->op, Operation::IN_ROUND_BRACKETS);
+            MY_ASSERT_EQUAL(instr.params[1]->params.size(), 1);
+            if (instr.params[1]->params.size() == 1) {
+                MY_ASSERT_EQUAL(instr.params[1]->params[0]->op, Operation::ADD);
+                MY_ASSERT_EQUAL(instr.params[1]->params[0]->params.size(), 2);
+                if (instr.params[1]->params[0]->params.size() == 2) {
+                    MY_ASSERT_EQUAL(instr.params[1]->params[0]->params[0]->op, Operation::RET_VALUE);
+                    ASSERT_IS_VALUE(instr.params[1]->params[0]->params[0], INT, Int, 1);
+                    MY_ASSERT_EQUAL(instr.params[1]->params[0]->params[1]->op, Operation::RET_VALUE);
+                    ASSERT_IS_VALUE(instr.params[1]->params[0]->params[1], INT, Int, 2);
+                }
+            }
+        }
+    }
+
+    {
+        // print("Hello,", "World!")
+        TokenList tokens = {
+            {TokenType::IDENTIFIER, "print"},
+            {TokenType::OPENING_ROUND_BRACKET, ""},
+            {TokenType::STRING, "Hello,"},
+            {TokenType::COMMA, ""},
+            {TokenType::STRING, "World!"},
+            {TokenType::CLOSING_ROUND_BRACKET, ""},
+        };
+
+        Instruction instr = Instruction::fromTokenList(tokens);
+
+        MY_ASSERT_EQUAL(instr.op, Operation::CALL);
+        MY_ASSERT_EQUAL(instr.params.size(), 2);
+
+        if (instr.params.size() == 2) {
+            ASSERT_IS_VAR(instr.params[0], "print");
+            MY_ASSERT_EQUAL(instr.params[1]->op, Operation::IN_ROUND_BRACKETS);
+            MY_ASSERT_EQUAL(instr.params[1]->params.size(), 2);
+            if (instr.params[1]->params.size() == 3) {
+                MY_ASSERT_EQUAL(instr.params[1]->params[0]->op, Operation::RET_VALUE);
+                ASSERT_IS_VALUE(instr.params[1]->params[0], INT, Int, 1);
+                MY_ASSERT_EQUAL(instr.params[1]->params[1]->op, Operation::RET_VALUE);
+                ASSERT_IS_VALUE(instr.params[1]->params[1], INT, Int, 2);
+            }
         }
     }
 }

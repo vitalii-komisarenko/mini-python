@@ -84,6 +84,16 @@ Instruction::Instruction(const Token &_token)
 
 Variable Instruction::execute(Scope *scope) {
     switch(op) {
+    case Operation::ASSIGN: {
+        CHECK_PARAM_SIZE(2);
+        auto var_name = params[0]->var->to_str();
+        auto scope_with_variable = scope->scopeWithVariable(var_name);
+        if (!scope_with_variable) {
+            scope_with_variable = scope->parentScope.lock()->impl;
+        }
+        scope_with_variable->vars.set(var_name, params[1]->execute(scope));
+        return nullptr; // TODO
+    }
     case Operation::ADD: {
         CHECK_PARAM_SIZE(2);
         return params[0]->execute(scope)->add(params[1]->execute(scope));

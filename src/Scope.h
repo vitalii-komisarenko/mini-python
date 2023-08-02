@@ -44,7 +44,6 @@ public:
     std::shared_ptr<ScopeImpl> impl;
 
     std::weak_ptr<Scope> parentScope;
-private:
     std::shared_ptr<ScopeImpl> scopeWithVariable(const std::string &name);
 };
 

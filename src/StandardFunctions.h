@@ -15,4 +15,6 @@ Variable bool_func(const InstructionParams &params, Scope *scope);
 
 Variable hex(const InstructionParams &params, Scope *scope);
 
+Variable len(const InstructionParams &params, Scope *scope);
+
 } // namespace MiniPython::StandardFunctions

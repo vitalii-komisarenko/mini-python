@@ -10,6 +10,7 @@ Variable print(const InstructionParams &params, Scope *scope);
 
 Variable min(const InstructionParams &params, Scope *scope);
 Variable max(const InstructionParams &params, Scope *scope);
+Variable pow(const InstructionParams &params, Scope *scope);
 
 Variable bool_func(const InstructionParams &params, Scope *scope);
 

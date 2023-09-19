@@ -143,6 +143,18 @@ Variable Scope::getVariable(const std::string &name) {
         throw std::runtime_error("Variable not found " + name);
     }
 
+    if (name == "True") {
+        return std::make_shared<BoolVariable>(true);
+    }
+
+    if (name == "False") {
+        return std::make_shared<BoolVariable>(false);
+    }
+
+    if (name == "None") {
+        return std::make_shared<NoneVariable>();
+    }
+
     return scope->vars.get(name);
 }
 
@@ -150,6 +162,10 @@ std::shared_ptr<ScopeImpl> Scope::scopeWithVariable(const std::string &name) {
     std::shared_ptr<ScopeImpl> curr = impl;
 
     while (true) {
+        if ((name == "True") || (name == "False") || (name == "None")) {
+            return curr;
+        }
+
         if (curr->vars.has(name)) {
             return curr;
         }

@@ -16,6 +16,8 @@ void runFromString(const std::string &fileContent) {
     auto scope = makeScope(lineTree);
 
     scope->setVariable("print", std::make_shared<FunctionVariable>(StandardFunctions::print));
+    scope->setVariable("min", std::make_shared<FunctionVariable>(StandardFunctions::min));
+    scope->setVariable("max", std::make_shared<FunctionVariable>(StandardFunctions::max));
 
     scope->execute();
 }

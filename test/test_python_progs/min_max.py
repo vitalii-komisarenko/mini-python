@@ -1,0 +1,6 @@
+print(min(1, 2, 3))
+print(min(1.0, 2.0, 3.0))
+print(min(3.0, -2, 1))
+print(max(1, 2, 3))
+print(max(3, 2, 1))
+print(max(3.0, 1.2, 4))

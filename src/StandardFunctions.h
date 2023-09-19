@@ -8,4 +8,7 @@ namespace MiniPython::StandardFunctions {
 
 Variable print(const InstructionParams &params, Scope *scope);
 
+Variable min(const InstructionParams &params, Scope *scope);
+Variable max(const InstructionParams &params, Scope *scope);
+
 } // namespace MiniPython::StandardFunctions

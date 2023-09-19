@@ -50,4 +50,24 @@ Variable max(const InstructionParams &params, Scope *scope) {
     return res;
 }
 
+Variable all(const InstructionParams &params, Scope *scope) {
+    for (size_t i = 0; i < params.size(); ++i) {
+        if (!params[i]->execute(scope)->to_bool()) {
+            return std::make_shared<BoolVariable>(false);
+        }
+    }
+
+    return std::make_shared<BoolVariable>(true);
+}
+
+Variable any(const InstructionParams &params, Scope *scope) {
+    for (size_t i = 0; i < params.size(); ++i) {
+        if (params[i]->execute(scope)->to_bool()) {
+            return std::make_shared<BoolVariable>(true);
+        }
+    }
+
+    return std::make_shared<BoolVariable>(false);
+}
+
 } // namespace MiniPython::StandardFunctions

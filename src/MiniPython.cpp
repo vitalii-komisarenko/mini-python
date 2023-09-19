@@ -18,6 +18,8 @@ void runFromString(const std::string &fileContent) {
     scope->setVariable("print", std::make_shared<FunctionVariable>(StandardFunctions::print));
     scope->setVariable("min", std::make_shared<FunctionVariable>(StandardFunctions::min));
     scope->setVariable("max", std::make_shared<FunctionVariable>(StandardFunctions::max));
+    scope->setVariable("all", std::make_shared<FunctionVariable>(StandardFunctions::all));
+    scope->setVariable("any", std::make_shared<FunctionVariable>(StandardFunctions::any));
 
     scope->execute();
 }

@@ -176,7 +176,7 @@ public:
     bool less(const Variable &other) override;
 
     bool strictly_equal(const Variable &other) override;
-private:
+
     StringType value;
 };
 

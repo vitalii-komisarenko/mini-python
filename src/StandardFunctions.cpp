@@ -78,8 +78,13 @@ Variable hex(const InstructionParams &params, Scope *scope) {
 
 Variable len(const InstructionParams &params, Scope *scope) {
     if (params[0]->execute(scope)->get_type() == VariableType::STRING) {
-        return std::dynamic_pointer_cast<StringVariable>(params[0]->execute(scope))->value->size();
+        auto generic_var = params[0]->execute(scope);
+        size_t value = std::dynamic_pointer_cast<StringVariable>(generic_var)->value.size();
+        auto int_var = std::make_shared<IntVariable>(value);
+        return std::dynamic_pointer_cast<GenericVariable>(int_var);
     }
 
     throw std::runtime_error("Unsupported type for len");
+}
+
 } // namespace MiniPython::StandardFunctions

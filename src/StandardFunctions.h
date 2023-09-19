@@ -13,4 +13,6 @@ Variable max(const InstructionParams &params, Scope *scope);
 
 Variable bool_func(const InstructionParams &params, Scope *scope);
 
+Variable hex(const InstructionParams &params, Scope *scope);
+
 } // namespace MiniPython::StandardFunctions

@@ -55,4 +55,25 @@ Variable bool_func(const InstructionParams &params, Scope *scope) {
     return std::make_shared<BoolVariable>(value);
 }
 
+std::string _hex(int num) {
+    if (num < 0) {
+        return "-" + _hex(-num);
+    }
+
+    std::string res;
+    while (num > 0) {
+        static std::string digits = "0123456789abcdef";
+        int new_digit = num % 16;
+        num /= 16;
+        res = std::string(1, digits[new_digit]) + res;
+    }
+
+    return "0x" + res;
+}
+
+Variable hex(const InstructionParams &params, Scope *scope) {
+    int num = std::dynamic_pointer_cast<IntVariable>(params[0]->execute(scope))->value;
+    return std::make_shared<StringVariable>(_hex(num));
+}
+
 } // namespace MiniPython::StandardFunctions

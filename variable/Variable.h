@@ -90,7 +90,7 @@ public:
     bool strictly_equal(const Variable &other) override;
 
     Variable toFloatVar();
-private:
+
     IntType value;
 };
 

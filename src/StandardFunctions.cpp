@@ -50,4 +50,9 @@ Variable max(const InstructionParams &params, Scope *scope) {
     return res;
 }
 
+Variable bool_func(const InstructionParams &params, Scope *scope) {
+    bool value = (params.size() > 0) && params[0]->execute(scope)->to_bool();
+    return std::make_shared<BoolVariable>(value);
+}
+
 } // namespace MiniPython::StandardFunctions

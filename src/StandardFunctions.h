@@ -14,6 +14,7 @@ Variable max(const InstructionParams &params, Scope *scope);
 Variable bool_func(const InstructionParams &params, Scope *scope);
 
 Variable hex(const InstructionParams &params, Scope *scope);
+Variable ord(const InstructionParams &params, Scope *scope);
 
 Variable len(const InstructionParams &params, Scope *scope);
 

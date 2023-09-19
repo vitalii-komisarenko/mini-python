@@ -76,6 +76,13 @@ Variable hex(const InstructionParams &params, Scope *scope) {
     return std::make_shared<StringVariable>(_hex(num));
 }
 
+Variable ord(const InstructionParams &params, Scope *scope) {
+    auto generic_var = params[0]->execute(scope);
+    unsigned char ch = std::dynamic_pointer_cast<StringVariable>(generic_var)->value[0];
+    auto int_var = std::make_shared<IntVariable>(ch);
+    return std::dynamic_pointer_cast<GenericVariable>(int_var);
+}
+
 Variable len(const InstructionParams &params, Scope *scope) {
     if (params[0]->execute(scope)->get_type() == VariableType::STRING) {
         auto generic_var = params[0]->execute(scope);

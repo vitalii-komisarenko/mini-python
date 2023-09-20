@@ -22,6 +22,7 @@ void runFromString(const std::string &fileContent) {
     scope->setVariable("bool", std::make_shared<FunctionVariable>(StandardFunctions::bool_func));
     scope->setVariable("hex", std::make_shared<FunctionVariable>(StandardFunctions::hex));
     scope->setVariable("ord", std::make_shared<FunctionVariable>(StandardFunctions::ord));
+    scope->setVariable("len", std::make_shared<FunctionVariable>(StandardFunctions::len));
 
     scope->execute();
 }

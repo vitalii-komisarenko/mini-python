@@ -254,4 +254,29 @@ void test_instruction() {
             }
         }
     }
+
+    {
+        // print(-1)
+        TokenList tokens = {
+            {TokenType::IDENTIFIER, "print"},
+            {TokenType::OPENING_ROUND_BRACKET, ""},
+            {TokenType::OPERATOR, "-"},
+            {TokenType::NUMBER, "1"},
+            {TokenType::CLOSING_ROUND_BRACKET, ""},
+        };
+
+        Instruction instr = Instruction::fromTokenList(tokens);
+
+        MY_ASSERT_EQUAL(instr.op, Operation::CALL);
+        MY_ASSERT_EQUAL(instr.params.size(), 2);
+        if (instr.params.size() == 2) {
+            ASSERT_IS_VAR(instr.params[0], "print");
+            MY_ASSERT_EQUAL(instr.params[1]->op, Operation::IN_ROUND_BRACKETS);
+            MY_ASSERT_EQUAL(instr.params[1]->params.size(), 1);
+            if (instr.params[1]->params.size() == 1) {
+                MY_ASSERT_EQUAL(instr.params[1]->params[0]->op, Operation::RET_VALUE);
+                ASSERT_IS_VALUE(instr.params[1]->params[0], INT, Int, -1);
+            }
+        }
+    }
 }

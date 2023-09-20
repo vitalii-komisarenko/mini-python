@@ -246,11 +246,11 @@ void test_instruction() {
             ASSERT_IS_VAR(instr.params[0], "print");
             MY_ASSERT_EQUAL(instr.params[1]->op, Operation::IN_ROUND_BRACKETS);
             MY_ASSERT_EQUAL(instr.params[1]->params.size(), 2);
-            if (instr.params[1]->params.size() == 3) {
+            if (instr.params[1]->params.size() == 2) {
                 MY_ASSERT_EQUAL(instr.params[1]->params[0]->op, Operation::RET_VALUE);
-                ASSERT_IS_VALUE(instr.params[1]->params[0], INT, Int, 1);
+                ASSERT_IS_VALUE(instr.params[1]->params[0], STRING, String, "Hello,");
                 MY_ASSERT_EQUAL(instr.params[1]->params[1]->op, Operation::RET_VALUE);
-                ASSERT_IS_VALUE(instr.params[1]->params[1], INT, Int, 2);
+                ASSERT_IS_VALUE(instr.params[1]->params[1], STRING, String, "World!");
             }
         }
     }

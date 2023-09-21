@@ -3,6 +3,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 namespace MiniPython {
 
@@ -38,6 +39,10 @@ public:
 
     virtual bool equal(const Variable &other) = 0;
     virtual bool less(const Variable &other) = 0;
+
+    std::unordered_map<std::string, Variable> attr;
+    Variable get_attr(const std::string &name);
+    Variable set_attr(const std::string &name, Variable attr_value);
 
     // for test purposes
     virtual bool strictly_equal(const Variable &other) = 0;

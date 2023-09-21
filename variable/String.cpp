@@ -4,6 +4,124 @@
 
 namespace MiniPython {
 
+static bool ch_is_lower(char ch) {
+    return ('a' <= ch) && (ch <= 'z');
+}
+
+static bool ch_is_upper(char ch) {
+    return ('A' <= ch) && (ch <= 'Z');
+}
+
+static bool ch_is_cased(char ch) {
+    return ch_is_lower(ch) || ch_is_upper(ch);
+}
+
+static char ch_to_lower(char ch) {
+    if (('A' <= ch) && (ch <= 'Z')) {
+        return ch + 32;
+    }
+    return ch;
+}
+
+static char ch_to_upper(char ch) {
+    if (('a' <= ch) && (ch <= 'z')) {
+        return ch - 32;
+    }
+    return ch;
+}
+
+static Variable encode_string(const std::string &value) {
+    return std::make_shared<MiniPython::StringVariable>(value);
+}
+
+extern Variable execute_instruction(std::shared_ptr<Instruction> instr, Scope *scope);
+
+#define DECODE_STRING(index) std::dynamic_pointer_cast<StringVariable>(execute_instruction(params[index], scope))->value
+
+static Variable islower(const InstructionParams& params, Scope *scope) {
+    std::string orig_value = DECODE_STRING(0);
+    bool has_cased_char = false;
+    bool has_lower_char = false;
+    for (size_t i = 0; i < orig_value.size(); ++i) {
+        char ch = orig_value[i];
+        if (ch_is_cased(ch)) {
+            has_cased_char = true;
+        }
+        if (ch_is_lower(ch)) {
+            has_lower_char = true;
+        }
+    }
+    bool res = has_cased_char && (!has_lower_char);
+    return std::make_shared<BoolVariable>(res);
+}
+
+static Variable isupper(const InstructionParams& params, Scope *scope) {
+    std::string orig_value = DECODE_STRING(0);
+    bool has_cased_char = false;
+    bool has_upper_char = false;
+    for (size_t i = 0; i < orig_value.size(); ++i) {
+        char ch = orig_value[i];
+        if (ch_is_cased(ch)) {
+            has_cased_char = true;
+        }
+        if (ch_is_upper(ch)) {
+            has_upper_char = true;
+        }
+    }
+    bool res = has_cased_char && (!has_upper_char);
+    return std::make_shared<BoolVariable>(res);
+}
+
+static Variable lower(const InstructionParams& params, Scope *scope) {
+    std::string orig_value = DECODE_STRING(0);
+    std::string res;
+    for (size_t i = 0; i < orig_value.size(); ++i) {
+        res += ch_to_lower(orig_value[i]);
+    }
+    return encode_string(res);
+}
+
+static Variable upper(const InstructionParams& params, Scope *scope) {
+    std::string orig_value = DECODE_STRING(0);
+    std::string res;
+    for (size_t i = 0; i < orig_value.size(); ++i) {
+        res += ch_to_upper(orig_value[i]);
+    }
+    return encode_string(res);
+}
+
+static Variable capitalize(const InstructionParams& params, Scope *scope) {
+    std::string orig_value = DECODE_STRING(0);
+    std::string res;
+    for (size_t i = 0; i < orig_value.size(); ++i) {
+        if (i == 0) {
+            res += ch_to_upper(orig_value[i]);
+        }
+        else {
+            res += ch_to_lower(orig_value[i]);
+        }
+    }
+    return encode_string(res);
+}
+
+static Variable swapcase(const InstructionParams& params, Scope *scope) {
+    std::string orig_value = DECODE_STRING(0);
+    std::string res;
+    for (size_t i = 0; i < orig_value.size(); ++i) {
+        char ch = orig_value[i];
+        if (ch_is_lower(ch)) {
+            res += ch_to_upper(ch);
+        }
+        else if (ch_is_upper(ch)) {
+            res += ch_to_lower(ch);
+        }
+        else {
+            res += ch;
+        }
+    }
+    return encode_string(res);
+}
+
 StringVariable::StringVariable(const StringType &_value): value(_value) {}
 
 VariableType StringVariable::get_type() {

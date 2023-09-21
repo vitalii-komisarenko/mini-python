@@ -82,6 +82,14 @@ Instruction::Instruction(const Token &_token)
         throw std::runtime_error(error); \
     }
 
+Variable execute_instruction(Instruction *instr, Scope *scope) {
+    return instr->execute(scope);
+}
+
+Variable execute_instruction(std::shared_ptr<Instruction> instr, Scope *scope) {
+    return instr->execute(scope);
+}
+
 Variable Instruction::execute(Scope *scope) {
     switch(op) {
     case Operation::ASSIGN: {

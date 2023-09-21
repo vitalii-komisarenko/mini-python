@@ -54,4 +54,6 @@ public:
     std::string debug_string(int indent_level=0);
 };
 
+Variable execute_instruction(Instruction *instr, Scope *scope);
+
 } // namespace MiniPython

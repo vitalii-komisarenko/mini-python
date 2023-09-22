@@ -37,6 +37,7 @@ static Variable encode_string(const std::string &value) {
 extern Variable execute_instruction(std::shared_ptr<Instruction> instr, Scope *scope);
 
 #define DECODE_STRING(index) std::dynamic_pointer_cast<StringVariable>(execute_instruction(params[index], scope))->value
+#define DECODE_INT(index) std::dynamic_pointer_cast<IntVariable>(execute_instruction(params[index], scope))->value
 
 static Variable islower(const InstructionParams& params, Scope *scope) {
     std::string orig_value = DECODE_STRING(0);
@@ -119,6 +120,51 @@ static Variable swapcase(const InstructionParams& params, Scope *scope) {
             res += ch;
         }
     }
+
+    return encode_string(res);
+}
+
+static std::string create_padding(const std::string &str_to_pad, int desired_len, char padding_char) {
+    int padding_len = desired_len > str_to_pad.size() ? desired_len - str_to_pad.size() : 0;
+    return std::string(padding_len, padding_char);
+}
+
+static Variable ljust(const InstructionParams& params, Scope *scope) {
+    std::string orig_value = DECODE_STRING(0);
+    int desired_len = DECODE_INT(1);
+    char padding_char = (params.size() == 3) ? DECODE_STRING(2)[0] : ' ';
+
+    std::string padding = create_padding(orig_value, desired_len, padding_char);
+    return encode_string(padding + orig_value);
+}
+
+static Variable rjust(const InstructionParams& params, Scope *scope) {
+    std::string orig_value = DECODE_STRING(0);
+    int desired_len = DECODE_INT(1);
+    char padding_char = (params.size() == 3) ? DECODE_STRING(2)[0] : ' ';
+
+    std::string padding = create_padding(orig_value, desired_len, padding_char);
+    return encode_string(orig_value + padding);
+}
+
+static Variable zfill(const InstructionParams& params, Scope *scope) {
+    std::string orig_value = DECODE_STRING(0);
+    int desired_len = DECODE_INT(1);
+    std::string res;
+    int start_pos = 0;
+
+    if (orig_value.size() >= desired_len) {
+        return encode_string(orig_value);
+    }
+
+    if ((orig_value.size() > 0) && ((orig_value[0] == '+') || (orig_value[0] == '-'))) {
+        start_pos = 1;
+        res += orig_value[0];
+    }
+
+    res += create_padding(orig_value, desired_len, '0');
+    res += orig_value.substr(start_pos);
+
     return encode_string(res);
 }
 

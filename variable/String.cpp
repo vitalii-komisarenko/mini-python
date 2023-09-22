@@ -214,6 +214,56 @@ static Variable removesuffix(const InstructionParams& params, Scope *scope) {
     return encode_string(str.substr(0, str.size() - suffix.size()));
 }
 
+bool str_contains_char(const std::string &str, char ch) {
+    return str.find(ch) != std::string::npos;
+}
+
+std::string str_lstrip(const std::string &str, const std::string &chars_to_strip) {
+    int first_char_not_to_strip = -1;
+    for (size_t i = 0; i < str.size(); ++i) {
+        if (!str_contains_char(chars_to_strip, str[i])) {
+            first_char_not_to_strip = i;
+            break;
+        }
+    }
+    if (first_char_not_to_strip == -1) {
+        return "";
+    }
+    return str.substr(first_char_not_to_strip);
+}
+
+std::string str_rstrip(const std::string &str, const std::string &chars_to_strip) {
+    int first_char_not_to_strip = -1;
+    for (int i = str.size() - 1; i >= 0; --i) {
+        if (!str_contains_char(chars_to_strip, str[i])) {
+            first_char_not_to_strip = i;
+            break;
+        }
+    }
+    if (first_char_not_to_strip == -1) {
+        return "";
+    }
+    return str.substr(0, first_char_not_to_strip);
+}
+
+static Variable lstrip(const InstructionParams& params, Scope *scope) {
+    std::string str = DECODE_STRING(0);
+    std::string chars = (params.size() == 2) ? DECODE_STRING(1) : " \t";
+    return encode_string(str_lstrip(str, chars));
+}
+
+static Variable rstrip(const InstructionParams& params, Scope *scope) {
+    std::string str = DECODE_STRING(0);
+    std::string chars = (params.size() == 2) ? DECODE_STRING(1) : " \t";
+    return encode_string(str_rstrip(str, chars));
+}
+
+static Variable strip(const InstructionParams& params, Scope *scope) {
+    std::string str = DECODE_STRING(0);
+    std::string chars = (params.size() == 2) ? DECODE_STRING(1) : " \t";
+    return encode_string(str_lstrip(str_rstrip(str, chars), chars));
+}
+
 StringVariable::StringVariable(const StringType &_value): value(_value) {}
 
 VariableType StringVariable::get_type() {

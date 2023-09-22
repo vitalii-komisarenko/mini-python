@@ -264,6 +264,30 @@ static Variable strip(const InstructionParams& params, Scope *scope) {
     return encode_string(str_lstrip(str_rstrip(str, chars), chars));
 }
 
+static Variable find(const InstructionParams& params, Scope *scope) {
+    std::string str = DECODE_STRING(0);
+    std::string substr = DECODE_STRING(1);
+    int start = params.size() > 2 ? DECODE_INT(2) : 0;
+    int end = params.size() > 3 ? DECODE_INT(3) : str.size();
+    size_t pos = str.substr(start, end).find(substr);
+    if (pos = std::string::npos) {
+        return std::make_shared<IntVariable>(-1);
+    }
+    return std::make_shared<IntVariable>(pos);
+}
+
+static Variable rfind(const InstructionParams& params, Scope *scope) {
+    std::string str = DECODE_STRING(0);
+    std::string substr = DECODE_STRING(1);
+    int start = params.size() > 2 ? DECODE_INT(2) : 0;
+    int end = params.size() > 3 ? DECODE_INT(3) : str.size();
+    size_t pos = str.substr(start, end).rfind(substr);
+    if (pos = std::string::npos) {
+        return std::make_shared<IntVariable>(-1);
+    }
+    return std::make_shared<IntVariable>(pos);
+}
+
 StringVariable::StringVariable(const StringType &_value): value(_value) {}
 
 VariableType StringVariable::get_type() {

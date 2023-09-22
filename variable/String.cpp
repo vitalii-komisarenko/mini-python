@@ -16,6 +16,14 @@ static bool ch_is_cased(char ch) {
     return ch_is_lower(ch) || ch_is_upper(ch);
 }
 
+static bool ch_is_alpha(char ch) {
+    return (('a' <= ch) && (ch <= 'z')) || (('A' <= ch) && (ch <= 'Z'));
+}
+
+static bool ch_is_numeric(char ch) {
+    return ('0' <= ch) && (ch <= '9');
+}
+
 static char ch_to_lower(char ch) {
     if (('A' <= ch) && (ch <= 'Z')) {
         return ch + 32;
@@ -71,6 +79,66 @@ static Variable isupper(const InstructionParams& params, Scope *scope) {
     }
     bool res = has_cased_char && (!has_upper_char);
     return std::make_shared<BoolVariable>(res);
+}
+
+static Variable isalpha(const InstructionParams& params, Scope *scope) {
+    std::string str = DECODE_STRING(0);
+    if (str.size() == 0) {
+        return std::make_shared<BoolVariable>(false);
+    }
+    for (size_t i = 0; i < str.size(); ++i) {
+        if (!ch_is_alpha(str[i])) {
+            return std::make_shared<BoolVariable>(false);
+        }
+    }
+    return std::make_shared<BoolVariable>(true);
+}
+
+static Variable isascii(const InstructionParams& params, Scope *scope) {
+    std::string str = DECODE_STRING(0);
+    if (str.size() == 0) {
+        return std::make_shared<BoolVariable>(true);
+    }
+    for (size_t i = 0; i < str.size(); ++i) {
+        if ((str[i] < 0) || (str[i] > 0xFF)) {
+            return std::make_shared<BoolVariable>(false);
+        }
+    }
+    return std::make_shared<BoolVariable>(true);
+}
+
+static Variable isdecimal(const InstructionParams& params, Scope *scope) {
+    std::string str = DECODE_STRING(0);
+    if (str.size() == 0) {
+        return std::make_shared<BoolVariable>(false);
+    }
+    for (size_t i = 0; i < str.size(); ++i) {
+        if (!ch_is_numeric(str[i])) {
+            return std::make_shared<BoolVariable>(false);
+        }
+    }
+    return std::make_shared<BoolVariable>(true);
+}
+
+static Variable isalnum(const InstructionParams& params, Scope *scope) {
+    std::string str = DECODE_STRING(0);
+    if (str.size() == 0) {
+        return std::make_shared<BoolVariable>(false);
+    }
+    for (size_t i = 0; i < str.size(); ++i) {
+        if (!ch_is_alpha(str[i]) && !ch_is_numeric(str[i])) {
+            return std::make_shared<BoolVariable>(false);
+        }
+    }
+    return std::make_shared<BoolVariable>(true);
+}
+
+static Variable isdigit(const InstructionParams& params, Scope *scope) {
+    return isdecimal(params, scope);
+}
+
+static Variable isnumeric(const InstructionParams& params, Scope *scope) {
+    return isdecimal(params, scope);
 }
 
 static Variable lower(const InstructionParams& params, Scope *scope) {

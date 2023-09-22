@@ -168,6 +168,52 @@ static Variable zfill(const InstructionParams& params, Scope *scope) {
     return encode_string(res);
 }
 
+bool str_starts_with(const std::string &str, const std::string &substr) {
+    if (substr.size() > str.size()) {
+        return false;
+    }
+    return str.rfind(substr, 0) == 0;
+}
+
+bool str_ends_with(const std::string &str, const std::string substr) {
+    if (substr.size() > str.size()) {
+        return false;
+    }
+    return str.find(substr, str.size() - substr.size()) == str.size() - substr.size();
+}
+
+static Variable startswith(const InstructionParams& params, Scope *scope) {
+    std::string str = DECODE_STRING(0);
+    std::string substr = DECODE_STRING(1);
+    bool res = str_starts_with(str, substr);
+    return std::make_shared<BoolVariable>(res);
+}
+
+static Variable endswith(const InstructionParams& params, Scope *scope) {
+    std::string str = DECODE_STRING(0);
+    std::string substr = DECODE_STRING(1);
+    bool res = str_ends_with(str, substr);
+    return std::make_shared<BoolVariable>(res);
+}
+
+static Variable removeprefix(const InstructionParams& params, Scope *scope) {
+    std::string str = DECODE_STRING(0);
+    std::string prefix = DECODE_STRING(1);
+    if (!str_starts_with(str, prefix)) {
+        return encode_string(str);
+    }
+    return encode_string(str.substr(prefix.size()));
+}
+
+static Variable removesuffix(const InstructionParams& params, Scope *scope) {
+    std::string str = DECODE_STRING(0);
+    std::string suffix = DECODE_STRING(1);
+    if (!str_ends_with(str, suffix)) {
+        return encode_string(str);
+    }
+    return encode_string(str.substr(0, str.size() - suffix.size()));
+}
+
 StringVariable::StringVariable(const StringType &_value): value(_value) {}
 
 VariableType StringVariable::get_type() {

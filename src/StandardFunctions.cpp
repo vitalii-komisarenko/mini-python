@@ -3,6 +3,9 @@
 #include <iostream>
 #include <stdexcept>
 
+#define VAR(i) params[i]->execute(scope)
+#define STRING(i) std::dynamic_pointer_cast<StringVariable>(VAR(i))
+
 namespace MiniPython::StandardFunctions {
 
 static auto None = std::static_pointer_cast<GenericVariable>(std::make_shared<NoneVariable>());
@@ -102,6 +105,25 @@ Variable len(const InstructionParams &params, Scope *scope) {
     }
 
     throw std::runtime_error("Unsupported type for len");
+}
+
+Variable getattr(const InstructionParams &params, Scope *scope) {
+    auto obj = VAR(0);
+    auto attr_name = STRING(1)->value;
+    return params.size() > 2 ? VAR(2) : obj->get_attr(attr_name);
+}
+
+Variable setattr(const InstructionParams &params, Scope *scope) {
+    auto obj = VAR(0);
+    auto attr_name = STRING(1)->value;
+    auto new_value = VAR(2);
+    return obj->set_attr(attr_name, new_value);
+}
+
+Variable hasattr(const InstructionParams &params, Scope *scope) {
+    auto obj = VAR(0);
+    auto attr_name = STRING(1)->value;
+    return std::make_shared<BoolVariable>(obj->has_attr(attr_name));
 }
 
 } // namespace MiniPython::StandardFunctions

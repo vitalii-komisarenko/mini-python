@@ -42,7 +42,8 @@ public:
 
     std::unordered_map<std::string, Variable> attr;
     Variable get_attr(const std::string &name);
-    Variable set_attr(const std::string &name, Variable attr_value);
+    void set_attr(const std::string &name, Variable attr_value);
+    bool has_attr(const std::string &name);
 
     // for test purposes
     virtual bool strictly_equal(const Variable &other) = 0;

@@ -393,6 +393,67 @@ static Variable rindex(const InstructionParams& params, Scope *scope) {
     return std::make_shared<IntVariable>(pos);
 }
 
+/*
+ * Bytes-related primitives
+ */
+
+int int_from_hex_char(char ch) {
+    if (('0' <= ch) && (ch <= '9')) {
+        return ch - '0';
+    }
+    if (('a' <= ch) && (ch <= 'f')) {
+        return ch - 'a' + 10;
+    }
+    if (('A' <= ch) && (ch <= 'F')) {
+        return ch - 'A' + 10;
+    }
+    throw std::runtime_error("Not a hex character");
+}
+
+static Variable fromhex(const InstructionParams& params, Scope *scope) {
+    std::string str = DECODE_STRING(0);
+    std::string str_without_spaces;
+    std::string res;
+    for (size_t i = 0; i < str.size(); ++i) {
+        if ((str[i] != ' ') && (str[i] != '\t')) {
+            str_without_spaces += str[i];
+        }
+    }
+    if (str_without_spaces.size() % 2) {
+        throw std::runtime_error("fromhex: even number of chars expected");
+    }
+    for (size_t i = 0 ; i < str_without_spaces.size(); i += 2) {
+        char ch1 = str_without_spaces[i];
+        char ch2 = str_without_spaces[i+1];
+        res += (16 * int_from_hex_char(ch1) + int_from_hex_char(ch2));
+    }
+    return encode_string(res);
+}
+
+static char to_hex_char(int num) {
+    if ((0 <= num) && (num <= 9)) {
+        return '0' + num;
+    }
+    if ((10 <= num) && (num <= 15)) {
+        return 'a' + num - 10;
+    }
+    throw std::runtime_error("Outside single-digit hex range");
+}
+
+static Variable hex(const InstructionParams& params, Scope *scope) {
+    std::string str = DECODE_STRING(0);
+    std::string res;
+    for (size_t i = 0; i < str.size(); ++i) {
+        res += to_hex_char(str[i] >> 4);
+        res += to_hex_char(str[i] % 16);
+    }
+    return encode_string(res);
+}
+
+/*
+ * Standard Variable API
+ */
+
 StringVariable::StringVariable(const StringType &_value): value(_value) {}
 
 VariableType StringVariable::get_type() {

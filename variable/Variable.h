@@ -212,8 +212,6 @@ public:
 
     bool strictly_equal(const Variable &other) override;
 
-    void append(const Variable &other);
-private:
     ListType list;
 };
 

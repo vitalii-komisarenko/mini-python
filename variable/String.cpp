@@ -345,26 +345,50 @@ static Variable strip(const InstructionParams& params, Scope *scope) {
     return encode_string(str_lstrip(str_rstrip(str, chars), chars));
 }
 
-static Variable find(const InstructionParams& params, Scope *scope) {
+static size_t _find(const InstructionParams& params, Scope *scope) {
     std::string str = DECODE_STRING(0);
     std::string substr = DECODE_STRING(1);
     int start = params.size() > 2 ? DECODE_INT(2) : 0;
     int end = params.size() > 3 ? DECODE_INT(3) : str.size();
-    size_t pos = str.substr(start, end).find(substr);
-    if (pos = std::string::npos) {
+    return str.substr(start, end).find(substr);
+}
+
+static Variable find(const InstructionParams& params, Scope *scope) {
+    size_t pos = _find(params, scope);
+    if (pos == std::string::npos) {
         return std::make_shared<IntVariable>(-1);
     }
     return std::make_shared<IntVariable>(pos);
 }
 
-static Variable rfind(const InstructionParams& params, Scope *scope) {
+static Variable index(const InstructionParams& params, Scope *scope) {
+    size_t pos = _find(params, scope);
+    if (pos == std::string::npos) {
+        throw std::runtime_error("ValueError: index: substring not found");
+    }
+    return std::make_shared<IntVariable>(pos);
+}
+
+static size_t _rfind(const InstructionParams& params, Scope *scope) {
     std::string str = DECODE_STRING(0);
     std::string substr = DECODE_STRING(1);
     int start = params.size() > 2 ? DECODE_INT(2) : 0;
     int end = params.size() > 3 ? DECODE_INT(3) : str.size();
-    size_t pos = str.substr(start, end).rfind(substr);
-    if (pos = std::string::npos) {
+    return str.substr(start, end).rfind(substr);
+}
+
+static Variable rfind(const InstructionParams& params, Scope *scope) {
+    size_t pos = _rfind(params, scope);
+    if (pos == std::string::npos) {
         return std::make_shared<IntVariable>(-1);
+    }
+    return std::make_shared<IntVariable>(pos);
+}
+
+static Variable rindex(const InstructionParams& params, Scope *scope) {
+    size_t pos = _rfind(params, scope);
+    if (pos == std::string::npos) {
+        throw std::runtime_error("ValueError: rindex: substring not found");
     }
     return std::make_shared<IntVariable>(pos);
 }

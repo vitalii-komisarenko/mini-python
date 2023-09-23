@@ -141,6 +141,19 @@ static Variable isnumeric(const InstructionParams& params, Scope *scope) {
     return isdecimal(params, scope);
 }
 
+static Variable isspace(const InstructionParams& params, Scope *scope) {
+    std::string str = DECODE_STRING(0);
+    if (str.size() == 0) {
+        return std::make_shared<BoolVariable>(false);
+    }
+    for (size_t i = 0; i < str.size(); ++i) {
+        if ((str[i] != ' ') && (str[i] != '\t')) {
+            return std::make_shared<BoolVariable>(false);
+        }
+    }
+    return std::make_shared<BoolVariable>(true);
+}
+
 static Variable lower(const InstructionParams& params, Scope *scope) {
     std::string orig_value = DECODE_STRING(0);
     std::string res;

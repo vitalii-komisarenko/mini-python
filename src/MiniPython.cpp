@@ -23,6 +23,10 @@ void runFromString(const std::string &fileContent) {
     scope->setVariable("hex", std::make_shared<FunctionVariable>(StandardFunctions::hex));
     scope->setVariable("ord", std::make_shared<FunctionVariable>(StandardFunctions::ord));
     scope->setVariable("len", std::make_shared<FunctionVariable>(StandardFunctions::len));
+    scope->setVariable("list", std::make_shared<FunctionVariable>(StandardFunctions::list));
+    scope->setVariable("tuple", std::make_shared<FunctionVariable>(StandardFunctions::list));
+    scope->setVariable("set", std::make_shared<FunctionVariable>(StandardFunctions::set));
+    scope->setVariable("frozenset", std::make_shared<FunctionVariable>(StandardFunctions::set));
 
     scope->execute();
 }

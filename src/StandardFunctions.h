@@ -19,4 +19,7 @@ Variable ord(const InstructionParams &params, Scope *scope);
 
 Variable len(const InstructionParams &params, Scope *scope);
 
+Variable list(const InstructionParams &params, Scope *scope);
+Variable set(const InstructionParams &params, Scope *scope);
+
 } // namespace MiniPython::StandardFunctions

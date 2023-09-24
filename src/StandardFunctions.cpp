@@ -3,8 +3,11 @@
 #include <iostream>
 #include <stdexcept>
 
-#define VAR(i) params[i]->execute(scope)
+extern Variable execute_instruction(std::shared_ptr<Instruction> instr, Scope *scope);
+
+#define VAR(i) execute_instruction(params[index], scope)
 #define STRING(i) std::dynamic_pointer_cast<StringVariable>(VAR(i))
+#define ITERABLE(i) std::dynamic_pointer_cast<IterableVariable>(VAR(i))
 
 namespace MiniPython::StandardFunctions {
 
@@ -124,6 +127,20 @@ Variable hasattr(const InstructionParams &params, Scope *scope) {
     auto obj = VAR(0);
     auto attr_name = STRING(1)->value;
     return std::make_shared<BoolVariable>(obj->has_attr(attr_name));
+}
+
+Variable list(const InstructionParams &params, Scope *scope) {
+    if (params.size()) {
+        return std::shared_ptr<ListVariable>(ITERABLE(0)->to_list()));
+    }
+    return std::shared_ptr<ListVariable>();
+}
+
+Varialbe set(const InstructionParams &params, Scope *scope) {
+    if (params.size()) {
+        return std::shared_ptr<SetVariable>(ITERABLE(0)->to_list()));
+    }
+    return std::shared_ptr<SetVariable>();
 }
 
 } // namespace MiniPython::StandardFunctions

@@ -143,4 +143,13 @@ Varialbe set(const InstructionParams &params, Scope *scope) {
     return std::shared_ptr<SetVariable>();
 }
 
+Varialbe input(const InstructionParams &params, Scope *scope) {
+    if (params.size()) {
+        std::cout << STRING(0)->value;
+    }
+    std::string line;
+    std::getline(std::cin, line);
+    return std::shared_ptr<StringVariable>(line);
+}
+
 } // namespace MiniPython::StandardFunctions

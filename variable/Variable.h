@@ -12,6 +12,7 @@ enum class VariableType {
     INT,
     BOOL,
     FLOAT,
+    COMPLEX,
     STRING,
     LIST,
     SET,
@@ -28,6 +29,7 @@ class GenericVariable;
 
 using Variable = std::shared_ptr<GenericVariable>;
 using ListType = std::vector<Variable>;
+using FloatType = double;
 
 class GenericVariable {
 public:
@@ -168,6 +170,35 @@ public:
     Variable toFloatVar();
 private:
     FloatType value;
+};
+
+class ComplexVariable: public GenericVariable {
+public:
+    ComplexVariable(FloatType _real, FloatType _imag = 0);
+
+    VariableType get_type() override;
+
+    Variable add(const Variable &other) override;
+    Variable sub(const Variable &other) override;
+    Variable mul(const Variable &other) override;
+    Variable div(const Variable &other) override;
+    Variable mod(const Variable &other) override;
+    Variable pow(const Variable &other) override;
+    Variable int_div(const Variable &other) override;
+
+    FloatType abs();
+    ComplexVariable conjugate();
+
+    bool to_bool() override;
+    std::string to_str() override;
+
+    bool equal(const Variable &other) override;
+    bool less(const Variable &other) override;
+
+    bool strictly_equal(const Variable &other) override;
+
+    FloatType real;
+    FloatType imag;
 };
 
 class StringVariable: public IterableVariable {

@@ -24,6 +24,7 @@ enum class VariableType {
 class GenericVariable;
 
 using Variable = std::shared_ptr<GenericVariable>;
+using ListType = std::vector<Variable>;
 
 class GenericVariable {
 public:
@@ -50,6 +51,11 @@ public:
 
     // for test purposes
     virtual bool strictly_equal(const Variable &other) = 0;
+};
+
+class IterableVariable: public GenericVariable {
+public:
+    virtual ListType to_list() = 0;
 };
 
 class NoneVariable: public GenericVariable {
@@ -161,7 +167,7 @@ private:
     FloatType value;
 };
 
-class StringVariable: public GenericVariable {
+class StringVariable: public IterableVariable {
 public:
     using StringType = std::string;
 
@@ -180,6 +186,7 @@ public:
 
     bool to_bool() override;
     std::string to_str() override;
+    ListType to_list() override;
 
     bool equal(const Variable &other) override;
     bool less(const Variable &other) override;
@@ -189,10 +196,8 @@ public:
     StringType value;
 };
 
-class ListVariable: public GenericVariable {
+class ListVariable: public IterableVariable {
 public:
-    using ListType = std::vector<Variable>;
-
     ListVariable();
     ListVariable(ListType _list);
 
@@ -209,6 +214,7 @@ public:
 
     bool to_bool() override;
     std::string to_str() override;
+    ListType to_list() override;
 
     bool equal(const Variable &other) override;
     bool less(const Variable &other) override;

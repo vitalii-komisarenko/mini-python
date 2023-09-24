@@ -45,7 +45,7 @@ VariableType ListVariable::get_type() {
     return VariableType::LIST;
 }
 
-ListVariable::ListType ListVariable::get_value() {
+ListType ListVariable::get_value() {
     return list;
 }
 
@@ -120,6 +120,10 @@ std::string ListVariable::to_str() {
     result += "]";
 
     return result;
+}
+
+ListType ListVariable::to_list() {
+    return list;
 }
 
 bool ListVariable::equal(const Variable &other) {

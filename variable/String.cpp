@@ -523,6 +523,14 @@ std::string StringVariable::to_str() {
     return value;
 }
 
+ListType StringVariable::to_list() {
+    ListType res;
+    for (size_t i = 0; i < value.size(); ++i) {
+        res.push_back(encode_string(std::string(1, value[i])));
+    }
+    return res;
+}
+
 bool StringVariable::equal(const Variable &other) {
     switch (other->get_type()) {
     case VariableType::STRING: {

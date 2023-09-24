@@ -14,12 +14,15 @@ enum class VariableType {
     FLOAT,
     STRING,
     LIST,
+    SET,
     DICT,
     FUNCTION,
     FILE,
 };
 
 #define NONE std::make_shared<NoneVariable>()
+
+#define NEW_SET(set) std::make_shared<SetVariable>(set)
 
 class GenericVariable;
 
@@ -200,6 +203,35 @@ class ListVariable: public IterableVariable {
 public:
     ListVariable();
     ListVariable(ListType _list);
+
+    VariableType get_type() override;
+    ListType get_value();
+
+    Variable add(const Variable &other) override;
+    Variable sub(const Variable &other) override;
+    Variable mul(const Variable &other) override;
+    Variable div(const Variable &other) override;
+    Variable mod(const Variable &other) override;
+    Variable pow(const Variable &other) override;
+    Variable int_div(const Variable &other) override;
+
+    bool to_bool() override;
+    std::string to_str() override;
+    ListType to_list() override;
+
+    bool equal(const Variable &other) override;
+    bool less(const Variable &other) override;
+
+    bool strictly_equal(const Variable &other) override;
+
+    ListType list;
+};
+
+class SetVariable: public IterableVariable {
+public:
+    SetVariable();
+    SetVariable(ListType *_list);
+    SetVariable(IterableVariable *_list);
 
     VariableType get_type() override;
     ListType get_value();

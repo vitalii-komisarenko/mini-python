@@ -17,7 +17,7 @@ mini_python_lib:
 LIB_SOURCES = Instruction.cpp LineLevelParser.cpp MiniPython.cpp Scope.cpp StandardFunctions.cpp Token.cpp TokenToVariable.cpp
 LIB_OBJECTS = $(LIB_SOURCES:%.cpp=build/common/%.o)
 
-LIB_VARIABLE_SOURCES = Bool.cpp Float.cpp Function.cpp Int.cpp List.cpp None.cpp String.cpp GenericVariable.cpp
+LIB_VARIABLE_SOURCES = Bool.cpp Float.cpp Function.cpp Int.cpp List.cpp None.cpp String.cpp GenericVariable.cpp File.cpp
 LIB_VARIABLE_OBJECTS = $(LIB_VARIABLE_SOURCES:%.cpp=build/common/%.o)
 
 app_files: $(LIB_OBJECTS) $(LIB_VARIABLE_OBJECTS)

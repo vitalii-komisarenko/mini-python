@@ -16,7 +16,10 @@ enum class VariableType {
     LIST,
     DICT,
     FUNCTION,
+    FILE,
 };
+
+#define NONE std::make_shared<NoneVariable>()
 
 class GenericVariable;
 

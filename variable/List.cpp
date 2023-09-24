@@ -11,7 +11,6 @@ extern Variable execute_instruction(std::shared_ptr<Instruction> instr, Scope *s
 #define INT(i) std::dynamic_pointer_cast<IntVariable>(VAR(i))
 #define LIST(i) std::dynamic_pointer_cast<ListVariable>(VAR(i))
 
-#define NONE std::make_shared<NoneVariable>()
 #define NEW_LIST(vector) std::make_shared<ListVariable>(vector)
 
 Variable append(const InstructionParams& params, Scope *scope) {

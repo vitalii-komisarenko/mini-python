@@ -1,11 +1,10 @@
 #include "StandardFunctions.h"
+#include "../variable/Variable.h"
 
 #include <iostream>
 #include <stdexcept>
 
-extern Variable execute_instruction(std::shared_ptr<Instruction> instr, Scope *scope);
-
-#define VAR(i) execute_instruction(params[index], scope)
+#define VAR(i) execute_instruction(params[i], scope)
 #define STRING(i) std::dynamic_pointer_cast<StringVariable>(VAR(i))
 #define ITERABLE(i) std::dynamic_pointer_cast<IterableVariable>(VAR(i))
 
@@ -120,7 +119,8 @@ Variable setattr(const InstructionParams &params, Scope *scope) {
     auto obj = VAR(0);
     auto attr_name = STRING(1)->value;
     auto new_value = VAR(2);
-    return obj->set_attr(attr_name, new_value);
+    obj->set_attr(attr_name, new_value);
+    return None;
 }
 
 Variable hasattr(const InstructionParams &params, Scope *scope) {
@@ -131,25 +131,26 @@ Variable hasattr(const InstructionParams &params, Scope *scope) {
 
 Variable list(const InstructionParams &params, Scope *scope) {
     if (params.size()) {
-        return std::shared_ptr<ListVariable>(ITERABLE(0)->to_list()));
+        return std::make_shared<ListVariable>(ITERABLE(0)->to_list());
     }
-    return std::shared_ptr<ListVariable>();
+    return std::make_shared<ListVariable>();
 }
 
-Varialbe set(const InstructionParams &params, Scope *scope) {
+Variable set(const InstructionParams &params, Scope *scope) {
     if (params.size()) {
-        return std::shared_ptr<SetVariable>(ITERABLE(0)->to_list()));
+        auto list = ITERABLE(0)->to_list();
+        return std::make_shared<SetVariable>(&list);
     }
-    return std::shared_ptr<SetVariable>();
+    return std::make_shared<SetVariable>();
 }
 
-Varialbe input(const InstructionParams &params, Scope *scope) {
+Variable input(const InstructionParams &params, Scope *scope) {
     if (params.size()) {
         std::cout << STRING(0)->value;
     }
     std::string line;
     std::getline(std::cin, line);
-    return std::shared_ptr<StringVariable>(line);
+    return std::make_shared<StringVariable>(line);
 }
 
 } // namespace MiniPython::StandardFunctions

@@ -10,37 +10,39 @@ extern Variable execute_instruction(std::shared_ptr<Instruction> instr, Scope *s
 #define ITERABLE(i) std::dynamic_pointer_cast<IterableVariable>(VAR(i))
 #define SET(i) std::dynamic_pointer_cast<SetVariable>(VAR(i))
 
-Variable contains(const InstructionParams& params, Scope *scope) {
-    auto item = VAR(1);
-    for (auto &item_this : SET(0)->list) {
-        if (item_this->equal(item)) {
+static bool set_contains(SetVariable *set, Variable item) {
+    for (auto set_item : set->list) {
+        if (set_item->equal(item)) {
             return true;
         }
     }
     return false;
 }
 
-Variable add(const InstructionParams& params, Scope *scope) {
-    if (!contains(params)) {
+static Variable contains(const InstructionParams& params, Scope *scope) {
+    return set_contains(SET(0).get(), VAR(1)) ? TRUE : FALSE;
+}
+
+static Variable add(const InstructionParams& params, Scope *scope) {
+    if (!contains(params, scope)) {
         SET(0)->list.push_back(VAR(1));
     }
     return NONE;
 }
 
-Variable update(const InstructionParams& params, Scope *scope) {
+static Variable update(const InstructionParams& params, Scope *scope) {
     auto set = SET(0);
     for (size_t i = 1; i < params.size(); ++i) {
         for (auto &item: ITERABLE(i)->to_list()) {
-            auto new_params = std::make_shared<vector<Variable>>();
-            new_params.push_back(set);
-            new_params.push_back(item);
-            add(new_params, scope);
+            if (!set_contains(set.get(), item)) {
+                set->list.push_back(item);
+            }
         }
     }
     return NONE;
 }
 
-bool _discard(const InstructionParams& params, Scope *scope) {
+static bool _discard(const InstructionParams& params, Scope *scope) {
     auto item = VAR(1);
     auto set = SET(0)->list;
     for (size_t i = 0; i < set.size(); ++i) {
@@ -53,17 +55,19 @@ bool _discard(const InstructionParams& params, Scope *scope) {
 }
 
 
-Variable discard(const InstructionParams& params, Scope *scope) {
+static Variable discard(const InstructionParams& params, Scope *scope) {
     _discard(params, scope);
+    return NONE;
 }
 
-Variable remove(const InstructionParams& params, Scope *scope) {
+static Variable remove(const InstructionParams& params, Scope *scope) {
     if (!_discard(params, scope)) {
         throw std::runtime_error("KeyError");
     }
+    return NONE;
 }
 
-Variable pop(const InstructionParams& params, Scope *scope) {
+static Variable pop(const InstructionParams& params, Scope *scope) {
     auto set = SET(0)->list;
     if (!set.size()) {
         throw std::runtime_error("KeyError: 'pop from an empty set'");
@@ -73,26 +77,28 @@ Variable pop(const InstructionParams& params, Scope *scope) {
     return res;
 }
 
-Variable clear(const InstructionParams& params, Scope *scope) {
+static Variable clear(const InstructionParams& params, Scope *scope) {
     SET(0)->list.clear();
+    return NONE;
 }
 
-Variable issuperset(const InstructionParams& params, Scope *scope) {
-    return !SET(0)->less(ITERABLE(1));
+static Variable issuperset(const InstructionParams& params, Scope *scope) {
+    return SET(0)->less(ITERABLE(1)) ? FALSE : TRUE;
 }
 
-Variable issubset(const InstructionParams& params, Scope *scope) {
-    return SET(0)->less(ITERABLE(1)) || SET(0)->equal(ITERABLE(1));
+static Variable issubset(const InstructionParams& params, Scope *scope) {
+    return (SET(0)->less(ITERABLE(1)) || SET(0)->equal(ITERABLE(1))) ? TRUE : FALSE;
 }
 
-Variable isdisjoint(const InstructionParams& params, Scope *scope) {
+static Variable isdisjoint(const InstructionParams& params, Scope *scope) {
     auto set1 = SET(0);
     auto set2 = SET(1);
-    return !(set1->sub(set2)->to_bool() || set2->sub(set1)->to_bool());
+    return (set1->sub(set2)->to_bool() || set2->sub(set1)->to_bool()) ? FALSE : TRUE;
 }
 
-Variable copy(const InstructionParams& params, Scope *scope) {
-    return NEW_SET(&(SET(0)->list()));
+static Variable copy(const InstructionParams& params, Scope *scope) {
+    auto list = SET(0)->to_list();
+    return NEW_SET(&list);
 }
 
 SetVariable::SetVariable() : list() {}

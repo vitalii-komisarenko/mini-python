@@ -21,8 +21,6 @@ enum class VariableType {
     FILE,
 };
 
-#define NONE std::make_shared<NoneVariable>()
-
 #define NEW_SET(set) std::make_shared<SetVariable>(set)
 
 class GenericVariable;
@@ -84,6 +82,8 @@ public:
     bool strictly_equal(const Variable &other) override;
 };
 
+static Variable NONE = std::make_shared<NoneVariable>();
+
 class IntVariable: public GenericVariable {
 public:
     using IntType = int64_t;
@@ -138,9 +138,12 @@ public:
 
     Variable toIntVar();
     Variable toFloatVar();
-private:
+
     bool value;
 };
+
+static auto TRUE = std::make_shared<BoolVariable>(true);
+static auto FALSE = std::make_shared<BoolVariable>(false);
 
 class FloatVariable: public GenericVariable {
 public:
@@ -168,7 +171,7 @@ public:
     bool strictly_equal(const Variable &other) override;
 
     Variable toFloatVar();
-private:
+
     FloatType value;
 };
 
@@ -187,7 +190,7 @@ public:
     Variable int_div(const Variable &other) override;
 
     FloatType abs();
-    ComplexVariable conjugate();
+    Variable conjugate();
 
     bool to_bool() override;
     std::string to_str() override;

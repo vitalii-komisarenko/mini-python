@@ -9,12 +9,12 @@ clean:
 	rm -rf build "${OUTPUT_FILE}"
 
 pre-build:
-	mkdir -p build/common
+	mkdir -p build/common build/modules
 
 mini_python_lib:
 	make do_mini_python
 
-LIB_SOURCES = Instruction.cpp LineLevelParser.cpp MiniPython.cpp Scope.cpp StandardFunctions.cpp Token.cpp TokenToVariable.cpp
+LIB_SOURCES = Instruction.cpp LineLevelParser.cpp MiniPython.cpp Scope.cpp StandardFunctions.cpp Token.cpp TokenToVariable.cpp ../modules/os.cpp
 LIB_OBJECTS = $(LIB_SOURCES:%.cpp=build/common/%.o)
 
 LIB_VARIABLE_SOURCES = Bool.cpp Float.cpp Function.cpp Int.cpp List.cpp None.cpp String.cpp GenericVariable.cpp File.cpp Set.cpp Dict.cpp Complex.cpp Iterable.cpp ObjectNotFound.cpp

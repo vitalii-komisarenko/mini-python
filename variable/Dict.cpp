@@ -84,6 +84,17 @@ Variable DictVariable::get(Variable key, Variable default_value) {
     return value->equal(OBJECT_NOT_FOUND) ? default_value : value;
 }
 
+Variable DictVariable::set_item(Variable key, Variable value) {
+    for (auto &pair : pairs) {
+        if (pair.first->equal(key)) {
+            pair.second = value;
+            return NONE;
+        }
+    }
+    pairs.push_back({key, value});
+    return NONE;
+}
+
 Variable DictVariable::clear() {
     pairs.clear();
     return NONE;

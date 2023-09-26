@@ -22,6 +22,8 @@ enum class VariableType {
     FILE,
 };
 
+#define NEW_INT(value) std::make_shared<MiniPython::IntVariable>(value)
+#define NEW_STRING(str) std::make_shared<StringVariable>(str)
 #define NEW_SET(set) std::make_shared<SetVariable>(set)
 
 class GenericVariable;
@@ -333,6 +335,7 @@ public:
     ListType keys();
     ListType values();
     Variable get_item(Variable key); // [] operator
+    Variable set_item(Variable key, Variable value);
     Variable get(Variable key, Variable default_value); // get()
     Variable clear();
     Variable copy();

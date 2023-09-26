@@ -11,9 +11,6 @@ extern Variable execute_instruction(std::shared_ptr<Instruction> instr, Scope *s
 #define STRING(i) std::dynamic_pointer_cast<StringVariable>(VAR(i))
 #define FILE_VAR(i) std::dynamic_pointer_cast<FileVariable>(VAR(i))
 
-#define NEW_INT(value) std::make_shared<MiniPython::IntVariable>(value)
-#define NEW_STRING(value) std::make_shared<MiniPython::StringVariable>(value)
-
 static Variable read_str(FILE *fh, size_t size) {
     std::string res(size, 0);
     int ret = fread(&res[0], 1, size, fh);

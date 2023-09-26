@@ -9,6 +9,7 @@ namespace MiniPython {
 
 enum class VariableType {
     NONE,
+    OBJECT_NOT_FOUND,
     INT,
     BOOL,
     FLOAT,
@@ -59,6 +60,7 @@ public:
 class IterableVariable: public GenericVariable {
 public:
     virtual ListType to_list() = 0;
+    bool contains(const Variable &item);
 };
 
 class NoneVariable: public GenericVariable {
@@ -83,6 +85,29 @@ public:
 };
 
 static Variable NONE = std::make_shared<NoneVariable>();
+
+class ObjectNotFoundVariable: public GenericVariable {
+public:
+    VariableType get_type() override;
+
+    Variable add(const Variable &other) override;
+    Variable sub(const Variable &other) override;
+    Variable mul(const Variable &other) override;
+    Variable div(const Variable &other) override;
+    Variable mod(const Variable &other) override;
+    Variable pow(const Variable &other) override;
+    Variable int_div(const Variable &other) override;
+
+    bool to_bool() override;
+    std::string to_str() override;
+
+    bool equal(const Variable &other) override;
+    bool less(const Variable &other) override;
+
+    bool strictly_equal(const Variable &other) override;
+};
+
+static Variable OBJECT_NOT_FOUND = std::make_shared<ObjectNotFoundVariable>();
 
 class IntVariable: public GenericVariable {
 public:
@@ -288,6 +313,55 @@ public:
     bool strictly_equal(const Variable &other) override;
 
     ListType list;
+};
+
+class DictVariable: public IterableVariable {
+public:
+    DictVariable();
+    DictVariable(const Variable &keys, const Variable value); // fromkeys()
+
+    VariableType get_type() override;
+
+    Variable add(const Variable &other) override;
+    Variable sub(const Variable &other) override;
+    Variable mul(const Variable &other) override;
+    Variable div(const Variable &other) override;
+    Variable mod(const Variable &other) override;
+    Variable pow(const Variable &other) override;
+    Variable int_div(const Variable &other) override;
+
+    ListType keys();
+    ListType values();
+    Variable get_item(Variable key); // [] operator
+    Variable get(Variable key, Variable default_value); // get()
+    Variable clear();
+    Variable copy();
+    Variable pop(Variable key);
+    Variable popitem();
+
+    bool to_bool() override;
+    std::string to_str() override;
+    ListType to_list() override;
+
+    bool equal(const Variable &other) override;
+    bool less(const Variable &other) override;
+
+    bool strictly_equal(const Variable &other) override;
+
+    std::vector<std::pair<Variable, Variable>> pairs;
+private:
+    /**
+     * @brief a helper function for [] operator and get() method
+     *
+     * @return value correspoding the key if exists or OBJECT_NOT_FOUND otherwise
+     */
+    Variable get_item_helper(Variable key);
+    /**
+     * @brief a helper function for del statement and pop() method
+     *
+     * @return value correspoding the key if exists or OBJECT_NOT_FOUND otherwise
+     */
+    Variable del_item_helper(Variable key);
 };
 
 class Instruction;

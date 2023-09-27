@@ -51,4 +51,14 @@ Variable os::chdir(Variable path) {
     return NONE;
 }
 
+Variable os::listdir(Variable path) {
+    std::vector<Variable> list;
+    for (const auto & entry : std::filesystem::directory_iterator(std::dynamic_pointer_cast<StringVariable>(path)->value)) {
+        if ((entry.path() != ".") && (entry.path() != "..")) {
+            list.push_back(NEW_STRING(entry.path()));
+        }
+    }
+    return NEW_LIST(list);
+}
+
 } // namespace MiniPython

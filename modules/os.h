@@ -12,6 +12,7 @@ public:
     Variable unsetenv(Variable key);
     Variable getcwd();
     Variable chdir(Variable path);
+    Variable listdir(Variable path = NEW_STRING("."));
 private:
     void make_environ();
 };

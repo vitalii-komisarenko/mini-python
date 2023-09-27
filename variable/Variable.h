@@ -22,10 +22,13 @@ enum class VariableType {
     FILE,
 };
 
+#define NEW_BOOL(value) (value ? TRUE : FALSE)
 #define NEW_INT(value) std::make_shared<MiniPython::IntVariable>(value)
 #define NEW_STRING(str) std::make_shared<StringVariable>(str)
 #define NEW_LIST(list) std::make_shared<ListVariable>(list)
 #define NEW_SET(set) std::make_shared<SetVariable>(set)
+
+#define VAR_TO_STR(var) std::dynamic_pointer_cast<StringVariable>(var)->value
 
 class GenericVariable;
 

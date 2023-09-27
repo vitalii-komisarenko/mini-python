@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+namespace fs = std::filesystem;
+
 extern char **environ;
 
 namespace MiniPython {
@@ -47,18 +49,34 @@ Variable os::getcwd() {
 }
 
 Variable os::chdir(Variable path) {
-    std::filesystem::current_path(std::dynamic_pointer_cast<StringVariable>(path)->value);
+    std::filesystem::current_path(VAR_TO_STR(path));
     return NONE;
 }
 
 Variable os::listdir(Variable path) {
     std::vector<Variable> list;
-    for (const auto & entry : std::filesystem::directory_iterator(std::dynamic_pointer_cast<StringVariable>(path)->value)) {
+    for (const auto & entry : std::filesystem::directory_iterator(VAR_TO_STR(path))) {
         if ((entry.path() != ".") && (entry.path() != "..")) {
             list.push_back(NEW_STRING(entry.path()));
         }
     }
     return NEW_LIST(list);
+}
+
+Variable os::mkdir(Variable path, Variable mode) {
+    if (fs::exists(VAR_TO_STR(path))) {
+        throw std::runtime_error("FileExistsError");
+    }
+    fs::create_directory(VAR_TO_STR(path));
+    return NONE;
+}
+
+Variable os::makedirs(Variable path, Variable mode, Variable exists_ok) {
+    if (fs::exists(VAR_TO_STR(path))) {
+        throw std::runtime_error("FileExistsError");
+    }
+    fs::create_directories(VAR_TO_STR(path));
+    return NONE;
 }
 
 } // namespace MiniPython

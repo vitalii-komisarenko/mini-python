@@ -13,6 +13,8 @@ public:
     Variable getcwd();
     Variable chdir(Variable path);
     Variable listdir(Variable path = NEW_STRING("."));
+    Variable mkdir(Variable path, Variable mode = NEW_INT(0777));
+    Variable makedirs(Variable path, Variable mode = NEW_INT(0777), Variable exists_ok = NEW_BOOL(false));
 private:
     void make_environ();
 };

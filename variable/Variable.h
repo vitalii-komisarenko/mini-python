@@ -28,9 +28,9 @@ enum class VariableType {
 #define NEW_LIST(list) std::make_shared<ListVariable>(list)
 #define NEW_SET(set) std::make_shared<SetVariable>(set)
 
+#define VAR_TO_INT(var) std::dynamic_pointer_cast<IntVariable>(var)->value
 #define VAR_TO_STR(var) std::dynamic_pointer_cast<StringVariable>(var)->value
 
-#define RAISE(exception) throw std::runtime_error( #exception )
 #define RAISE(exception, description) throw std::runtime_error(std::string(#exception) + ": " + description)
 
 class GenericVariable;

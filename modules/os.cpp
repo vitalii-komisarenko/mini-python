@@ -4,7 +4,6 @@
 #include <cstdlib>
 #include <filesystem>
 #include <stdlib.h>
-#include <ctime>
 #include <unistd.h>
 
 namespace fs = std::filesystem;
@@ -107,7 +106,7 @@ Variable os::rmdir(Variable path) {
 }
 
 Variable os::removedirs(Variable path) {
-    fs::removeall(VAR_TO_STR(path));
+    fs::remove_all(VAR_TO_STR(path));
     return NONE;
 }
 
@@ -120,8 +119,6 @@ Variable os::system(Variable cmd) {
     int res = std::system(VAR_TO_STR(cmd).c_str());
     return NEW_INT(res);
 }
-
-std::srand(std::time(nullptr));
 
 Variable os::urandom(Variable size) {
     std::string res;

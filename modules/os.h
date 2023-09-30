@@ -24,15 +24,15 @@ public:
     Variable urandom(Variable size);
 
 #ifdef _WIN32
-    static Variable devnull = NEW_STRING("nul");
-    static Variable sep = NEW_STRING("\\");
-    static Variable linesep = NEW_STRING("\r\n");
-    static Variable pathsep = NEW_STRING(";");
+    inline static Variable devnull = NEW_STRING("nul");
+    inline static Variable sep = NEW_STRING("\\");
+    inline static Variable linesep = NEW_STRING("\r\n");
+    inline static Variable pathsep = NEW_STRING(";");
 #else
-    static Variable devnull = NEW_STRING("/dev/null");
-    static Variable sep = NEW_STRING("/");
-    static Variable linesep = NEW_STRING("\n");
-    static Variable pathsep = NEW_STRING(":");
+    inline static Variable devnull = NEW_STRING("/dev/null");
+    inline static Variable sep = NEW_STRING("/");
+    inline static Variable linesep = NEW_STRING("\n");
+    inline static Variable pathsep = NEW_STRING(":");
 #endif
 
 private:

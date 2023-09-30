@@ -1,8 +1,10 @@
 #include "os.h"
 
+#include <cstdio>
 #include <cstdlib>
 #include <filesystem>
 #include <stdlib.h>
+#include <ctime>
 #include <unistd.h>
 
 namespace fs = std::filesystem;
@@ -77,6 +79,56 @@ Variable os::makedirs(Variable path, Variable mode, Variable exists_ok) {
     }
     fs::create_directories(VAR_TO_STR(path));
     return NONE;
+}
+
+Variable os::readlink(Variable path) {
+    auto p = VAR_TO_STR(path);
+    if (fs::is_symlink(p)) {
+        return NEW_STRING(fs::read_symlink(p));
+    }
+    throw std::runtime_error("Not a symlink");
+}
+
+Variable os::remove(Variable path) {
+    auto p = VAR_TO_STR(path);
+    if (!fs::exists(p)) {
+        RAISE(FileNotFoundError, p + " does not exist");
+    }
+    if (fs::is_directory(p)) {
+        RAISE(OSError, p + " is a directory");
+    }
+    fs::remove(p);
+    return NONE;
+}
+
+Variable os::rmdir(Variable path) {
+    fs::remove(VAR_TO_STR(path));
+    return NONE;
+}
+
+Variable os::removedirs(Variable path) {
+    fs::removeall(VAR_TO_STR(path));
+    return NONE;
+}
+
+Variable os::rename(Variable src, Variable dst) {
+    std::rename(VAR_TO_STR(src).c_str(), VAR_TO_STR(dst).c_str());
+    return NONE;
+}
+
+Variable os::system(Variable cmd) {
+    int res = std::system(VAR_TO_STR(cmd).c_str());
+    return NEW_INT(res);
+}
+
+std::srand(std::time(nullptr));
+
+Variable os::urandom(Variable size) {
+    std::string res;
+    for (size_t i = 0; i < VAR_TO_INT(size); ++i) {
+        res += char(rand());
+    }
+    return NEW_STRING(res);
 }
 
 } // namespace MiniPython

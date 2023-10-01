@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <string>
+#include <stdexcept>
 #include <vector>
 #include <unordered_map>
 
@@ -24,11 +25,14 @@ enum class VariableType {
 
 #define NEW_BOOL(value) ((value) ? TRUE : FALSE)
 #define NEW_INT(value) std::make_shared<MiniPython::IntVariable>(value)
+#define NEW_FLOAT(value) std::make_shared<MiniPython::FloatVariable>(value)
 #define NEW_STRING(str) std::make_shared<StringVariable>(str)
 #define NEW_LIST(list) std::make_shared<ListVariable>(list)
 #define NEW_SET(set) std::make_shared<SetVariable>(set)
 
+#define VAR_TO_BOOL(var) std::dynamic_pointer_cast<BoolVariable>(var)->value
 #define VAR_TO_INT(var) std::dynamic_pointer_cast<IntVariable>(var)->value
+#define VAR_TO_FLOAT(var) std::dynamic_pointer_cast<FloatVariable>(var)->value
 #define VAR_TO_STR(var) std::dynamic_pointer_cast<StringVariable>(var)->value
 
 #define RAISE(exception, description) throw std::runtime_error(std::string(#exception) + ": " + description)

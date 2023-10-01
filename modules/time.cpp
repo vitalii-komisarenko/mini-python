@@ -1,6 +1,7 @@
 #include "time.h"
 
 #include <chrono>
+#include <thread>
 
 namespace MiniPython {
 
@@ -11,13 +12,13 @@ Variable time::time_func() {
 
 Variable time::sleep(Variable seconds_var) {
     float seconds;
-    if (seconds_var->get_type() = VariableType::INT) {
+    if (seconds_var->get_type() == VariableType::INT) {
         seconds = VAR_TO_INT(seconds_var);
     }
-    else if (seconds_var->get_type() = VariableType::FLOAT) {
+    else if (seconds_var->get_type() == VariableType::FLOAT) {
         seconds = VAR_TO_FLOAT(seconds_var);
     }
-    else if (seconds_var->get_type() = VariableType::BOOL) {
+    else if (seconds_var->get_type() == VariableType::BOOL) {
         seconds = VAR_TO_BOOL(seconds_var) ? 1 : 0;
     }
     else {

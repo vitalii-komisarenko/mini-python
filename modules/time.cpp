@@ -6,8 +6,13 @@
 namespace MiniPython {
 
 Variable time::time_func() {
-    auto milliseconds_since_epoch = std::chrono::system_clock::now().time_since_epoch() / std::chrono::milliseconds(1);
+    auto milliseconds_since_epoch = std::chrono::system_clock::now().time_since_epoch() / std::chrono::seconds(1);
     return NEW_FLOAT(milliseconds_since_epoch);
+}
+
+Variable time::time_ns() {
+    auto nanoseconds_since_start = std::chrono::system_clock::now().time_since_epoch() / std::chrono::nanoseconds(1);
+    return NEW_INT(nanoseconds_since_start);
 }
 
 Variable time::sleep(Variable seconds_var) {

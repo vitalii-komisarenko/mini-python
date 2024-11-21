@@ -1,8 +1,42 @@
 #include "Variable.h"
 
+#include <algorithm>
 #include <stdexcept>
 
 namespace MiniPython {
+
+extern Variable execute_instruction(std::shared_ptr<Instruction> instr, Scope *scope);
+
+#define VAR(i) execute_instruction(params[i], scope)
+#define INT(i) std::dynamic_pointer_cast<IntVariable>(VAR(i))
+#define LIST(i) std::dynamic_pointer_cast<ListVariable>(VAR(i))
+
+#define NEW_LIST(vector) std::make_shared<ListVariable>(vector)
+
+Variable append(const InstructionParams& params, Scope *scope) {
+    LIST(0)->list.push_back(VAR(1));
+    return NONE;
+}
+
+Variable insert(const InstructionParams& params, Scope *scope) {
+    LIST(0)->list.insert(LIST(0)->list.begin() + INT(1)->value, VAR(2));
+    return NONE;
+}
+
+Variable clear(const InstructionParams& params, Scope *scope) {
+    LIST(0)->list.clear();
+    return NONE;
+}
+
+Variable reverse(const InstructionParams& params, Scope *scope) {
+    auto vec = LIST(0)->list;
+    std::reverse(vec.begin(), vec.end());
+    return NONE;
+}
+
+Variable copy(const InstructionParams& params, Scope *scope) {
+    return NEW_LIST(LIST(0)->list);
+}
 
 ListVariable::ListVariable() {}
 ListVariable::ListVariable(ListType _list): list(_list) {}
@@ -11,7 +45,7 @@ VariableType ListVariable::get_type() {
     return VariableType::LIST;
 }
 
-ListVariable::ListType ListVariable::get_value() {
+ListType ListVariable::get_value() {
     return list;
 }
 
@@ -86,6 +120,10 @@ std::string ListVariable::to_str() {
     result += "]";
 
     return result;
+}
+
+ListType ListVariable::to_list() {
+    return list;
 }
 
 bool ListVariable::equal(const Variable &other) {

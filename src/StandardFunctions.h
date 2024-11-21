@@ -8,4 +8,18 @@ namespace MiniPython::StandardFunctions {
 
 Variable print(const InstructionParams &params, Scope *scope);
 
+Variable min(const InstructionParams &params, Scope *scope);
+Variable max(const InstructionParams &params, Scope *scope);
+Variable pow(const InstructionParams &params, Scope *scope);
+
+Variable bool_func(const InstructionParams &params, Scope *scope);
+
+Variable hex(const InstructionParams &params, Scope *scope);
+Variable ord(const InstructionParams &params, Scope *scope);
+
+Variable len(const InstructionParams &params, Scope *scope);
+
+Variable list(const InstructionParams &params, Scope *scope);
+Variable set(const InstructionParams &params, Scope *scope);
+
 } // namespace MiniPython::StandardFunctions

@@ -149,6 +149,10 @@ static void test_misc_code() {
         {"2.", {{TokenType::NUMBER, "2."}}},
         {".33", {{TokenType::NUMBER, ".33"}}},
         {".33E-45", {{TokenType::NUMBER, ".33E-45"}}},
+        {"-1", {
+            {TokenType::OPERATOR, "-"},
+            {TokenType::NUMBER, "1"}
+        }},
     };
 
     for (const auto& pair: input) {

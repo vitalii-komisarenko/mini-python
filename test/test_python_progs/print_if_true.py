@@ -1,2 +1,2 @@
 if True:
-    print("Hello, World!")
+    print("Value is True")

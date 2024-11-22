@@ -58,11 +58,12 @@ Variable max(const InstructionParams &params, Scope *scope) {
 Variable pow(const InstructionParams &params, Scope *scope) {
     auto arg1 = params[0]->execute(scope);
     auto arg2 = params[1]->execute(scope);
-    auto arg3 = params.size() > 2
-              ? params[2]->execute(scope)
-              : std::make_shared<IntVariable>(1);
 
-    return arg1->pow(arg2)->mod(arg3);
+    if (params.size() == 2) {
+        return arg1->pow(arg2);
+    }
+
+    return arg1->pow(arg2)->mod(params[2]->execute(scope));
 }
 
 Variable bool_func(const InstructionParams &params, Scope *scope) {

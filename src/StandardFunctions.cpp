@@ -71,6 +71,10 @@ Variable bool_func(const InstructionParams &params, Scope *scope) {
 }
 
 std::string _hex(int num) {
+    if (num == 0) {
+        return "0x0";
+    }
+
     if (num < 0) {
         return "-" + _hex(-num);
     }

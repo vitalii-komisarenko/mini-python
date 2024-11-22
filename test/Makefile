@@ -1,7 +1,6 @@
 all:
 	mkdir -p build
-	make -C .. pre-build
-	make -C .. app_files
+	make -C .. app
 	make build_all
 
 clean:

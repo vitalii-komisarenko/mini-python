@@ -194,9 +194,16 @@ Instruction Instruction::fromTokenRange(std::vector<Token>::const_iterator &curr
         }
     }
 
-    // handle unary minus or plus
+    // handle unary minus or plus as the first token
     if ((result.params.size() >= 1) && (result.params[0]->token.type == TokenType::OPERATOR) && ((result.params[0]->token.value == "-") || (result.params[0]->token.value == "+"))) {
         result.params.insert(result.params.begin(), std::make_shared<Instruction>(Token(TokenType::NUMBER, "0")));
+    }
+
+    // handle unary minus or plus after comma
+    for (size_t i = 1; i < result.params.size(); ++i) {
+        if ((result.params[i-1]->token.type == TokenType::COMMA) && ((result.params[i]->token.value == "-") || (result.params[i]->token.value == "+"))) {
+            result.params.insert(result.params.begin() + i, std::make_shared<Instruction>(Token(TokenType::NUMBER, "0")));
+        }
     }
 
     auto groupByOperator = [&result](std::vector<std::pair<const char *, Operation>> ops) {

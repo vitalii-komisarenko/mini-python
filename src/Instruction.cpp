@@ -194,6 +194,11 @@ Instruction Instruction::fromTokenRange(std::vector<Token>::const_iterator &curr
         }
     }
 
+    // handle unary minus or plus
+    if ((result.params.size() >= 1) && (result.params[0]->token.type == TokenType::OPERATOR) && ((result.params[0]->token.value == "-") || (result.params[0]->token.value == "+"))) {
+        result.params.insert(result.params.begin(), std::make_shared<Instruction>(Token(TokenType::NUMBER, "0")));
+    }
+
     auto groupByOperator = [&result](std::vector<std::pair<const char *, Operation>> ops) {
         auto canBeArithmeticOperand = [](std::shared_ptr<Instruction> &instr) {
             return instr->op != Operation::TOKEN;

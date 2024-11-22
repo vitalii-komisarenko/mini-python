@@ -29,8 +29,8 @@ vars = (
     ('StrA', 'VAR(String, "some text")', 'some text'),
     ('StrA2', 'VAR(String, "some text")', 'some text'),
     ('StrB', 'VAR(String, "other text")', 'other text'),
-    ('ListEmpty', 'VAR(List, ListVariable::ListType())', []),
-    ('ListEmpty2', 'VAR(List, ListVariable::ListType())', []),
+    ('ListEmpty', 'VAR(List, ListType())', []),
+    ('ListEmpty2', 'VAR(List, ListType())', []),
 )
 
 # TODO: % is an operator for string formatting
@@ -158,7 +158,7 @@ def generate_for_arithmetic_operation(operation, cpp_name, fh):
                 continue
             elif _type == 'list':
                 # Only empty lists supported in tests
-                res_str = 'VAR(List, ListVariable::ListType())'
+                res_str = 'VAR(List, ListType())'
 
             if not res_str:
                 res_str = "VAR(" + _type.capitalize() + ", " + str(res) + ")"

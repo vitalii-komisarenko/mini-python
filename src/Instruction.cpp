@@ -288,7 +288,7 @@ std::string Instruction::debug_string(int indent_level) {
     for (size_t i = 0; i < indent_level; ++i) {
         result += "  ";
     }
-    result += opToString(op) + "\n";
+    result += opToString(op) + (var ? " " + var->to_str() : "") + "\n";
     for (auto param: params) {
         result += param->debug_string(indent_level + 1);
     }

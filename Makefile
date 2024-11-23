@@ -1,12 +1,18 @@
 OUTPUT_FILE = mini-python
+DEV_TOOLS_FILE = dev-tools
+
+all: app devtools
 
 app:
 	make pre-build
 	make app_files
 	g++ mini-python.cpp build/common/*.o -o "${OUTPUT_FILE}"
 
+devtools: app_files
+	g++ dev-tools.cpp build/common/*.o -I . -I variable -o "${DEV_TOOLS_FILE}"
+
 clean:
-	rm -rf build "${OUTPUT_FILE}"
+	rm -rf build "${OUTPUT_FILE}" "${DEV_TOOLS_FILE}"
 
 pre-build:
 	mkdir -p build/common build/modules

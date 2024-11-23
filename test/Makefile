@@ -49,6 +49,7 @@ build_all: $(TEST_OBJECTS) $(TEST_AUTOGEN_OBJECTS)
 	-I ../src \
 	-I . \
 	-I .. \
+	-l gtest \
 	-o test
 
 $(TEST_OBJECTS): build/%.o: %.cpp

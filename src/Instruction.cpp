@@ -141,6 +141,11 @@ Variable Instruction::execute(Scope *scope) {
         CHECK_PARAM_SIZE(0);
         return var;
     }
+    case Operation::IN_ROUND_BRACKETS: {
+        if (params.size() == 1) {
+            return params[0]->execute(scope);
+        }
+    }
     case Operation::CALL: {
         CHECK_PARAM_SIZE(2);
         InstructionParams call_args;

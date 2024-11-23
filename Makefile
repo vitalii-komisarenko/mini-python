@@ -20,7 +20,7 @@ pre-build:
 mini_python_lib:
 	make do_mini_python
 
-LIB_SOURCES = Instruction.cpp LineLevelParser.cpp MiniPython.cpp Scope.cpp StandardFunctions.cpp Token.cpp TokenToVariable.cpp ../modules/os.cpp ../modules/sys.cpp ../modules/time.cpp ../modules/math.cpp
+LIB_SOURCES = Instruction.cpp LineLevelParser.cpp MiniPython.cpp Scope.cpp StandardFunctions.cpp Token.cpp TokenToVariable.cpp StringFormatting.cpp ../modules/os.cpp ../modules/sys.cpp ../modules/time.cpp ../modules/math.cpp
 LIB_OBJECTS = $(LIB_SOURCES:%.cpp=build/common/%.o)
 
 LIB_VARIABLE_SOURCES = Bool.cpp Float.cpp Function.cpp Int.cpp List.cpp None.cpp String.cpp GenericVariable.cpp File.cpp Set.cpp Dict.cpp Complex.cpp Iterable.cpp ObjectNotFound.cpp
@@ -40,4 +40,6 @@ $(LIB_OBJECTS): build/common/%.o: src/%.cpp
 $(LIB_VARIABLE_OBJECTS): build/common/%.o: variable/%.cpp
 	g++ -c \
 	$< \
+	-I . \
+	-I .. \
 	-o $@

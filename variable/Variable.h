@@ -34,6 +34,7 @@ enum class VariableType {
 #define VAR_TO_INT(var) std::dynamic_pointer_cast<IntVariable>(var)->value
 #define VAR_TO_FLOAT(var) std::dynamic_pointer_cast<FloatVariable>(var)->value
 #define VAR_TO_STR(var) std::dynamic_pointer_cast<StringVariable>(var)->value
+#define VAR_TO_LIST(var) std::dynamic_pointer_cast<ListVariable>(var)->list
 
 #define RAISE(exception, description) throw std::runtime_error(std::string(#exception) + ": " + description)
 

@@ -1,4 +1,5 @@
 #include "Variable.h"
+#include "src/StringFormatting.h"
 
 #include <stdexcept>
 
@@ -508,7 +509,17 @@ Variable StringVariable::int_div(const Variable &other) {
 }
 
 Variable StringVariable::mod(const Variable &other) {
-    throw std::runtime_error("Can't do modular arithmetic on string");
+    // Technically, %-interpolation requires either a single value or a tuple.
+    // A list is interpreted as a single value.
+    // But since tuples are implemented as lists here, we break the compatibility with Python.
+    if (other->get_type() == VariableType::LIST) {
+        return NEW_STRING(PercentFormatter(to_str()).format(VAR_TO_LIST(other)));
+    }
+    else {
+        std::vector<Variable> vec;
+        vec.push_back(other);
+        return NEW_STRING(PercentFormatter(to_str()).format(vec));
+    }
 }
 
 Variable StringVariable::pow(const Variable &other) {

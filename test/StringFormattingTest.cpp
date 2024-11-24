@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include "src/StringFormatting.h"
+#include "src/Scope.h"
 
 using namespace MiniPython;
 
@@ -93,4 +94,13 @@ TEST_F(InterpolateStringTest, interpolate_vars) {
     EXPECT_EQ(NEW_STRING("%#21.3sdef")->mod(NEW_FLOAT(3456.78))->to_str(), "                  345def");
     EXPECT_EQ(NEW_STRING("abc%#21.3s")->mod(NEW_FLOAT(3456.78))->to_str(), "abc                  345");
     EXPECT_EQ(NEW_STRING("abc%#21.3sdef")->mod(NEW_FLOAT(3456.78))->to_str(), "abc                  345def");
+}
+
+class FStringFormatterTest: public testing::Test {
+};
+
+TEST_F(FStringFormatterTest, format) {
+    Scope scope;
+    scope.setVariable("str", NEW_STRING("abcdef"));
+    EXPECT_EQ(FStringFormatter("{str}").format(&scope), "abcdef");
 }

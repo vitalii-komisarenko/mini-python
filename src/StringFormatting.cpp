@@ -1,4 +1,5 @@
 #include "StringFormatting.h"
+#include "src/StandardFunctions.h"
 
 #include <cctype>
 #include <sstream>
@@ -126,6 +127,76 @@ std::string PercentFormatter::format(const std::vector<Variable> &variables) {
                 throw std::runtime_error("percent formatting: not enough variables");
             }
             res += interpolate_value(elem.value, variables[var_idx++]);
+        }
+    }
+    return res;
+}
+
+FStringFormatter::FStringFormatter(const std::string &format) {
+    std::stringstream ss(format);
+    while (ss) {
+        std::string value;
+        char ch = ss.peek();
+        if (ch == '{') {
+            ss.get();
+            while (ss && (ch = ss.get())) {
+                if (ch == '}') {
+                    elements.push_back(FormatElement(FormatElementType::INTERPOLATION, value));
+                    break;
+                }
+                value += ch;
+            }
+        }
+        else {
+            while (ss && (ch = ss.get())) {
+                if (ch == '{') {
+                    elements.push_back(FormatElement(FormatElementType::EXACT_STRING, value));
+                    break;
+                }
+            }
+            if (value.size()) { // to handle EOF
+                elements.push_back(FormatElement(FormatElementType::EXACT_STRING, value));
+            }
+        }
+    }
+}
+
+std::string apply_fstring_format_modifiers(const std::string &value, const std::string &format) {
+    std::string res = value;
+    return res;
+}
+
+std::string FStringFormatter::format(Scope *scope) {
+    std::string res;
+    for (const auto& elem : elements) {
+        if (elem.type == FormatElementType::EXACT_STRING) {
+            res += elem.value;
+        }
+        else {
+            size_t last_colon_pos = elem.value.rfind(":");
+            if (last_colon_pos != std::string::npos) {
+                for (auto &symbol: {")", "]", "\"", "'"}) {
+                    size_t last_other_symbol_pos = elem.value.find(symbol);
+                    if ((last_other_symbol_pos != std::string::npos) && (last_other_symbol_pos > last_colon_pos)) {
+                        last_colon_pos = std::string::npos;
+                    }
+                }
+            }
+
+            std::string expression_to_eval;
+            std::string format_modifiers;
+            if (last_colon_pos != std::string::npos) {
+                expression_to_eval = elem.value.substr(0, last_colon_pos);
+                format_modifiers = elem.value.substr(last_colon_pos + 1);
+            }
+            else {
+                expression_to_eval = elem.value;
+            }
+            InstructionParams instr_params;
+            auto instr = std::make_shared<Instruction>();
+            *instr = Instruction::fromTokenList(tokenizeLine(expression_to_eval));
+            instr_params.push_back(instr);
+            res += apply_fstring_format_modifiers(StandardFunctions::eval(instr_params, scope)->to_str(), format_modifiers);
         }
     }
     return res;

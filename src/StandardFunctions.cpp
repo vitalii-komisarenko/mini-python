@@ -1,4 +1,6 @@
 #include "StandardFunctions.h"
+#include "Scope.h"
+#include "RaiseException.h"
 #include "../variable/Variable.h"
 
 #include <iostream>
@@ -156,6 +158,35 @@ Variable input(const InstructionParams &params, Scope *scope) {
     std::string line;
     std::getline(std::cin, line);
     return std::make_shared<StringVariable>(line);
+}
+
+Variable eval(const InstructionParams &params, Scope *scope) {
+    if (!params.size()) {
+        raise_exception("TypeError", "eval expected at least 1 argument, got 0");
+        return None;
+    }
+
+    auto str_var = params[0]->execute(scope);
+
+    if (str_var->get_type() != VariableType::STRING) {
+        raise_exception("TypeError", "eval() arg 1 must be a string, bytes or code object");
+        return None;
+    }
+
+    auto str = str_var->to_str();
+    bool str_is_a_var_name = str.size();
+    for (char ch: str) {
+        if (!isalnum(ch) && (ch != '_')) {
+            str_is_a_var_name = false;
+        }
+    }
+
+    if (str_is_a_var_name) {
+        return scope->getVariable(str);
+    }
+
+    raise_exception("NotImplementedError", "advanced eval() statements not implemented");
+    return None;
 }
 
 } // namespace MiniPython::StandardFunctions

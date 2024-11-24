@@ -27,6 +27,7 @@ void runFromString(const std::string &fileContent) {
     scope->setVariable("tuple", std::make_shared<FunctionVariable>(StandardFunctions::list));
     scope->setVariable("set", std::make_shared<FunctionVariable>(StandardFunctions::set));
     scope->setVariable("frozenset", std::make_shared<FunctionVariable>(StandardFunctions::set));
+    scope->setVariable("eval", std::make_shared<FunctionVariable>(StandardFunctions::eval));
 
     scope->execute();
 }

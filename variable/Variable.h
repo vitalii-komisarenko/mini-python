@@ -272,6 +272,11 @@ public:
     StringType value;
 };
 
+/**
+ * @brief list and tuple representation
+ *
+ * They differ only by is_tuple flag.
+ */
 class ListVariable: public IterableVariable {
 public:
     ListVariable();
@@ -298,7 +303,10 @@ public:
     bool strictly_equal(const Variable &other) override;
 
     ListType list;
+    bool is_tuple;
 };
+
+bool is_tuple(Variable var);
 
 class SetVariable: public IterableVariable {
 public:

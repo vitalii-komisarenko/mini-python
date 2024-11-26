@@ -38,8 +38,8 @@ Variable copy(const InstructionParams& params, Scope *scope) {
     return NEW_LIST(LIST(0)->list);
 }
 
-ListVariable::ListVariable() {}
-ListVariable::ListVariable(ListType _list): list(_list) {}
+ListVariable::ListVariable(): is_tuple(false) {}
+ListVariable::ListVariable(ListType _list): list(_list), is_tuple(false) {}
 
 VariableType ListVariable::get_type() {
     return VariableType::LIST;
@@ -178,7 +178,12 @@ bool ListVariable::strictly_equal(const Variable &other) {
         return false;
     }
 
-    return list == std::dynamic_pointer_cast<ListVariable>(other)->list;
+    auto other_casted = std::dynamic_pointer_cast<ListVariable>(other);
+    return (list == other_casted->list) && (is_tuple == other_casted->is_tuple);
+}
+
+bool is_tuple(Variable var) {
+    return (var->get_type() == VariableType::LIST) && std::dynamic_pointer_cast<ListVariable>(var)->is_tuple;
 }
 
 } // namespace MiniPython

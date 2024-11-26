@@ -509,10 +509,7 @@ Variable StringVariable::int_div(const Variable &other) {
 }
 
 Variable StringVariable::mod(const Variable &other) {
-    // Technically, %-interpolation requires either a single value or a tuple.
-    // A list is interpreted as a single value.
-    // But since tuples are implemented as lists here, we break the compatibility with Python.
-    if (other->get_type() == VariableType::LIST) {
+    if (is_tuple(other)) {
         return NEW_STRING(PercentFormatter(to_str()).format(VAR_TO_LIST(other)));
     }
     else {

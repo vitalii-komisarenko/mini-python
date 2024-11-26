@@ -9,6 +9,7 @@ enum class TokenType {
     OPERATOR,
     IDENTIFIER,
     STRING,
+    FSTRING,
     NUMBER,
     COLON,
     COMMA,
@@ -24,7 +25,7 @@ enum class TokenType {
 struct Token {
     Token();
     Token(TokenType _type, const std::string &value = {});
-    bool operator==(const Token &other);
+    bool operator==(const Token &other) const;
 
     TokenType type;
     std::string value;

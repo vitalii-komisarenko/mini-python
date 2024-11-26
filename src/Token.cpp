@@ -13,7 +13,7 @@ Token::Token(TokenType _type, const std::string &_value):
     type(_type),
     value(_value) {}
 
-bool Token::operator==(const Token &other) {
+bool Token::operator==(const Token &other) const {
     return type == other.type && value == other.value;
 }
 
@@ -219,9 +219,25 @@ TokenList tokenizeLine(const std::string &line) {
         case std::char_traits<char>::eof():
             return result;
         case '\'':
-        case '"':
-            result.push_back(tokenizeString(ss));
+        case '"': {
+            Token token_candidate = tokenizeString(ss);
+            bool is_fstring = false;
+            if (result.size()) {
+                auto prev_token = result[result.size() - 1];
+                bool has_f = prev_token.value.find('f') != std::string::npos;
+                bool has_F = prev_token.value.find('F') != std::string::npos;
+                is_fstring = (prev_token.type == TokenType::IDENTIFIER) && (has_f || has_F);
+            }
+
+            if (is_fstring) {
+                result[result.size() - 1].type = TokenType::FSTRING;
+                result[result.size() - 1].value = token_candidate.value;
+            }
+            else {
+                result.push_back(token_candidate);
+            }
             break;
+        }
         case '0' ... '9':
         case '.':
             result.push_back(tokenizeNumber(ss));

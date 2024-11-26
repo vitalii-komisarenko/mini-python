@@ -50,6 +50,7 @@ build_all: $(TEST_OBJECTS) $(TEST_AUTOGEN_OBJECTS)
 	-I . \
 	-I .. \
 	-l gtest \
+	-l gmock \
 	-o test
 
 $(TEST_OBJECTS): build/%.o: %.cpp

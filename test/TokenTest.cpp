@@ -1,8 +1,11 @@
 #include "Token.h"
 
+#include <gtest/gtest.h>
+#include <gmock/gmock.h>
 #include <iostream>
 
 using namespace MiniPython;
+using testing::ElementsAre;
 
 static void test_no_token() {
     std::vector<std::string> lines = {
@@ -178,4 +181,16 @@ void test_token() {
     test_single_string_parsing();
     test_illegal_code();
     test_misc_code();
+}
+
+class TokentTest: public testing::Test {
+};
+
+TEST_F(TokentTest, f_string) {
+    ASSERT_THAT(tokenizeLine("f'{my_var}'"), ElementsAre(Token(TokenType::FSTRING, "{my_var}")));
+    ASSERT_THAT(tokenizeLine("F\"{x}\""), ElementsAre(Token(TokenType::FSTRING, "{x}")));
+    ASSERT_THAT(tokenizeLine("f'{a}' + '123'"),
+                ElementsAre(Token(TokenType::FSTRING, "{a}"),
+                            Token(TokenType::OPERATOR, "+"),
+                            Token(TokenType::STRING, "123")));
 }

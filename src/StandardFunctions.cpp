@@ -160,6 +160,22 @@ Variable input(const InstructionParams &params, Scope *scope) {
     return std::make_shared<StringVariable>(line);
 }
 
+Variable eval_string(const std::string &str, Scope *scope) {
+    bool str_is_a_var_name = str.size();
+    for (char ch: str) {
+        if (!isalnum(ch) && (ch != '_')) {
+            str_is_a_var_name = false;
+        }
+    }
+
+    if (str_is_a_var_name) {
+        return scope->getVariable(str);
+    }
+
+    raise_exception("NotImplementedError", "advanced eval() statements not implemented");
+    return None;
+}
+
 Variable eval(const InstructionParams &params, Scope *scope) {
     if (!params.size()) {
         raise_exception("TypeError", "eval expected at least 1 argument, got 0");
@@ -174,19 +190,7 @@ Variable eval(const InstructionParams &params, Scope *scope) {
     }
 
     auto str = str_var->to_str();
-    bool str_is_a_var_name = str.size();
-    for (char ch: str) {
-        if (!isalnum(ch) && (ch != '_')) {
-            str_is_a_var_name = false;
-        }
-    }
-
-    if (str_is_a_var_name) {
-        return scope->getVariable(str);
-    }
-
-    raise_exception("NotImplementedError", "advanced eval() statements not implemented");
-    return None;
+    return eval_string(str, scope);
 }
 
 } // namespace MiniPython::StandardFunctions

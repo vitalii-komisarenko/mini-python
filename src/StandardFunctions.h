@@ -22,6 +22,7 @@ Variable len(const InstructionParams &params, Scope *scope);
 Variable list(const InstructionParams &params, Scope *scope);
 Variable set(const InstructionParams &params, Scope *scope);
 
+Variable eval_string(const std::string &str, Scope *scope);
 Variable eval(const InstructionParams &params, Scope *scope);
 
 } // namespace MiniPython::StandardFunctions

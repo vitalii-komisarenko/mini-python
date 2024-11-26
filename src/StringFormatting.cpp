@@ -192,11 +192,7 @@ std::string FStringFormatter::format(Scope *scope) {
             else {
                 expression_to_eval = elem.value;
             }
-            InstructionParams instr_params;
-            auto instr = std::make_shared<Instruction>();
-            *instr = Instruction::fromTokenList(tokenizeLine(expression_to_eval));
-            instr_params.push_back(instr);
-            res += apply_fstring_format_modifiers(StandardFunctions::eval(instr_params, scope)->to_str(), format_modifiers);
+            res += apply_fstring_format_modifiers(StandardFunctions::eval_string(expression_to_eval, scope)->to_str(), format_modifiers);
         }
     }
     return res;

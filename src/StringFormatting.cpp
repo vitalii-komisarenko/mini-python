@@ -19,6 +19,16 @@ int get_number_from_stringstream(std::stringstream &ss) {
     return std::atoi(num_str.c_str());
 }
 
+size_t interpolation_element_count(const std::vector<FormatElement> &elements) {
+    size_t res = 0;
+    for (const auto &elem: elements) {
+        if (elem.type == FormatElementType::INTERPOLATION) {
+            res++;
+        }
+    }
+    return res;
+}
+
 ParsedFormat::ParsedFormat(const std::string &format): plus(false), dot(false), octothorp(false), after_dot(0), after_octothorp(0) {
     std::stringstream ss(format);
     char ch;

@@ -17,6 +17,10 @@ bool Token::operator==(const Token &other) const {
     return type == other.type && value == other.value;
 }
 
+static inline void discardCharacter(std::stringstream &ss) {
+    ss.get();
+}
+
 static Token tokenizeString(std::stringstream &ss) {
     std::string result;
 
@@ -59,6 +63,8 @@ static std::string readUnsignedInteger(std::stringstream &ss) {
             result += ch;
             break;
         }
+        case '_':
+            break;
         default: {
             ss.putback(ch);
             goto exit;
@@ -70,12 +76,53 @@ static std::string readUnsignedInteger(std::stringstream &ss) {
     return result;
 }
 
+static Token tokenizeNumberHexOrOct(std::stringstream &ss) {
+    std::string result;
+
+    char ch;
+    while (ss && (ch = ss.get())) {
+        switch (ch  ) {
+        case '0' ... '9':
+        case 'a' ... 'f':
+        case 'A' ... 'F':
+        case 'x':
+        case 'X':
+        case 'o':
+        case 'O':
+            result += ch;
+            break;
+        case '_':
+            break;
+        default:
+            goto exit;
+        }
+    }
+
+    exit:
+    return Token(TokenType::NUMBER, result);
+}
+
 static Token tokenizeNumber(std::stringstream &ss) {
-    // TODO: oct & hex numbers
     std::string result;
 
     switch (ss.peek()) {
-    case '0' ... '9':
+    case '0': {
+        char ch = ss.get();
+        switch (ss.peek()) {
+        case 'x':
+        case 'X':
+        case 'o':
+        case 'O':
+            ss.putback(ch);
+            return tokenizeNumberHexOrOct(ss);
+        case std::char_traits<char>::eof():
+            return Token(TokenType::NUMBER, "0");
+        default:
+            ss.putback(ch);
+            goto read_integer_part;
+        }
+    }
+    case '1' ... '9':
         goto read_integer_part;
     case '.':
         result += ss.get();
@@ -177,10 +224,6 @@ static Token tokenizeOperator(std::stringstream &ss) {
 
     exit:
     return Token(TokenType::OPERATOR, result);
-}
-
-static void discardCharacter(std::stringstream &ss) {
-    ss.get();
 }
 
 static char hexDigit(int ch) {

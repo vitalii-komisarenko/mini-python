@@ -194,3 +194,41 @@ TEST_F(TokentTest, f_string) {
                             Token(TokenType::OPERATOR, "+"),
                             Token(TokenType::STRING, "123")));
 }
+
+TEST_F(TokentTest, final_number_0) {
+    ASSERT_THAT(tokenizeLine("x = 0"), ElementsAre(
+        Token(TokenType::IDENTIFIER, "x"),
+        Token(TokenType::OPERATOR, "="),
+        Token(TokenType::NUMBER, "0")
+    ));
+}
+
+TEST_F(TokentTest, octal_string) {
+    ASSERT_THAT(tokenizeLine("x = 0o5134"), ElementsAre(
+        Token(TokenType::IDENTIFIER, "x"),
+        Token(TokenType::OPERATOR, "="),
+        Token(TokenType::NUMBER, "0o5134")
+    ));
+}
+
+TEST_F(TokentTest, hex_string) {
+    ASSERT_THAT(tokenizeLine("x = 0x5A3F"), ElementsAre(
+        Token(TokenType::IDENTIFIER, "x"),
+        Token(TokenType::OPERATOR, "="),
+        Token(TokenType::NUMBER, "0x5A3F")
+    ));
+}
+
+TEST_F(TokentTest, underscores_in_numbers) {
+    ASSERT_THAT(tokenizeLine("1_000_000_000_000_000"),
+                ElementsAre(Token(TokenType::NUMBER, "1000000000000000")));
+
+    ASSERT_THAT(tokenizeLine("123_4_56e-0_1"),
+                ElementsAre(Token(TokenType::NUMBER, "123456e-01")));
+
+    ASSERT_THAT(tokenizeLine("0o123_456"),
+                ElementsAre(Token(TokenType::NUMBER, "0o123456")));
+
+    ASSERT_THAT(tokenizeLine("0x_FF_FF_FF_FF"),
+                ElementsAre(Token(TokenType::NUMBER, "0xFFFFFFFF")));
+}

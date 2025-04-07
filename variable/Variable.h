@@ -47,6 +47,7 @@ using FloatType = double;
 class GenericVariable {
 public:
     virtual VariableType get_type() = 0;
+    std::string get_class_name();
 
     virtual Variable add(const Variable &other) = 0;
     virtual Variable sub(const Variable &other) = 0;

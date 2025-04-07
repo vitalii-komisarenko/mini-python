@@ -49,19 +49,19 @@ public:
     virtual VariableType get_type() = 0;
     std::string get_class_name();
 
-    virtual Variable add(const Variable &other) = 0;
-    virtual Variable sub(const Variable &other) = 0;
-    virtual Variable mul(const Variable &other) = 0;
-    virtual Variable div(const Variable &other) = 0;
-    virtual Variable mod(const Variable &other) = 0;
-    virtual Variable pow(const Variable &other) = 0;
-    virtual Variable int_div(const Variable &other) = 0;
+    virtual Variable add(const Variable &other);
+    virtual Variable sub(const Variable &other);
+    virtual Variable mul(const Variable &other);
+    virtual Variable div(const Variable &other);
+    virtual Variable mod(const Variable &other);
+    virtual Variable pow(const Variable &other);
+    virtual Variable int_div(const Variable &other);
 
-    virtual bool to_bool() = 0;
-    virtual std::string to_str() = 0;
+    virtual bool to_bool();
+    virtual std::string to_str();
 
-    virtual bool equal(const Variable &other) = 0;
-    virtual bool less(const Variable &other) = 0;
+    virtual bool equal(const Variable &other);
+    virtual bool less(const Variable &other);
 
     std::unordered_map<std::string, Variable> attr;
     Variable get_attr(const std::string &name);
@@ -69,7 +69,7 @@ public:
     bool has_attr(const std::string &name);
 
     // for test purposes
-    virtual bool strictly_equal(const Variable &other) = 0;
+    virtual bool strictly_equal(const Variable &other);
 };
 
 class IterableVariable: public GenericVariable {

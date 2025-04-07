@@ -21,6 +21,54 @@ std::string GenericVariable::get_class_name() {
          : "type";
 }
 
+Variable GenericVariable::add(const Variable &other) {
+    throw std::runtime_error("Operation + not supported");
+}
+
+Variable GenericVariable::sub(const Variable &other) {
+    throw std::runtime_error("Operation - not supported");
+}
+
+Variable GenericVariable::mul(const Variable &other) {
+    throw std::runtime_error("Operation * not supported");
+}
+
+Variable GenericVariable::div(const Variable &other) {
+    throw std::runtime_error("Operation / not supported");
+}
+
+Variable GenericVariable::int_div(const Variable &other) {
+    throw std::runtime_error("Operation // not supported");
+}
+
+Variable GenericVariable::mod(const Variable &other) {
+    throw std::runtime_error("Operation % not supported");
+}
+
+Variable GenericVariable::pow(const Variable &other) {
+    throw std::runtime_error("Operation ** not supported");
+}
+
+bool GenericVariable::to_bool() {
+    return true;
+}
+
+std::string GenericVariable::to_str() {
+    return "<object>";
+}
+
+bool GenericVariable::equal(const Variable &other) {
+    throw std::runtime_error("Operation == not supported");
+}
+
+bool GenericVariable::less(const Variable &other) {
+    throw std::runtime_error("Operation < not supported");
+}
+
+bool GenericVariable::strictly_equal(const Variable &other) {
+    throw std::runtime_error("Operation `strictly_equal` not supported");
+}
+
 Variable GenericVariable::get_attr(const std::string &name) {
     return attr[name];
 }

@@ -62,10 +62,6 @@ Variable ListVariable::add(const Variable &other) {
     }
 }
 
-Variable ListVariable::sub(const Variable &other) {
-    throw std::runtime_error("Can't substract anything from list");
-}
-
 Variable ListVariable::mul(const Variable &other) {
     switch (other->get_type()) {
     case VariableType::INT: {
@@ -84,22 +80,6 @@ Variable ListVariable::mul(const Variable &other) {
     default:
         throw std::runtime_error("Can't multiply list by that");
     }
-}
-
-Variable ListVariable::div(const Variable &other) {
-    throw std::runtime_error("Can't divide list by anything");
-}
-
-Variable ListVariable::int_div(const Variable &other) {
-    throw std::runtime_error("Can't divide list by anything");
-}
-
-Variable ListVariable::mod(const Variable &other) {
-    throw std::runtime_error("Can't do modular arithmetic on list");
-}
-
-Variable ListVariable::pow(const Variable &other) {
-    throw std::runtime_error("Can't raise list to any power");
 }
 
 bool ListVariable::to_bool() {

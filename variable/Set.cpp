@@ -114,10 +114,6 @@ ListType SetVariable::get_value() {
     return list;
 }
 
-Variable SetVariable::add(const Variable &other) {
-    throw std::runtime_error("Addition not supported for sets");
-}
-
 Variable SetVariable::sub(const Variable &other) {
     ListType res;
     for (auto &item_this : list) {
@@ -133,26 +129,6 @@ Variable SetVariable::sub(const Variable &other) {
         }
     }
     return NEW_SET(&res);
-}
-
-Variable SetVariable::mul(const Variable &other) {
-    throw std::runtime_error("Multiplication not supported for sets");
-}
-
-Variable SetVariable::div(const Variable &other) {
-    throw std::runtime_error("Division not supported for sets");
-}
-
-Variable SetVariable::mod(const Variable &other) {
-    throw std::runtime_error("% not supported for sets");
-}
-
-Variable SetVariable::pow(const Variable &other) {
-    throw std::runtime_error("Power not supported for sets");
-}
-
-Variable SetVariable::int_div(const Variable &other) {
-    throw std::runtime_error("Integer division not supported for sets");
 }
 
 bool SetVariable::to_bool() {

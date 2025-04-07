@@ -476,10 +476,6 @@ Variable StringVariable::add(const Variable &other) {
     }
 }
 
-Variable StringVariable::sub(const Variable &other) {
-    throw std::runtime_error("Can't substract anything from string");
-}
-
 Variable StringVariable::mul(const Variable &other) {
     switch (other->get_type()) {
     case VariableType::INT: {
@@ -500,14 +496,6 @@ Variable StringVariable::mul(const Variable &other) {
     }
 }
 
-Variable StringVariable::div(const Variable &other) {
-    throw std::runtime_error("Can't divide string by anything");
-}
-
-Variable StringVariable::int_div(const Variable &other) {
-    throw std::runtime_error("Can't divide string by anything");
-}
-
 Variable StringVariable::mod(const Variable &other) {
     if (is_tuple(other)) {
         return NEW_STRING(PercentFormatter(to_str()).format(VAR_TO_LIST(other)));
@@ -517,10 +505,6 @@ Variable StringVariable::mod(const Variable &other) {
         vec.push_back(other);
         return NEW_STRING(PercentFormatter(to_str()).format(vec));
     }
-}
-
-Variable StringVariable::pow(const Variable &other) {
-    throw std::runtime_error("Can't raise string to any power");
 }
 
 bool StringVariable::to_bool() {

@@ -18,14 +18,6 @@ VariableType DictVariable::get_type() {
     return VariableType::DICT;
 }
 
-Variable DictVariable::add(const Variable &other) { throw std::runtime_error("dict: + not supported"); }
-Variable DictVariable::sub(const Variable &other) { throw std::runtime_error("dict: - not supported"); }
-Variable DictVariable::mul(const Variable &other) { throw std::runtime_error("dict: * not supported"); }
-Variable DictVariable::div(const Variable &other) { throw std::runtime_error("dict: / not supported"); }
-Variable DictVariable::mod(const Variable &other) { throw std::runtime_error("dict: % not supported"); }
-Variable DictVariable::pow(const Variable &other) { throw std::runtime_error("dict: ^ not supported"); }
-Variable DictVariable::int_div(const Variable &other) { throw std::runtime_error("dict: // not supported"); }
-
 bool DictVariable::to_bool() {
     return pairs.size();
 }
@@ -145,10 +137,6 @@ bool DictVariable::equal(const Variable &other) {
     if (!keys1->equal(keys2)) {
         return false;
     }
-}
-
-bool DictVariable::less(const Variable &other) {
-    throw std::runtime_error("dict: < not supported");
 }
 
 bool DictVariable::strictly_equal(const Variable &other) {

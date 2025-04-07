@@ -34,23 +34,6 @@ Variable FunctionVariable::call(Variable &param1, Variable &param2, Scope *scope
     return value(params, scope);
 }
 
-#define OP_NOT_SUPPORTED(OPERATION)\
-Variable FunctionVariable::OPERATION(const Variable &other) { \
-    throw std::runtime_error("Operation '" #OPERATION "' not supported on functions"); \
-}
-
-OP_NOT_SUPPORTED(add);
-OP_NOT_SUPPORTED(sub);
-OP_NOT_SUPPORTED(mul);
-OP_NOT_SUPPORTED(div);
-OP_NOT_SUPPORTED(int_div);
-OP_NOT_SUPPORTED(mod);
-OP_NOT_SUPPORTED(pow);
-
-bool FunctionVariable::to_bool() {
-    return true;
-}
-
 std::string FunctionVariable::to_str() {
     // Python3 returns something like:
     //'<built-in function abs>'

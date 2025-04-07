@@ -82,20 +82,10 @@ class NoneVariable: public GenericVariable {
 public:
     VariableType get_type() override;
 
-    Variable add(const Variable &other) override;
-    Variable sub(const Variable &other) override;
-    Variable mul(const Variable &other) override;
-    Variable div(const Variable &other) override;
-    Variable mod(const Variable &other) override;
-    Variable pow(const Variable &other) override;
-    Variable int_div(const Variable &other) override;
-
     bool to_bool() override;
     std::string to_str() override;
 
     bool equal(const Variable &other) override;
-    bool less(const Variable &other) override;
-
     bool strictly_equal(const Variable &other) override;
 };
 
@@ -104,22 +94,7 @@ static Variable NONE = std::make_shared<NoneVariable>();
 class ObjectNotFoundVariable: public GenericVariable {
 public:
     VariableType get_type() override;
-
-    Variable add(const Variable &other) override;
-    Variable sub(const Variable &other) override;
-    Variable mul(const Variable &other) override;
-    Variable div(const Variable &other) override;
-    Variable mod(const Variable &other) override;
-    Variable pow(const Variable &other) override;
-    Variable int_div(const Variable &other) override;
-
-    bool to_bool() override;
-    std::string to_str() override;
-
     bool equal(const Variable &other) override;
-    bool less(const Variable &other) override;
-
-    bool strictly_equal(const Variable &other) override;
 };
 
 static Variable OBJECT_NOT_FOUND = std::make_shared<ObjectNotFoundVariable>();
@@ -225,9 +200,7 @@ public:
     Variable sub(const Variable &other) override;
     Variable mul(const Variable &other) override;
     Variable div(const Variable &other) override;
-    Variable mod(const Variable &other) override;
     Variable pow(const Variable &other) override;
-    Variable int_div(const Variable &other) override;
 
     FloatType abs();
     Variable conjugate();
@@ -254,12 +227,8 @@ public:
     StringType get_value();
 
     Variable add(const Variable &other) override;
-    Variable sub(const Variable &other) override;
     Variable mul(const Variable &other) override;
-    Variable div(const Variable &other) override;
     Variable mod(const Variable &other) override;
-    Variable pow(const Variable &other) override;
-    Variable int_div(const Variable &other) override;
 
     bool to_bool() override;
     std::string to_str() override;
@@ -287,12 +256,7 @@ public:
     ListType get_value();
 
     Variable add(const Variable &other) override;
-    Variable sub(const Variable &other) override;
     Variable mul(const Variable &other) override;
-    Variable div(const Variable &other) override;
-    Variable mod(const Variable &other) override;
-    Variable pow(const Variable &other) override;
-    Variable int_div(const Variable &other) override;
 
     bool to_bool() override;
     std::string to_str() override;
@@ -318,13 +282,7 @@ public:
     VariableType get_type() override;
     ListType get_value();
 
-    Variable add(const Variable &other) override;
     Variable sub(const Variable &other) override;
-    Variable mul(const Variable &other) override;
-    Variable div(const Variable &other) override;
-    Variable mod(const Variable &other) override;
-    Variable pow(const Variable &other) override;
-    Variable int_div(const Variable &other) override;
 
     bool to_bool() override;
     std::string to_str() override;
@@ -345,14 +303,6 @@ public:
 
     VariableType get_type() override;
 
-    Variable add(const Variable &other) override;
-    Variable sub(const Variable &other) override;
-    Variable mul(const Variable &other) override;
-    Variable div(const Variable &other) override;
-    Variable mod(const Variable &other) override;
-    Variable pow(const Variable &other) override;
-    Variable int_div(const Variable &other) override;
-
     ListType keys();
     ListType values();
     Variable get_item(Variable key); // [] operator
@@ -368,7 +318,6 @@ public:
     ListType to_list() override;
 
     bool equal(const Variable &other) override;
-    bool less(const Variable &other) override;
 
     bool strictly_equal(const Variable &other) override;
 
@@ -404,15 +353,6 @@ public:
     Variable call(Variable &param, Scope *scope);
     Variable call(Variable &param1, Variable &param2, Scope *scope);
 
-    Variable add(const Variable &other) override;
-    Variable sub(const Variable &other) override;
-    Variable mul(const Variable &other) override;
-    Variable div(const Variable &other) override;
-    Variable mod(const Variable &other) override;
-    Variable pow(const Variable &other) override;
-    Variable int_div(const Variable &other) override;
-
-    bool to_bool() override;
     std::string to_str() override;
 
     bool equal(const Variable &other) override;

@@ -57,16 +57,8 @@ Variable ComplexVariable::div(const Variable &other) {
     return NEW_COMPLEX(before_div_by_abs->real / other_abs, before_div_by_abs->imag / other_abs);
 }
 
-Variable ComplexVariable::mod(const Variable &other) {
-    throw std::runtime_error("mod not supported for Complex");
-}
-
 Variable ComplexVariable::pow(const Variable &other) {
     throw std::runtime_error("pow not implemented for Complex");
-}
-
-Variable ComplexVariable::int_div(const Variable &other) {
-    throw std::runtime_error("integer division not supported for Complex");
 }
 
 bool ComplexVariable::to_bool() {

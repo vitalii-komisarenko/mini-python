@@ -100,18 +100,6 @@ VariableType FileVariable::get_type() {
     return VariableType::FILE;
 }
 
-Variable FileVariable::add(const Variable &other) { throw std::runtime_error("FileVariable: add not supported"); }
-Variable FileVariable::sub(const Variable &other) { throw std::runtime_error("FileVariable: sub not supported"); }
-Variable FileVariable::mul(const Variable &other) { throw std::runtime_error("FileVariable: mul not supported"); }
-Variable FileVariable::div(const Variable &other) { throw std::runtime_error("FileVariable: div not supported"); }
-Variable FileVariable::mod(const Variable &other) { throw std::runtime_error("FileVariable: mod not supported"); }
-Variable FileVariable::pow(const Variable &other) { throw std::runtime_error("FileVariable: pow not supported"); }
-Variable FileVariable::int_div(const Variable &other) { throw std::runtime_error("FileVariable: int_div not supported"); }
-
-bool FileVariable::to_bool() {
-    return true;
-
-}
 std::string FileVariable::to_str() {
     return "<FileVariable>";
 }

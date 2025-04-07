@@ -40,6 +40,7 @@ class Instruction {
 public:
     Instruction();
     Instruction(Operation _op, std::vector<std::shared_ptr<Instruction>> _instructions);
+    Instruction(Variable _var);
     Instruction(const Token &_token);
     static Instruction fromTokenList(const TokenList &tokens);
     static Instruction fromTokenRange(std::vector<Token>::const_iterator &current, std::vector<Token>::const_iterator &end, TokenType endToken);

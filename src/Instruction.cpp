@@ -52,6 +52,11 @@ Instruction::Instruction(Operation _op, std::vector<std::shared_ptr<Instruction>
     , params(_params)
     {}
 
+Instruction::Instruction(Variable _var)
+    : op(Operation::RET_VALUE)
+    , var(_var)
+    {}
+
 Instruction::Instruction(const Token &_token)
 {
     switch (_token.type) {

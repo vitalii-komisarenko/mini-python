@@ -42,4 +42,6 @@ $(LIB_VARIABLE_OBJECTS): build/common/%.o: variable/%.cpp
 	$< \
 	-I . \
 	-I .. \
+	-I src \
+	-I variable \
 	-o $@

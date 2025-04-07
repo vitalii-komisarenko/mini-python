@@ -1,4 +1,5 @@
 #include "Variable.h"
+#include "Instruction.h"
 
 #include <stdexcept>
 
@@ -17,6 +18,19 @@ const FunctionType& FunctionVariable::get_value() {
 }
 
 Variable FunctionVariable::call(const InstructionParams &params, Scope *scope) {
+    return value(params, scope);
+}
+
+Variable FunctionVariable::call(Variable &param, Scope *scope) {
+    InstructionParams params;
+    params.push_back(std::make_shared<Instruction>(param));
+    return value(params, scope);
+}
+
+Variable FunctionVariable::call(Variable &param1, Variable &param2, Scope *scope) {
+    InstructionParams params;
+    params.push_back(std::make_shared<Instruction>(param1));
+    params.push_back(std::make_shared<Instruction>(param2));
     return value(params, scope);
 }
 

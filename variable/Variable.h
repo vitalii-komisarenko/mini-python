@@ -401,6 +401,8 @@ public:
     VariableType get_type() override;
     FunctionType& get_value();
     Variable call(const InstructionParams &params, Scope *scope);
+    Variable call(Variable &param, Scope *scope);
+    Variable call(Variable &param1, Variable &param2, Scope *scope);
 
     Variable add(const Variable &other) override;
     Variable sub(const Variable &other) override;

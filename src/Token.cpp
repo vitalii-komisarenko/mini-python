@@ -282,8 +282,18 @@ TokenList tokenizeLine(const std::string &line) {
             break;
         }
         case '0' ... '9':
-        case '.':
             result.push_back(tokenizeNumber(ss));
+            break;
+        case '.':
+            discardCharacter(ss);
+            switch (ss.peek()) {
+            case '0' ... '9':
+                ss.putback('.');
+                result.push_back(tokenizeNumber(ss));
+                break;
+            default:
+                result.push_back(Token(TokenType::OPERATOR, "."));
+            }
             break;
         case 'a' ... 'z':
         case 'A' ... 'Z':

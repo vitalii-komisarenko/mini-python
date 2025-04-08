@@ -12,6 +12,8 @@ std::string opToString(Operation op) {
         return "NONE";
     case Operation::ASSIGN:
         return "ASSIGN";
+    case Operation::ATTR:
+        return "ATTR";
     case Operation::ADD:
         return "ADD";
     case Operation::SUB:
@@ -106,6 +108,20 @@ Variable Instruction::execute(Scope *scope) {
         }
         scope_with_variable->vars.set(var_name, params[1]->execute(scope));
         return nullptr; // TODO
+    }
+    case Operation::ATTR: {
+        CHECK_PARAM_SIZE(2);
+        auto var = params[0]->var;
+        auto var_name = var->to_str();
+        auto attr_name = params[1]->var->to_str();
+        auto scope_with_variable = scope->scopeWithVariable(var_name);
+        if (!scope_with_variable) {
+            scope_with_variable = scope->parentScope.lock()->impl;
+        }
+        if (!var->has_attr(attr_name)) {
+            var->set_attr(attr_name, NONE);
+        }
+        return var->get_attr(attr_name);
     }
     case Operation::ADD: {
         CHECK_PARAM_SIZE(2);
@@ -252,6 +268,7 @@ Instruction Instruction::fromTokenRange(std::vector<Token>::const_iterator &curr
         }
     };
 
+    groupByOperator({{".", Operation::ATTR}});
     groupByOperator({{"**", Operation::POW}});
     groupByOperator({{"*", Operation::MUL},
                      {"/", Operation::DIV},

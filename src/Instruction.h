@@ -15,6 +15,7 @@ using InstructionParams = std::vector<std::shared_ptr<Instruction>>;
 enum class Operation {
     NONE,
     ASSIGN,
+    ATTR,
     ADD,
     SUB,
     MUL,

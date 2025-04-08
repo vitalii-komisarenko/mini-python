@@ -1,22 +1,27 @@
 #include "TokenToVariable.h"
 
-#include "Test.h"
+#include <gtest/gtest.h>
+
+using namespace MiniPython;
 
 #define TOKEN(TYPE, VALUE) \
     parseTokenToVariable({TokenType::TYPE, VALUE})
 
-void test_token2variable() {
-    CHECK_VAR(TOKEN(STRING, "str"), STRING, String, "str");
-    CHECK_VAR(TOKEN(NUMBER, "0"), INT, Int, 0);
-    CHECK_VAR(TOKEN(NUMBER, "0.0"), FLOAT, Float, 0);
-    CHECK_VAR(TOKEN(NUMBER, ".0"), FLOAT, Float, 0);
-    CHECK_VAR(TOKEN(NUMBER, "0."), FLOAT, Float, 0);
-    CHECK_VAR(TOKEN(NUMBER, "0.e0"), FLOAT, Float, 0);
-    CHECK_VAR(TOKEN(NUMBER, "0.e-0"), FLOAT, Float, 0);
-    CHECK_VAR(TOKEN(NUMBER, "0.E+0"), FLOAT, Float, 0);
-    CHECK_VAR(TOKEN(NUMBER, "1e4"), FLOAT, Float, 10000);
-    CHECK_VAR(TOKEN(NUMBER, "123456e-01"), FLOAT, Float, 12345.6);
-    CHECK_VAR(TOKEN(NUMBER, "1000000000000000"), INT, Int, 1000000000000000);
-    CHECK_VAR(TOKEN(NUMBER, "0o123456"), INT, Int, 42798);
-    CHECK_VAR(TOKEN(NUMBER, "0xFFFFFFFF"), INT, Int, 4294967295);
+class TokenToVariableTest: public testing::Test {
+};
+
+TEST_F(TokenToVariableTest, token_to_variable) {
+    EXPECT_TRUE(TOKEN(STRING, "str")->strictly_equal(NEW_STRING("str")));
+    EXPECT_TRUE(TOKEN(NUMBER, "0")->strictly_equal(NEW_INT(0)));
+    EXPECT_TRUE(TOKEN(NUMBER, "0.0")->strictly_equal(NEW_FLOAT(0)));
+    EXPECT_TRUE(TOKEN(NUMBER, ".0")->strictly_equal(NEW_FLOAT(0)));
+    EXPECT_TRUE(TOKEN(NUMBER, "0.")->strictly_equal(NEW_FLOAT(0)));
+    EXPECT_TRUE(TOKEN(NUMBER, "0.e0")->strictly_equal(NEW_FLOAT(0)));
+    EXPECT_TRUE(TOKEN(NUMBER, "0.e-0")->strictly_equal(NEW_FLOAT(0)));
+    EXPECT_TRUE(TOKEN(NUMBER, "0.E+0")->strictly_equal(NEW_FLOAT(0)));
+    EXPECT_TRUE(TOKEN(NUMBER, "1e4")->strictly_equal(NEW_FLOAT(10000)));
+    EXPECT_TRUE(TOKEN(NUMBER, "123456e-01")->strictly_equal(NEW_FLOAT(12345.6)));
+    EXPECT_TRUE(TOKEN(NUMBER, "1000000000000000")->strictly_equal(NEW_INT(1000000000000000)));
+    EXPECT_TRUE(TOKEN(NUMBER, "0o123456")->strictly_equal(NEW_INT(42798)));
+    EXPECT_TRUE(TOKEN(NUMBER, "0xFFFFFFFF")->strictly_equal(NEW_INT(4294967295)));
 }

@@ -21,10 +21,56 @@ static inline void discardCharacter(std::stringstream &ss) {
     ss.get();
 }
 
+static Token tokenizeStringMultiline(std::stringstream &ss) {
+    char quote = ss.get();
+    int quote_count = 0;
+    std::string result;
+    char ch;
+
+    while (ss && (ch = ss.get())) {
+        if (ch == quote) {
+            if (++quote_count == 3) {
+                break;
+            }
+        }
+        else {
+            quote_count = 0;
+        }
+
+        if (ch == '\\') {
+            if (ss.eof()) {
+                throw std::runtime_error("End of stream after backslash when reading string");
+            }
+            switch(ss.get()) {
+            case 't': { result += "\t"; break; }
+            case 'n': { result += "\n"; break; }
+            case 'r': { result += "\r"; break; }
+            case '"': { result += "\""; break; }
+            case '\'': { result += "'"; break; }
+            case '\\': { result += "\\"; break; }
+            }
+        }
+        else {
+            result += ch;
+        }
+    }
+
+    if (quote_count != 3) {
+        throw std::runtime_error("End of stream when looking for \"\"\" or '''");
+    }
+    return Token(TokenType::STRING, result.substr(0, result.size() - 2));
+}
+
 static Token tokenizeString(std::stringstream &ss) {
     std::string result;
 
     char quote = ss.get();
+
+    char char2 = ss.get();
+    if ((char2 == quote) && (ss.peek() == quote)) {
+        return tokenizeStringMultiline(ss);
+    }
+    ss.putback(char2);
 
     char ch;
     while (ss && (ch = ss.get())) {

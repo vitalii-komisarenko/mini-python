@@ -21,6 +21,7 @@ enum class VariableType {
     DICT,
     FUNCTION,
     FILE,
+    MODULE,
 };
 
 #define NEW_BOOL(value) ((value) ? TRUE : FALSE)
@@ -364,4 +365,11 @@ public:
 private:
     FunctionType& value;
 };
+
+class ModuleVariable: public GenericVariable {
+public:
+    VariableType get_type() override { return VariableType::MODULE; }
+    std::string to_str() override { return "<module>"; }
+};
+
 } // namespace MiniPython

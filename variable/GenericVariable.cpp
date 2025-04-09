@@ -14,6 +14,7 @@ std::string GenericVariable::get_class_name() {
         {VariableType::SET, "set"},
         {VariableType::DICT, "dict"},
         {VariableType::FUNCTION, "function"},
+        {VariableType::MODULE, "module"},
     };
 
     return mapping.find(get_type()) == mapping.end()

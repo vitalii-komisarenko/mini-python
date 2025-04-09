@@ -2,6 +2,7 @@
 #include "LineLevelParser.h"
 #include "Scope.h"
 #include "StandardFunctions.h"
+#include "modules/Module.h"
 
 #include <fstream>
 
@@ -28,6 +29,11 @@ void runFromString(const std::string &fileContent) {
     scope->setVariable("set", std::make_shared<FunctionVariable>(StandardFunctions::set));
     scope->setVariable("frozenset", std::make_shared<FunctionVariable>(StandardFunctions::set));
     scope->setVariable("eval", std::make_shared<FunctionVariable>(StandardFunctions::eval));
+
+    scope->setVariable("math", std::static_pointer_cast<GenericVariable>(std::make_shared<math>()));
+    scope->setVariable("os", std::static_pointer_cast<GenericVariable>(std::make_shared<os>()));
+    scope->setVariable("sys", std::static_pointer_cast<GenericVariable>(std::make_shared<sys>()));
+    scope->setVariable("time", std::static_pointer_cast<GenericVariable>(std::make_shared<time>()));
 
     scope->execute();
 }

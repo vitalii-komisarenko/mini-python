@@ -46,6 +46,7 @@ build_all: $(TEST_OBJECTS) $(TEST_AUTOGEN_OBJECTS)
 	g++ \
 	build/*.o \
 	../build/common/*.o \
+	../build/modules/*.o \
 	-I ../src \
 	-I . \
 	-I .. \

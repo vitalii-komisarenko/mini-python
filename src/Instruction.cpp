@@ -111,13 +111,13 @@ Variable Instruction::execute(Scope *scope) {
     }
     case Operation::ATTR: {
         CHECK_PARAM_SIZE(2);
-        auto var = params[0]->var;
-        auto var_name = var->to_str();
+        auto var_name = params[0]->var->to_str();
         auto attr_name = params[1]->var->to_str();
         auto scope_with_variable = scope->scopeWithVariable(var_name);
         if (!scope_with_variable) {
             scope_with_variable = scope->parentScope.lock()->impl;
         }
+        auto var = scope_with_variable->vars.get(var_name);
         if (!var->has_attr(attr_name)) {
             var->set_attr(attr_name, NONE);
         }

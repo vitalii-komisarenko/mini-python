@@ -1,5 +1,6 @@
 #include "Instruction.h"
 #include "Scope.h"
+#include "StringFormatting.h"
 #include "TokenToVariable.h"
 
 #include <stdexcept>
@@ -34,6 +35,8 @@ std::string opToString(Operation op) {
         return "VAR_NAME";
     case Operation::RET_VALUE:
         return "RET_VALUE";
+    case Operation::FSTRING:
+        return "FSTRING";
     case Operation::TOKEN:
         return "TOKEN";
     case Operation::IN_ROUND_BRACKETS:
@@ -174,6 +177,11 @@ Variable Instruction::execute(Scope *scope) {
         auto func = std::dynamic_pointer_cast<FunctionVariable>(params[0]->execute(scope));
         return func->call((const InstructionParams)(params[1]->params), scope);
     }
+    case Operation::FSTRING: {
+        CHECK_PARAM_SIZE(1);
+        std::string str = FStringFormatter(params[0]->execute(scope)->to_str()).format(scope);
+        return NEW_STRING(str);
+    }
     }
     return std::make_shared<NoneVariable>();
 }
@@ -229,6 +237,15 @@ Instruction Instruction::fromTokenRange(std::vector<Token>::const_iterator &curr
     for (size_t i = 1; i < result.params.size(); ++i) {
         if ((result.params[i-1]->token.type == TokenType::COMMA) && ((result.params[i]->token.value == "-") || (result.params[i]->token.value == "+"))) {
             result.params.insert(result.params.begin() + i, std::make_shared<Instruction>(Token(TokenType::NUMBER, "0")));
+        }
+    }
+
+    // f-string
+    for (size_t i = 0; i < result.params.size(); ++i) {
+        if ((result.params[i]->op == Operation::TOKEN) && (result.params[i]->token.type == TokenType::FSTRING)) {
+            result.params[i]->op = Operation::FSTRING;
+            Variable param = NEW_STRING(result.params[i]->token.value);
+            result.params[i]->params.push_back(std::make_shared<Instruction>(param));
         }
     }
 

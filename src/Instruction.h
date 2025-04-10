@@ -26,6 +26,7 @@ enum class Operation {
     CALL,
     VAR_NAME,
     RET_VALUE,
+    FSTRING,
     // temporary tokens during parsing
     TOKEN,
     IN_ROUND_BRACKETS,

@@ -147,22 +147,29 @@ FStringFormatter::FStringFormatter(const std::string &format) {
     while (ss) {
         std::string value;
         char ch = ss.peek();
+        if (ss.eof()) {
+            break;
+        }
         if (ch == '{') {
             ss.get();
             while (ss && (ch = ss.get())) {
                 if (ch == '}') {
                     elements.push_back(FormatElement(FormatElementType::INTERPOLATION, value));
+                    value = "";
                     break;
                 }
                 value += ch;
             }
         }
         else {
-            while (ss && (ch = ss.get())) {
+            while (ss && (ch = ss.get()) && (!ss.eof())) {
                 if (ch == '{') {
+                    ss.putback('{');
                     elements.push_back(FormatElement(FormatElementType::EXACT_STRING, value));
+                    value = "";
                     break;
                 }
+                value += ch;
             }
             if (value.size()) { // to handle EOF
                 elements.push_back(FormatElement(FormatElementType::EXACT_STRING, value));

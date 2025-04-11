@@ -11,3 +11,5 @@ print(f'{x}{y}')
 print(f'''{x} {y}''')
 z = 30
 print(f'x{x}{y} {z} {x}')
+print('\x62')
+print('\u0062')

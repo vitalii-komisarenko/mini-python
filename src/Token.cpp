@@ -21,6 +21,54 @@ static inline void discardCharacter(std::stringstream &ss) {
     ss.get();
 }
 
+static int decodeHexDigit(char ch) {
+    if (('0' <= ch) && (ch <= '9')) {
+        return ch - '0';
+    }
+    if (('a' <= ch) && (ch <= 'f')) {
+        return ch + 10 - 'a';
+    }
+    if (('A' <= ch) && (ch <= 'F')) {
+        return ch + 10 - 'A';
+    }
+    throw std::runtime_error("Not a hex digit");
+}
+
+static char tokenizeHexEncodedChar(std::stringstream &ss) {
+    char ch1 = ss.get();
+    char ch2 = ss.get();
+    return 16 * decodeHexDigit(ch1) + decodeHexDigit(ch2);
+}
+
+static std::string tokenizeEscapedCharacter(std::stringstream &ss) {
+    std::string result;
+    char ch2;
+
+    char ch = ss.get();
+    switch(ch) {
+        case 't': return "\t";
+        case 'n': return "\n";
+        case 'r': return "\r";
+        case '"': return "\"";
+        case '\'': return "'";
+        case '\\': return "\\";
+        case 'u':
+        case 'U':
+            ch2 = tokenizeHexEncodedChar(ss);
+            if (ch2) {
+                result += ch2;
+            }
+            // fall through
+        case 'x':
+        case 'X':
+            result += tokenizeHexEncodedChar(ss);
+            return result;
+        default: {
+            return std::string() + ch;
+        }
+    }
+}
+
 static Token tokenizeStringMultiline(std::stringstream &ss) {
     char quote = ss.get();
     int quote_count = 0;
@@ -41,14 +89,7 @@ static Token tokenizeStringMultiline(std::stringstream &ss) {
             if (ss.eof()) {
                 throw std::runtime_error("End of stream after backslash when reading string");
             }
-            switch(ss.get()) {
-            case 't': { result += "\t"; break; }
-            case 'n': { result += "\n"; break; }
-            case 'r': { result += "\r"; break; }
-            case '"': { result += "\""; break; }
-            case '\'': { result += "'"; break; }
-            case '\\': { result += "\\"; break; }
-            }
+            result += tokenizeEscapedCharacter(ss);
         }
         else {
             result += ch;
@@ -82,14 +123,7 @@ static Token tokenizeString(std::stringstream &ss) {
             if (ss.eof()) {
                 throw std::runtime_error("End of stream after backslash when reading string");
             }
-            switch(ss.get()) {
-            case 't': { result += "\t"; break; }
-            case 'n': { result += "\n"; break; }
-            case 'r': { result += "\r"; break; }
-            case '"': { result += "\""; break; }
-            case '\'': { result += "'"; break; }
-            case '\\': { result += "\\"; break; }
-            }
+            result += tokenizeEscapedCharacter(ss);
         }
         else {
             result += ch;

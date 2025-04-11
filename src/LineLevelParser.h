@@ -9,6 +9,9 @@ namespace MiniPython {
 using Lines = std::vector<std::string>;
 
 // Internal functions - exported only to be covered by tests
+std::string replace_all(const std::string &input,
+                        const std::string &pattern,
+                        const std::string &repalcement);
 Lines stringToLines(const std::string &data);
 Lines processLineContinuation(const Lines &lines);
 bool lineHasCode(const std::string &line);

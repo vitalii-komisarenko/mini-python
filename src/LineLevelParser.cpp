@@ -4,6 +4,21 @@
 
 namespace MiniPython {
 
+std::string replace_all(const std::string &input,
+                        const std::string &pattern,
+                        const std::string &repalcement) {
+    std::string result;
+    int current_pos = 0;
+    int found_pos;
+    while ((found_pos = input.find(pattern, current_pos)) != std::string::npos) {
+        result += input.substr(current_pos, found_pos - current_pos);
+        result += repalcement;
+        current_pos = found_pos + pattern.size();
+    }
+    result += input.substr(current_pos);
+    return result;
+}
+
 Lines stringToLines(const std::string &data) {
     Lines result;
 

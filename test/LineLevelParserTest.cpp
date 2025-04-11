@@ -2,6 +2,7 @@
 #include "Test.h"
 
 #include <iostream>
+#include <gtest/gtest.h>
 
 #define RUN_TEST(function) \
     if (!function()) { \
@@ -10,6 +11,44 @@
 
 using namespace MiniPython;
 
+class ReplaceAllTest: public testing::Test {
+};
+
+TEST_F(ReplaceAllTest, empty_str) {
+    EXPECT_EQ(replace_all("", "a", "b"), "");
+}
+
+TEST_F(ReplaceAllTest, same_size) {
+    EXPECT_EQ(replace_all("abcd", "a", "b"), "bbcd");
+}
+
+TEST_F(ReplaceAllTest, different_size_1) {
+    EXPECT_EQ(replace_all("abcd", "a", "bcd"), "bcdbcd");
+}
+
+TEST_F(ReplaceAllTest, different_size_2) {
+    EXPECT_EQ(replace_all("abcd", "abc", "e"), "ed");
+}
+
+TEST_F(ReplaceAllTest, replace_at_end) {
+    EXPECT_EQ(replace_all("abcd", "bcd", "e"), "ae");
+}
+
+TEST_F(ReplaceAllTest, replace_full_str) {
+    EXPECT_EQ(replace_all("abcd", "abcd", "e"), "e");
+}
+
+TEST_F(ReplaceAllTest, multiple_matches) {
+    EXPECT_EQ(replace_all("abcdaeae", "ae", "f"), "abcdff");
+}
+
+TEST_F(ReplaceAllTest, overlapping_matches) {
+    EXPECT_EQ(replace_all("aaaaaaa", "aa", "f"), "fffa");
+}
+
+TEST_F(ReplaceAllTest, ignore_accidently_created_matches) {
+    EXPECT_EQ(replace_all("aaaaaaa", "aa", "a"), "aaaa");
+}
 
 bool test_stringToLines_no_newline_at_the_end() {
     std::string data = "aaa\nbbb\nccc";
@@ -200,8 +239,8 @@ static bool test_linetree_tree_line_no_indent() {
 }
 
 static bool test_linetree_simple_indent() {
-    LineTree lineTree{{"if a == b:",
-                       "    print('yes')"}};
+    LineTree lineTree{Lines({"if a == b:",
+                       "    print('yes')"})};
 
     MY_ASSERT_EQUAL(lineTree.children.size(), 1);
 

@@ -9,11 +9,7 @@
 namespace MiniPython {
 
 void runFromString(const std::string &fileContent) {
-    Lines lines = stringToLines(fileContent);
-    lines = processLineContinuation(lines);
-    lines = removeLinesWithoutCode(lines);
-
-    LineTree lineTree(lines);
+    LineTree lineTree(fileContent);
     auto scope = makeScope(lineTree);
 
     scope->setVariable("print", std::make_shared<FunctionVariable>(StandardFunctions::print));

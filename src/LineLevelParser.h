@@ -17,6 +17,7 @@ Lines removeLinesWithoutCode(const Lines &lines);
 struct LineTree {
     LineTree(const Lines &line);
     LineTree(Lines::const_iterator &curr, const Lines::const_iterator &end, const std::string &parentIndentation);
+    LineTree(const std::string &file_content);
     std::string indentation;
     std::string value;
     std::vector<std::shared_ptr<LineTree>> children;

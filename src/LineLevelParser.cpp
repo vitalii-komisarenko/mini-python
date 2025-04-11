@@ -141,4 +141,13 @@ LineTree::LineTree(Lines::const_iterator &curr, const Lines::const_iterator &end
     }
 }
 
+static Lines prepare_lines(const std::string &file_content) {
+    Lines lines = stringToLines(file_content);
+    lines = processLineContinuation(lines);
+    lines = removeLinesWithoutCode(lines);
+    return lines;
+}
+
+LineTree::LineTree(const std::string &file_content): LineTree(prepare_lines(file_content)) {}
+
 } // namespace MiniPython

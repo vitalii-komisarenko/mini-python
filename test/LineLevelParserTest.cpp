@@ -1,13 +1,6 @@
 #include "LineLevelParser.h"
-#include "Test.h"
 
-#include <iostream>
 #include <gtest/gtest.h>
-
-#define RUN_TEST(function) \
-    if (!function()) { \
-        std::cerr << #function << " failed\n"; \
-    }
 
 using namespace MiniPython;
 
@@ -50,90 +43,82 @@ TEST_F(ReplaceAllTest, ignore_accidently_created_matches) {
     EXPECT_EQ(replace_all("aaaaaaa", "aa", "a"), "aaaa");
 }
 
-bool test_stringToLines_no_newline_at_the_end() {
-    std::string data = "aaa\nbbb\nccc";
+class StringToLinesTest: public testing::Test {
+};
 
-    Lines expected = {"aaa", "bbb", "ccc"};
-    Lines actual   = stringToLines(data);
-
-    return expected == actual;
+TEST_F(StringToLinesTest, no_newline_at_the_end) {
+    EXPECT_EQ(stringToLines("aaa\nbbb\nccc"), Lines({"aaa", "bbb", "ccc"}));
 }
 
-bool test_stringToLines_has_newline_at_the_end() {
-    std::string data = "aaa\nbbb\nccc\n";
+TEST_F(StringToLinesTest, newline_at_the_end) {
+    EXPECT_EQ(stringToLines("aaa\nbbb\nccc\n"), Lines({"aaa", "bbb", "ccc", ""}));
 
-    Lines expected = {"aaa", "bbb", "ccc", ""};
-    Lines actual   = stringToLines(data);
-
-    return expected == actual;
 }
 
-bool test_lineContinuation_dangling_backslash_at_the_end() {
+class ProcessLineContinuationTest: public testing::Test {
+};
+
+TEST_F(ProcessLineContinuationTest, dangling_backslash_at_the_end) {
     std::string data = 1 + R"(
 aaa
 bbb\
 ccc
 ddd\)";
-    Lines expected = {"aaa", "bbbccc", "ddd"};
-    Lines actual   = processLineContinuation(stringToLines(data));
-
-    return expected == actual;
+    EXPECT_EQ(processLineContinuation(stringToLines(data)), Lines({"aaa", "bbbccc", "ddd"}));
 }
 
-bool test_lineContinuation_no_dangling_backslash_at_the_end() {
+TEST_F(ProcessLineContinuationTest, no_dangling_backslash_at_the_end) {
     std::string data = 1 + R"(
 aaa
 bbb\
 ccc
 ddd)";
-    Lines expected = {"aaa", "bbbccc", "ddd"};
-    Lines actual   = processLineContinuation(stringToLines(data));
-
-    return expected == actual;
+    EXPECT_EQ(processLineContinuation(stringToLines(data)), Lines({"aaa", "bbbccc", "ddd"}));
 }
 
-bool test_lineHasCode_empty() {
-    return !lineHasCode("");
+class LineHasCodeTest: public testing::Test {
+};
+
+TEST_F(LineHasCodeTest, empty) {
+    EXPECT_FALSE(lineHasCode(""));
 }
 
-bool test_lineHasCode_space_only() {
-    return !lineHasCode(" ");
+TEST_F(LineHasCodeTest, space_only) {
+    EXPECT_FALSE(lineHasCode(" "));
 }
 
-bool test_lineHasCode_tab_only() {
-    return !lineHasCode("\t");
+TEST_F(LineHasCodeTest, tab_only) {
+    EXPECT_FALSE(lineHasCode("\t"));
 }
 
-bool test_lineHasCode_comment_at_the_beginning() {
-    return !lineHasCode("# blah blah blah");
+TEST_F(LineHasCodeTest, comment_at_the_beginning) {
+    EXPECT_FALSE(lineHasCode("# blah blah blah"));
 }
 
-bool test_lineHasCode_comment_after_whitespace() {
-    return !lineHasCode("   # comment");
+TEST_F(LineHasCodeTest, comment_after_whitespace) {
+    EXPECT_FALSE(lineHasCode("   # comment"));
 }
 
-bool test_lineHasCode_code_at_the_beginning() {
-    return lineHasCode("a = b + c");
+TEST_F(LineHasCodeTest, code_at_the_beginning) {
+    EXPECT_TRUE(lineHasCode("a = b + c"));
 }
 
-bool test_lineHasCode_code_after_whitespace() {
-    return lineHasCode("   \t  a = None");
+TEST_F(LineHasCodeTest, code_after_whitespace) {
+    EXPECT_TRUE(lineHasCode("   \t  a = None"));
 }
 
-bool test_lineHasCode_comment_after_code() {
-    return lineHasCode("  x = y # comment");
+TEST_F(LineHasCodeTest, comment_after_code) {
+    EXPECT_TRUE(lineHasCode("  x = y # comment"));
 }
 
-bool test_removeLinesWithoutCode_no_code() {
-    Lines lines = {};
+class RemoveLinesWithoutCodeTest: public testing::Test {
+};
 
-    Lines expected = {};
-    Lines actual   = removeLinesWithoutCode(lines);
-
-    return expected == actual;
+TEST_F(RemoveLinesWithoutCodeTest, no_code) {
+    EXPECT_EQ(removeLinesWithoutCode({}), Lines({}));
 }
 
-bool test_removeLinesWithoutCode_comment_at_the_beginning() {
+TEST_F(RemoveLinesWithoutCodeTest, comment_at_the_beginning) {
     Lines lines = {
         "# this functions adds two numbers",
         "def add(a, b):",
@@ -145,12 +130,10 @@ bool test_removeLinesWithoutCode_comment_at_the_beginning() {
         "    retrun a + b",
     };
 
-    Lines actual = removeLinesWithoutCode(lines);
-
-    return expected == actual;
+    EXPECT_EQ(removeLinesWithoutCode(lines), expected);
 }
 
-bool test_removeLinesWithoutCode_trailing_empty_line() {
+TEST_F(RemoveLinesWithoutCodeTest, trailing_empty_line) {
     Lines lines = {
         "def add(a, b):",
         "    retrun a + b",
@@ -162,12 +145,10 @@ bool test_removeLinesWithoutCode_trailing_empty_line() {
         "    retrun a + b",
     };
 
-    Lines actual = removeLinesWithoutCode(lines);
-
-    return expected == actual;
+    EXPECT_EQ(removeLinesWithoutCode(lines), expected);
 }
 
-bool test_removeLinesWithoutCode_mixed_example() {
+TEST_F(RemoveLinesWithoutCodeTest, mixed_example) {
     Lines lines = {
         "",
         "import math",
@@ -190,72 +171,67 @@ bool test_removeLinesWithoutCode_mixed_example() {
         "    print(i)",
     };
 
-    Lines actual = removeLinesWithoutCode(lines);
-
-    return expected == actual;
+    EXPECT_EQ(removeLinesWithoutCode(lines), expected);
 }
 
-static bool test_linetree_empty() {
+class LineTreeTest: public testing::Test {
+};
+
+TEST_F(LineTreeTest, empty) {
     Lines lines = {};
     LineTree lineTree(lines);
 
-    return lineTree.children.size() == 0;
+    EXPECT_EQ(lineTree.children.size(), 0);
 }
 
-static bool test_linetree_one_line_no_indent() {
+TEST_F(LineTreeTest, one_line_no_indent) {
     Lines lines = {"a = b + c"};
     LineTree lineTree(lines);
 
-    MY_ASSERT_EQUAL(lineTree.children.size(), 1);
-    MY_ASSERT_EQUAL(lineTree.children[0]->indentation, "");
-    MY_ASSERT_EQUAL(lineTree.children[0]->value, "a = b + c");
-    MY_ASSERT_EQUAL(lineTree.children[0]->children.size(), 0);
-
-    return true;
+    EXPECT_EQ(lineTree.children.size(), 1);
+    EXPECT_EQ(lineTree.children[0]->indentation, "");
+    EXPECT_EQ(lineTree.children[0]->value, "a = b + c");
+    EXPECT_EQ(lineTree.children[0]->children.size(), 0);
 }
 
-static bool test_linetree_tree_line_no_indent() {
+TEST_F(LineTreeTest, three_lines_no_indent) {
     Lines lines = {"a = b + c",
                    "print('Hello')",
                    "a += 2"};
     LineTree lineTree(lines);
 
-    MY_ASSERT_EQUAL(lineTree.children.size(), 3);
+    EXPECT_EQ(lineTree.children.size(), 3);
 
-    MY_ASSERT_EQUAL(lineTree.children[0]->indentation, "");
-    MY_ASSERT_EQUAL(lineTree.children[0]->value, "a = b + c");
-    MY_ASSERT_EQUAL(lineTree.children[0]->children.size(), 0);
+    EXPECT_EQ(lineTree.children[0]->indentation, "");
+    EXPECT_EQ(lineTree.children[0]->value, "a = b + c");
+    EXPECT_EQ(lineTree.children[0]->children.size(), 0);
 
-    MY_ASSERT_EQUAL(lineTree.children[1]->indentation, "");
-    MY_ASSERT_EQUAL(lineTree.children[1]->value, "print('Hello')");
-    MY_ASSERT_EQUAL(lineTree.children[1]->children.size(), 0);
+    EXPECT_EQ(lineTree.children[1]->indentation, "");
+    EXPECT_EQ(lineTree.children[1]->value, "print('Hello')");
+    EXPECT_EQ(lineTree.children[1]->children.size(), 0);
 
 
-    MY_ASSERT_EQUAL(lineTree.children[2]->indentation, "");
-    MY_ASSERT_EQUAL(lineTree.children[2]->value, "a += 2");
-    MY_ASSERT_EQUAL(lineTree.children[2]->children.size(), 0);
-
-    return true;
+    EXPECT_EQ(lineTree.children[2]->indentation, "");
+    EXPECT_EQ(lineTree.children[2]->value, "a += 2");
+    EXPECT_EQ(lineTree.children[2]->children.size(), 0);
 }
 
-static bool test_linetree_simple_indent() {
+TEST_F(LineTreeTest, simple_indent) {
     LineTree lineTree{Lines({"if a == b:",
                        "    print('yes')"})};
 
-    MY_ASSERT_EQUAL(lineTree.children.size(), 1);
+    EXPECT_EQ(lineTree.children.size(), 1);
 
-    MY_ASSERT_EQUAL(lineTree.children[0]->indentation, "");
-    MY_ASSERT_EQUAL(lineTree.children[0]->value, "if a == b:");
-    MY_ASSERT_EQUAL(lineTree.children[0]->children.size(), 1);
+    EXPECT_EQ(lineTree.children[0]->indentation, "");
+    EXPECT_EQ(lineTree.children[0]->value, "if a == b:");
+    EXPECT_EQ(lineTree.children[0]->children.size(), 1);
 
-    MY_ASSERT_EQUAL(lineTree.children[0]->children[0]->indentation, "    ");
-    MY_ASSERT_EQUAL(lineTree.children[0]->children[0]->value, "print('yes')");
-    MY_ASSERT_EQUAL(lineTree.children[0]->children[0]->children.size(), 0);
-
-    return true;
+    EXPECT_EQ(lineTree.children[0]->children[0]->indentation, "    ");
+    EXPECT_EQ(lineTree.children[0]->children[0]->value, "print('yes')");
+    EXPECT_EQ(lineTree.children[0]->children[0]->children.size(), 0);
 }
 
-static bool test_linetree_big_tree() {
+TEST_F(LineTreeTest, big_tree) {
     Lines lines = {
         "print ('blah')",
         "if x == 3:",
@@ -270,50 +246,15 @@ static bool test_linetree_big_tree() {
     };
     LineTree lineTree(lines);
 
-    MY_ASSERT_EQUAL(lineTree.children.size(), 5);
-    MY_ASSERT_EQUAL(lineTree.children[0]->children.size(), 0);
-    MY_ASSERT_EQUAL(lineTree.children[1]->children.size(), 1);
-    MY_ASSERT_EQUAL(lineTree.children[2]->children.size(), 0);
-    MY_ASSERT_EQUAL(lineTree.children[3]->children.size(), 2);
-    MY_ASSERT_EQUAL(lineTree.children[4]->children.size(), 0);
+    EXPECT_EQ(lineTree.children.size(), 5);
+    EXPECT_EQ(lineTree.children[0]->children.size(), 0);
+    EXPECT_EQ(lineTree.children[1]->children.size(), 1);
+    EXPECT_EQ(lineTree.children[2]->children.size(), 0);
+    EXPECT_EQ(lineTree.children[3]->children.size(), 2);
+    EXPECT_EQ(lineTree.children[4]->children.size(), 0);
 
-    MY_ASSERT_EQUAL(lineTree.children[1]->children[0]->children.size(), 0);
+    EXPECT_EQ(lineTree.children[1]->children[0]->children.size(), 0);
 
-    MY_ASSERT_EQUAL(lineTree.children[3]->children[0]->children.size(), 0);
-    MY_ASSERT_EQUAL(lineTree.children[3]->children[1]->children.size(), 2);
-
-    return true;
-}
-
-void test_line_level_parser() {
-    // stringToLines
-    RUN_TEST(test_stringToLines_no_newline_at_the_end);
-    RUN_TEST(test_stringToLines_has_newline_at_the_end);
-
-    // processLineContinuation
-    RUN_TEST(test_lineContinuation_dangling_backslash_at_the_end);
-    RUN_TEST(test_lineContinuation_no_dangling_backslash_at_the_end);
-
-    // lineHasCode
-    RUN_TEST(test_lineHasCode_empty);
-    RUN_TEST(test_lineHasCode_space_only);
-    RUN_TEST(test_lineHasCode_tab_only);
-    RUN_TEST(test_lineHasCode_comment_at_the_beginning);
-    RUN_TEST(test_lineHasCode_comment_after_whitespace);
-    RUN_TEST(test_lineHasCode_code_at_the_beginning);
-    RUN_TEST(test_lineHasCode_code_after_whitespace);
-    RUN_TEST(test_lineHasCode_comment_after_code);
-
-    // removeLinesWithoutCode
-    RUN_TEST(test_removeLinesWithoutCode_no_code);
-    RUN_TEST(test_removeLinesWithoutCode_comment_at_the_beginning);
-    RUN_TEST(test_removeLinesWithoutCode_trailing_empty_line);
-    RUN_TEST(test_removeLinesWithoutCode_mixed_example);
-
-    // LineTree
-    RUN_TEST(test_linetree_empty);
-    RUN_TEST(test_linetree_one_line_no_indent);
-    RUN_TEST(test_linetree_tree_line_no_indent);
-    RUN_TEST(test_linetree_simple_indent);
-    RUN_TEST(test_linetree_big_tree);
+    EXPECT_EQ(lineTree.children[3]->children[0]->children.size(), 0);
+    EXPECT_EQ(lineTree.children[3]->children[1]->children.size(), 2);
 }

@@ -1,6 +1,6 @@
 #include "LineLevelParser.h"
 
-#include <iostream>
+#include <stdexcept>
 
 namespace MiniPython {
 
@@ -57,8 +57,7 @@ Lines processLineContinuation(const Lines &lines) {
 
     // last line expects continuation
     if (prev_line.size() > 0) {
-        std::cerr << "Last line expects continuation (ends with '\\')\n";
-        result.push_back(prev_line);
+        throw std::runtime_error("Last line expects continuation (ends with '\\')");
     }
 
     return result;

@@ -64,7 +64,7 @@ aaa
 bbb\
 ccc
 ddd\)";
-    EXPECT_EQ(processLineContinuation(stringToLines(data)), Lines({"aaa", "bbbccc", "ddd"}));
+    EXPECT_ANY_THROW(processLineContinuation(stringToLines(data)));
 }
 
 TEST_F(ProcessLineContinuationTest, no_dangling_backslash_at_the_end) {

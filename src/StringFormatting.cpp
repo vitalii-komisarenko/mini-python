@@ -126,6 +126,25 @@ std::string interpolate_value(const std::string &format, Variable var) {
 }
 
 std::string PercentFormatter::format(const std::vector<Variable> &variables) {
+    size_t variables_required = 0;
+    for (const auto& elem : elements) {
+        if (elem.type == FormatElementType::INTERPOLATION) {
+            ++variables_required;
+        }
+    }
+
+    if ((variables_required == 0) && (variables.size() == 1) && (variables[0]->get_type() == VariableType::LIST)) {
+        std::string result;
+        for (const auto& elem : elements) {
+            result += elem.value;
+        }
+        return result;
+    }
+
+    if (variables_required != variables.size()) {
+        throw std::runtime_error(" percent formatting: wrong number of arguments");
+    }
+
     std::string res;
     size_t var_idx = 0;
     for (const auto& elem : elements) {
@@ -133,9 +152,6 @@ std::string PercentFormatter::format(const std::vector<Variable> &variables) {
             res += elem.value;
         }
         else {
-            if (var_idx >= variables.size()) {
-                throw std::runtime_error("percent formatting: not enough variables");
-            }
             res += interpolate_value(elem.value, variables[var_idx++]);
         }
     }

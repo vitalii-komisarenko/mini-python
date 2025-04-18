@@ -16,6 +16,7 @@ enum class VariableType {
     FLOAT,
     COMPLEX,
     STRING,
+    BYTES,
     LIST,
     SET,
     DICT,
@@ -28,6 +29,7 @@ enum class VariableType {
 #define NEW_INT(value) std::make_shared<MiniPython::IntVariable>(value)
 #define NEW_FLOAT(value) std::make_shared<MiniPython::FloatVariable>(value)
 #define NEW_STRING(str) std::make_shared<StringVariable>(str)
+#define NEW_BYTES(str) std::make_shared<Bytes>(str)
 #define NEW_LIST(list) std::make_shared<ListVariable>(list)
 #define NEW_SET(set) std::make_shared<SetVariable>(set)
 
@@ -241,6 +243,25 @@ public:
     bool strictly_equal(const Variable &other) override;
 
     StringType value;
+};
+
+class Bytes: public StringVariable {
+public:
+    Bytes(const StringType &_value);
+
+    VariableType get_type() override;
+    StringType get_value();
+
+    Variable add(const Variable &other) override;
+    Variable mul(const Variable &other) override;
+    Variable mod(const Variable &other) override;
+
+    std::string to_str() override;
+
+    bool equal(const Variable &other) override;
+    bool less(const Variable &other) override;
+
+    bool strictly_equal(const Variable &other) override;
 };
 
 /**

@@ -147,12 +147,12 @@ def generate_for_arithmetic_operation(operation, cpp_variable_method_name, fh):
     print(f"class {test_class_name}: public testing::Test {{")
     print("};")
     print()
+    print(f"TEST_F({test_class_name}, {test_class_name}) {{")
 
     global vars
 
     for v1 in vars:
         for v2 in vars:
-            print(f"TEST_F({test_class_name}, {v1[0]}_{cpp_variable_method_name}_{v2[0]}) {{")
 
             _type = "None"
             res = ""
@@ -161,8 +161,6 @@ def generate_for_arithmetic_operation(operation, cpp_variable_method_name, fh):
 
             except:
                 print(f"    EXPECT_ANY_THROW({v1[0]}->{cpp_variable_method_name}({v2[0]}));")
-                print("}")
-                print()
                 continue
 
             _type = str(type(res)).replace("<class '", "").replace("'>", "")
@@ -175,9 +173,6 @@ def generate_for_arithmetic_operation(operation, cpp_variable_method_name, fh):
                 res = '"' + res + '"'
             elif _type == "complex":
                 # Complex numbers not implemented
-                print("    // Complex numbers not implemented")
-                print("}")
-                print()
                 continue
             elif _type == 'list':
                 # Only empty lists supported in tests
@@ -187,8 +182,8 @@ def generate_for_arithmetic_operation(operation, cpp_variable_method_name, fh):
                 res_str = "VAR(" + _type.capitalize() + ", " + str(res) + ")"
 
             print(f"    EXPECT_TRUE({v1[0]}->{cpp_variable_method_name}({v2[0]})->strictly_equal({res_str}));")
-            print("}")
-            print()
+
+    print("}")
 
     sys.stdout = orig_stdout
 

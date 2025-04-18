@@ -61,8 +61,43 @@ Variable Bytes::mod(const Variable &other) {
     }
 }
 
+static char int_to_hex(int ch) {
+    return (ch <= 9) ? '0' + ch : 'a' + ch - 10;
+}
+
+static std::string char_to_str(unsigned char ch) {
+    if (ch == '\t') {
+        return "\\t";
+    }
+    if (ch == '\n') {
+        return "\\n";
+    }
+    if (ch == '\r') {
+        return "\\r";
+    }
+    if ((ch < 0x20) || (ch > 0x7e)) {
+        return std::string("\\x") + int_to_hex(ch >> 4) + int_to_hex(ch % 16);
+    }
+    return std::string(1, ch);
+}
+
 std::string Bytes::to_str() {
-    return std::string("b'") + Bytes::to_str() + "'";
+    bool has_single_quote = value.find("'") != std::string::npos;
+    bool has_double_quote = value.find("\"") != std::string::npos;
+
+    char quote_type = (has_single_quote && !has_double_quote) ? '"' : '\'';
+
+    std::string between_quotes;
+    for (char ch: value) {
+        if (ch == quote_type) {
+            between_quotes += '\\';
+            between_quotes += ch;
+        }
+        else {
+            between_quotes += char_to_str(ch);
+        }
+    }
+    return std::string("b") + quote_type + between_quotes + quote_type;
 }
 
 bool Bytes::equal(const Variable &other) {

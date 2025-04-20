@@ -305,6 +305,18 @@ Instruction Instruction::fromTokenRange(std::vector<Token>::const_iterator &curr
         result.op = Operation::CALL;
     }
 
+    for (size_t i = 0; i + 1 < result.params.size(); ++i) {
+        if ((result.params[i]->op == Operation::ATTR) && (result.params[i+1]->op == Operation::IN_ROUND_BRACKETS)) {
+            InstructionParams params_for_new_instr;
+            params_for_new_instr.push_back(result.params[i]);
+            params_for_new_instr.push_back(result.params[i+1]);
+
+            auto new_instr = std::make_shared<Instruction>(Operation::CALL, params_for_new_instr);
+            result.params[i] = new_instr;
+            result.params.erase(result.params.begin() + i + 1);
+        }
+    }
+
     if ((result.op == Operation::CALL) && (result.params.size() == 2) && (result.params[1]->op == Operation::IN_ROUND_BRACKETS) && (result.params[1]->params.size() == 1) && (result.params[1]->params[0]->op == Operation::NONE)) {
         result.params[1] = result.params[1]->params[0];
         result.params[1]->op = Operation::IN_ROUND_BRACKETS;

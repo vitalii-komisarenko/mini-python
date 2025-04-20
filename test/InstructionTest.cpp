@@ -227,3 +227,19 @@ TEST_F(InstructionTest, attribute) {
     EXPECT_IS_VAR(instr.params[0]->params[1], "y");
     EXPECT_IS_VALUE(instr.params[1], NEW_INT(5));
 }
+
+TEST_F(InstructionTest, method_call) {
+    // print(a.b(c))
+    auto instr = Instruction::fromTokenList(tokenizeLine("print(a.b(c))"));
+    EXPECT_IS_BINARY_OP(instr, Operation::CALL);
+    EXPECT_IS_VAR(instr.params[0], "print");
+    EXPECT_EQ(instr.params[1]->op, Operation::IN_ROUND_BRACKETS);
+    EXPECT_EQ(instr.params[1]->params.size(), 1);
+    EXPECT_IS_BINARY_OP(instr.params[1]->params[0], Operation::CALL);
+    EXPECT_IS_BINARY_OP(instr.params[1]->params[0]->params[0], Operation::ATTR);
+    EXPECT_IS_VAR(instr.params[1]->params[0]->params[0]->params[0], "a");
+    EXPECT_IS_VAR(instr.params[1]->params[0]->params[0]->params[1], "b");
+    EXPECT_EQ(instr.params[1]->params[0]->params[1]->op, Operation::IN_ROUND_BRACKETS);
+    EXPECT_EQ(instr.params[1]->params[0]->params[1]->params.size(), 1);
+    EXPECT_IS_VAR(instr.params[1]->params[0]->params[1]->params[0], "c");
+}

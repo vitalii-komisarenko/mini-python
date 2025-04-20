@@ -436,4 +436,28 @@ TokenList tokenizeLine(const std::string &line) {
     return result;
 }
 
+static std::string token_type_to_str(TokenType t) {
+    switch(t) {
+    case TokenType::OPERATOR:               return "OPERATOR";
+    case TokenType::IDENTIFIER:             return "IDENTIFIER";
+    case TokenType::STRING:                 return "STRING";
+    case TokenType::FSTRING:                return "FSTRING";
+    case TokenType::NUMBER:                 return "NUBMER";
+    case TokenType::COLON:                  return "COLON";
+    case TokenType::COMMA:                  return "COMMA";
+    case TokenType::OPENING_ROUND_BRACKET:  return "OPENING_ROUND_BRACKET";
+    case TokenType::CLOSING_ROUND_BRACKET:  return "CLOSING_ROUND_BRACKET";
+    case TokenType::OPENING_SQUARE_BRACKET: return "OPENING_SQUARE_BRACKET";
+    case TokenType::CLOSING_SQUARE_BRACKET: return "CLOSING_SQUARE_BRACKET";
+    case TokenType::OPENING_CURLY_BRACKET:  return "OPENING_CURLY_BRACKET";
+    case TokenType::CLOSING_CURLY_BRACKET:  return "CLOSING_CURLY_BRACKET";
+    case TokenType::NONE:                   return "NONE";
+    default:                                return "???";
+    }
+}
+
+std::string Token::debug_string() {
+    return token_type_to_str(type) + " " + value;
+}
+
 }; // namespace MiniPython

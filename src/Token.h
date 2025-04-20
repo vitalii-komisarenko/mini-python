@@ -29,6 +29,8 @@ struct Token {
 
     TokenType type;
     std::string value;
+
+    std::string debug_string();
 };
 
 using TokenList = std::vector<Token>;

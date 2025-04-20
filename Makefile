@@ -1,6 +1,14 @@
 OUTPUT_FILE = mini-python
 DEV_TOOLS_FILE = dev-tools
 
+CPP_FLAGS = \
+	-std=c++23 \
+	-I . \
+	-I .. \
+	-I src \
+	-I variable \
+	-I export
+
 all: app devtools
 
 app:
@@ -31,17 +39,11 @@ app_files: $(LIB_OBJECTS) $(LIB_VARIABLE_OBJECTS)
 $(LIB_OBJECTS): build/common/%.o: src/%.cpp
 	g++ -c \
 	$< \
-	-I src \
-	-I variable \
-	-I . \
-	-I export \
+	${CPP_FLAGS} \
 	-o $@
 
 $(LIB_VARIABLE_OBJECTS): build/common/%.o: variable/%.cpp
 	g++ -c \
+	${CPP_FLAGS} \
 	$< \
-	-I . \
-	-I .. \
-	-I src \
-	-I variable \
 	-o $@

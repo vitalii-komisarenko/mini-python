@@ -49,9 +49,6 @@ build_all: $(TEST_OBJECTS) $(TEST_AUTOGEN_OBJECTS)
 	build/modules/*.o \
 	../build/common/*.o \
 	../build/modules/*.o \
-	-I ../src \
-	-I . \
-	-I .. \
 	-l gtest \
 	-l gmock \
 	-o test
@@ -59,6 +56,7 @@ build_all: $(TEST_OBJECTS) $(TEST_AUTOGEN_OBJECTS)
 $(TEST_OBJECTS): build/%.o: %.cpp
 	g++ -c \
 	$< \
+	-std=c++23 \
 	-I ../src \
 	-I ../variable \
 	-I .. \

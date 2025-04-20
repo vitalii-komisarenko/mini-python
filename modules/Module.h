@@ -2,9 +2,9 @@
 
 #include "variable/Variable.h"
 
-#define PARAM(i) params[i]->execute(scope)
+#define PARAM(i) (params[i]->execute(scope))
 #define PARAM_DEFAULT(i, DEFAULT_VALUE) \
-        (params.size() < i) ? PARAM(i) : DEFAULT_VALUE;
+        ((params.size() < i) ? PARAM(i) : DEFAULT_VALUE)
 
 #define SET_FUNCTION(PYTHON_FUNCTION_NAME, CPP_FUNCTION_NAME) \
         set_attr(PYTHON_FUNCTION_NAME, std::make_shared<FunctionVariable>(CPP_FUNCTION_NAME))
@@ -14,6 +14,8 @@ namespace MiniPython {
 class binascii: public ModuleVariable {
 public:
     binascii();
+
+    static std::string helper_hexlify(const std::string &data, const std::string &sep, int bytes_per_sep);
 };
 
 class math: public ModuleVariable {

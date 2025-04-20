@@ -1,5 +1,6 @@
 #include "Variable.h"
 #include "src/StringFormatting.h"
+#include "Utils.h"
 
 #include <stdexcept>
 
@@ -61,10 +62,6 @@ Variable Bytes::mod(const Variable &other) {
     }
 }
 
-static char int_to_hex(int ch) {
-    return (ch <= 9) ? '0' + ch : 'a' + ch - 10;
-}
-
 static std::string char_to_str(unsigned char ch) {
     if (ch == '\t') {
         return "\\t";
@@ -76,7 +73,7 @@ static std::string char_to_str(unsigned char ch) {
         return "\\r";
     }
     if ((ch < 0x20) || (ch > 0x7e)) {
-        return std::string("\\x") + int_to_hex(ch >> 4) + int_to_hex(ch % 16);
+        return std::string("\\x") + nibble_to_hex(ch >> 4) + nibble_to_hex(ch % 16);
     }
     return std::string(1, ch);
 }

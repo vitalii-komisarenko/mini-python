@@ -73,7 +73,7 @@ static std::string char_to_str(unsigned char ch) {
         return "\\r";
     }
     if ((ch < 0x20) || (ch > 0x7e)) {
-        return std::string("\\x") + nibble_to_hex(ch >> 4) + nibble_to_hex(ch % 16);
+        return "\\x" + byte_to_hex(ch);
     }
     return std::string(1, ch);
 }

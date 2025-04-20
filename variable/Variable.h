@@ -18,6 +18,7 @@ enum class VariableType {
     STRING,
     BYTES,
     LIST,
+    ARRAY,
     SET,
     DICT,
     FUNCTION,
@@ -301,6 +302,14 @@ public:
 };
 
 bool is_tuple(Variable var);
+
+class ArrayVariable: public ListVariable {
+public:
+    ArrayVariable(Variable typecode, ListType _list);
+
+    VariableType get_type() override { return VariableType::ARRAY; }
+    std::string to_str() override;
+};
 
 class SetVariable: public IterableVariable {
 public:

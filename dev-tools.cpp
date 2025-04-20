@@ -21,7 +21,7 @@ int main(int argc, char** argv) {
 
     if (!strcmp(argv[1], "token")) {
         std::string line;
-        while (std::cin >> line) {
+        while (std::getline(std::cin, line)) {
             for (auto& token: tokenizeLine(line)) {
                 std::cout << token.debug_string() << "\n";
             }
@@ -30,7 +30,7 @@ int main(int argc, char** argv) {
 
     if (!strcmp(argv[1], "instr")) {
         std::string line;
-        while (std::cin >> line) {
+        while (std::getline(std::cin, line)) {
             std::cout <<  Instruction::fromTokenList(tokenizeLine(line)).debug_string() << "\n";
         }
     }

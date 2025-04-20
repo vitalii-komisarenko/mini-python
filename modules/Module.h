@@ -11,6 +11,11 @@
 
 namespace MiniPython {
 
+class binascii: public ModuleVariable {
+public:
+    binascii();
+};
+
 class math: public ModuleVariable {
 public:
     math();

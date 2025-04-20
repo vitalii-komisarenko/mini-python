@@ -26,6 +26,7 @@ void runFromString(const std::string &fileContent) {
     scope->setVariable("frozenset", std::make_shared<FunctionVariable>(StandardFunctions::set));
     scope->setVariable("eval", std::make_shared<FunctionVariable>(StandardFunctions::eval));
 
+    scope->setVariable("binascii", std::static_pointer_cast<GenericVariable>(std::make_shared<binascii>()));
     scope->setVariable("math", std::static_pointer_cast<GenericVariable>(std::make_shared<math>()));
     scope->setVariable("os", std::static_pointer_cast<GenericVariable>(std::make_shared<os>()));
     scope->setVariable("sys", std::static_pointer_cast<GenericVariable>(std::make_shared<sys>()));

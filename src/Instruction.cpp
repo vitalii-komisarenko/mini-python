@@ -318,24 +318,33 @@ Instruction Instruction::fromTokenRange(std::vector<Token>::const_iterator &curr
         }
     }
 
-    if ((result.op == Operation::CALL) && (result.params.size() == 2) && (result.params[1]->op == Operation::IN_ROUND_BRACKETS) && (result.params[1]->params.size() == 1) && (result.params[1]->params[0]->op == Operation::NONE)) {
-        result.params[1] = result.params[1]->params[0];
-        result.params[1]->op = Operation::IN_ROUND_BRACKETS;
+    std::function<void(Instruction *instr)> recursivelyParseCommaListInsideBrackets = [&](Instruction *instr) {
+        bool in_brackets = (instr->op == Operation::IN_ROUND_BRACKETS)
+                        || (instr->op == Operation::IN_SQUARE_BRACKETS)
+                        || (instr->op == Operation::IN_CURLY_BRACKETS);
 
-        // Transform param1, <comma>, param2, <comma>, param3, ..., <comma>, paramN --> param1, param2, ..., paramN
-        bool ok = true;
-        for (size_t i = 0; i < result.params[1]->params.size(); ++i) {
-            bool is_comma = result.params[1]->params[i]->op == Operation::TOKEN && result.params[1]->params[i]->token.type == TokenType::COMMA; //value == ",";
-            if ((i % 2) != is_comma) {
-                ok = false;
+        if (in_brackets && (instr->params.size() == 1) && (instr->params[0]->op == Operation::NONE)) {
+            bool ok = true;
+            for (size_t i = 0; i < instr->params[0]->params.size(); ++i) {
+                bool is_comma = instr->params[0]->params[i]->op == Operation::TOKEN && instr->params[0]->params[i]->token.type == TokenType::COMMA; //value == ",";
+                if ((i % 2) != is_comma) {
+                    ok = false;
+                }
+            }
+            if (ok) {
+                for (size_t i = instr->params[0]->params.size() / 2; i > 0; --i) {
+                    instr->params[0]->params.erase(instr->params[0]->params.begin() + 2*i-1);
+                }
+                instr->params = instr->params[0]->params;
             }
         }
-        if (ok) {
-            for (size_t i = result.params[1]->params.size() / 2; i > 0; --i) {
-                result.params[1]->params.erase(result.params[1]->params.begin() + 2*i-1);
-            }
+
+        for (auto param: instr->params) {
+            recursivelyParseCommaListInsideBrackets(param.get());
         }
-    }
+    };
+
+    recursivelyParseCommaListInsideBrackets(&result);
 
     return result;
 }

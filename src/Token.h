@@ -10,6 +10,7 @@ enum class TokenType {
     IDENTIFIER,
     STRING,
     FSTRING,
+    BYTES,
     NUMBER,
     COLON,
     COMMA,

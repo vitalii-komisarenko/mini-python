@@ -71,7 +71,8 @@ Instruction::Instruction(const Token &_token)
         break;
     }
     case TokenType::NUMBER:
-    case TokenType::STRING: {
+    case TokenType::STRING:
+    case TokenType::BYTES: {
         op = Operation::RET_VALUE;
         var = parseTokenToVariable(_token);
         break;

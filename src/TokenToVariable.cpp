@@ -2,15 +2,14 @@
 
 #include <stdexcept>
 
-#define VAR(TYPE, VALUE) \
-    std::static_pointer_cast<GenericVariable>(std::make_shared<TYPE ## Variable>(VALUE))
-
 namespace MiniPython {
 
 Variable parseTokenToVariable(const Token &token) {
     switch (token.type) {
     case TokenType::STRING:
-        return VAR(String, token.value);
+        return NEW_STRING(token.value);
+    case TokenType::BYTES:
+        return NEW_BYTES(token.value);
     case TokenType::NUMBER: {
         // TODO - better type detection
         bool isFloat = (token.value.find('.') != std::string::npos)
@@ -24,7 +23,7 @@ Variable parseTokenToVariable(const Token &token) {
                   || (token.value.find('X') != std::string::npos);
 
         if (isFloat) {
-            return VAR(Float, std::stod(token.value));
+            return NEW_FLOAT(std::stod(token.value));
         }
         else {
             int base = isOct ? 8 : isHex ? 16 : 10;
@@ -32,7 +31,7 @@ Variable parseTokenToVariable(const Token &token) {
             // remove 0x / 0o prefix if needed
             auto str_value = base == 10 ? token.value : token.value.substr(2);
 
-            return VAR(Int, std::stoull(str_value, nullptr, base));
+            return NEW_INT(std::stoull(str_value, nullptr, base));
         }
     }
     default:

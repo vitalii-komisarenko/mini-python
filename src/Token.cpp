@@ -345,15 +345,21 @@ TokenList tokenizeLine(const std::string &line) {
         case '"': {
             Token token_candidate = tokenizeString(ss);
             bool is_fstring = false;
+            bool is_bytes = false;
             if (result.size()) {
                 auto prev_token = result[result.size() - 1];
-                bool has_f = prev_token.value.find('f') != std::string::npos;
-                bool has_F = prev_token.value.find('F') != std::string::npos;
-                is_fstring = (prev_token.type == TokenType::IDENTIFIER) && (has_f || has_F);
+                if (prev_token.type == TokenType::IDENTIFIER) {
+                    is_fstring = prev_token.value.contains('f') || prev_token.value.contains('F');
+                    is_bytes = prev_token.value.contains('b') || prev_token.value.contains('B');
+                }
             }
 
             if (is_fstring) {
                 result[result.size() - 1].type = TokenType::FSTRING;
+                result[result.size() - 1].value = token_candidate.value;
+            }
+            else if (is_bytes) {
+                result[result.size() - 1].type = TokenType::BYTES;
                 result[result.size() - 1].value = token_candidate.value;
             }
             else {
@@ -442,6 +448,7 @@ static std::string token_type_to_str(TokenType t) {
     case TokenType::IDENTIFIER:             return "IDENTIFIER";
     case TokenType::STRING:                 return "STRING";
     case TokenType::FSTRING:                return "FSTRING";
+    case TokenType::BYTES:                  return "BYTES";
     case TokenType::NUMBER:                 return "NUBMER";
     case TokenType::COLON:                  return "COLON";
     case TokenType::COMMA:                  return "COMMA";

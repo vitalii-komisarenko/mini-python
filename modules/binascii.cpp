@@ -29,10 +29,10 @@ std::string binascii::helper_hexlify(const std::string &data, const std::string 
 
 static Variable hexlify(const InstructionParams &params, Scope *scope) {
     auto data = PARAM(0);
-    auto sep = PARAM_DEFAULT(1, NEW_STRING(""));
+    auto sep = PARAM_DEFAULT(1, NEW_BYTES(""));
     auto bytes_per_sep = PARAM_DEFAULT(2, NEW_INT(1));
 
-    return NEW_BYTES(binascii::helper_hexlify(VAR_TO_STR(data), VAR_TO_STR(sep), VAR_TO_INT(bytes_per_sep)));
+    return NEW_BYTES(binascii::helper_hexlify(VAR_TO_BYTES(data), VAR_TO_STR(sep), VAR_TO_INT(bytes_per_sep)));
 }
 
 binascii::binascii() {

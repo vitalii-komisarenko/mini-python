@@ -4,7 +4,7 @@
 
 #define PARAM(i) (params[i]->execute(scope))
 #define PARAM_DEFAULT(i, DEFAULT_VALUE) \
-        ((params.size() < i) ? PARAM(i) : DEFAULT_VALUE)
+        ((i < params.size()) ? (PARAM(i)) : (DEFAULT_VALUE))
 
 #define SET_FUNCTION(PYTHON_FUNCTION_NAME, CPP_FUNCTION_NAME) \
         set_attr(PYTHON_FUNCTION_NAME, std::make_shared<FunctionVariable>(CPP_FUNCTION_NAME))

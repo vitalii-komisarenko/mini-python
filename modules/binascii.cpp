@@ -15,7 +15,7 @@ std::string binascii::helper_hexlify(const std::string &data, const std::string 
     bytes_per_sep = (bytes_per_sep > 0) ? bytes_per_sep : -bytes_per_sep;
 
     for (const char ch: data) {
-        if (bytes_till_sep == 0) {
+        if ((bytes_till_sep == 0) && (bytes_per_sep != 0)) {
             result += sep;
             bytes_till_sep = bytes_per_sep;
         }

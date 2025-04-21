@@ -35,9 +35,16 @@ static Variable hexlify(const InstructionParams &params, Scope *scope) {
     return NEW_BYTES(binascii::helper_hexlify(VAR_TO_BYTES(data), VAR_TO_STR(sep), VAR_TO_INT(bytes_per_sep)));
 }
 
+static Variable unhexlify(const InstructionParams &params, Scope *scope) {
+    auto hexstr = VAR_TO_STR(PARAM(0));
+    return NEW_BYTES(str_from_hex_str(hexstr));
+}
+
 binascii::binascii() {
     SET_FUNCTION("hexlify", hexlify);
     SET_FUNCTION("b2a_hex", hexlify);
+    SET_FUNCTION("unhexlify", unhexlify);
+    SET_FUNCTION("a2b_hex", unhexlify);
 }
 
 } // namespace MiniPython

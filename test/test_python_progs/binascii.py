@@ -1,5 +1,7 @@
 import binascii
 
+# hexlify / b2a_hex
+
 print(binascii.hexlify(b"abcdef"))
 print(binascii.hexlify(b"abcdef", "-"))
 print(binascii.hexlify(b"abcdef", "-", 2))
@@ -22,3 +24,13 @@ print(binascii.b2a_hex(b"abcdefd", "-", 3))
 print(binascii.b2a_hex(b"abcdef", "-", -2))
 print(binascii.b2a_hex(b"abcdefd", "-", -2))
 print(binascii.b2a_hex(b"abcdefd", "-", -3))
+
+# unhexlify / a2b_hex
+
+print(binascii.unhexlify(''))
+print(binascii.unhexlify('0123456789abcdefABCDEF'))
+print(binascii.unhexlify(b'0123456789abcdefABCDEF'))
+
+print(binascii.a2b_hex(''))
+print(binascii.a2b_hex('0123456789abcdefABCDEF'))
+print(binascii.a2b_hex(b'0123456789abcdefABCDEF'))

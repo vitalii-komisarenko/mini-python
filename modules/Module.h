@@ -16,6 +16,8 @@ public:
     binascii();
 
     static std::string helper_hexlify(const std::string &data, const std::string &sep, int bytes_per_sep);
+    static std::string base64_encode(const std::string &input);
+    static std::string base64_decode(const std::string &input);
 };
 
 class math: public ModuleVariable {

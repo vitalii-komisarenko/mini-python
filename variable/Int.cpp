@@ -11,7 +11,7 @@ VariableType IntVariable::get_type() {
     return VariableType::INT;
 }
 
-IntVariable::IntType IntVariable::get_value() {
+IntType IntVariable::get_value() {
     return value;
 }
 
@@ -203,6 +203,10 @@ Variable IntVariable::pow(const Variable &other) {
 
 bool IntVariable::to_bool() {
     return value != 0;
+}
+
+IntType IntVariable::to_int() {
+    return value;
 }
 
 std::string IntVariable::to_str() {

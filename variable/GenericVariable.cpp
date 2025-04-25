@@ -54,6 +54,14 @@ bool GenericVariable::to_bool() {
     return true;
 }
 
+IntType GenericVariable::to_int() {
+    throw std::runtime_error(get_class_name() + " cannot be converted to int");
+}
+
+Variable GenericVariable::to_int_var() {
+    return NEW_INT(to_int());
+}
+
 std::string GenericVariable::to_str() {
     return "<object>";
 }

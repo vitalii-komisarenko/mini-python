@@ -445,7 +445,7 @@ Variable StringVariable::mul(const Variable &other) {
         auto other_casted = std::dynamic_pointer_cast<IntVariable>(other);
 
         std::string result = {};
-        for (IntVariable::IntType i = 0; i < other_casted->get_value(); ++i) {
+        for (IntType i = 0; i < other_casted->get_value(); ++i) {
             result += value;
         }
         return std::make_shared<StringVariable>(result);

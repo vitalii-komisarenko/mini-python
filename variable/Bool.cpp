@@ -53,6 +53,10 @@ bool BoolVariable::to_bool() {
     return value;
 }
 
+IntType BoolVariable::to_int() {
+    return value;
+}
+
 std::string BoolVariable::to_str() {
     return value ? "True" : "False";
 }

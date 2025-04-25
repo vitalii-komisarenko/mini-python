@@ -45,6 +45,7 @@ enum class VariableType {
 class GenericVariable;
 
 using Variable = std::shared_ptr<GenericVariable>;
+using IntType = int64_t;
 using ListType = std::vector<Variable>;
 using FloatType = double;
 
@@ -62,6 +63,8 @@ public:
     virtual Variable int_div(const Variable &other);
 
     virtual bool to_bool();
+    virtual IntType to_int();
+    Variable to_int_var();
     virtual std::string to_str();
 
     virtual bool equal(const Variable &other);
@@ -105,8 +108,6 @@ static Variable OBJECT_NOT_FOUND = std::make_shared<ObjectNotFoundVariable>();
 
 class IntVariable: public GenericVariable {
 public:
-    using IntType = int64_t;
-
     IntVariable(IntType _value);
 
     VariableType get_type() override;
@@ -121,6 +122,7 @@ public:
     Variable int_div(const Variable &other) override;
 
     bool to_bool() override;
+    IntType to_int() override;
     std::string to_str() override;
 
     bool equal(const Variable &other) override;
@@ -148,6 +150,7 @@ public:
     Variable int_div(const Variable &other) override;
 
     bool to_bool() override;
+    IntType to_int() override;
     std::string to_str() override;
 
     bool equal(const Variable &other) override;

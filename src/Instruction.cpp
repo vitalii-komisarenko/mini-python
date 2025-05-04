@@ -193,7 +193,10 @@ Instruction Instruction::fromTokenList(const TokenList &tokens) {
     return fromTokenRange(begin, end, TokenType::NONE);
 }
 
-Instruction Instruction::fromTokenRange(std::vector<Token>::const_iterator &current, std::vector<Token>::const_iterator &end, TokenType endToken) {
+Instruction Instruction::fromTokenRange(std::vector<Token>::const_iterator &current,
+                                        std::vector<Token>::const_iterator &end,
+                                        TokenType endToken,
+                                        ParsingConext context) {
     Instruction result;
 
     while (current != end) {
@@ -205,7 +208,8 @@ Instruction Instruction::fromTokenRange(std::vector<Token>::const_iterator &curr
         switch (current->type) {
         case TokenType::OPENING_ROUND_BRACKET: {
             ++current;
-            auto in_round_brackets = std::make_shared<Instruction>(fromTokenRange(current, end, TokenType::CLOSING_ROUND_BRACKET));
+            auto in_round_brackets = std::make_shared<Instruction>(fromTokenRange(current, end, TokenType::CLOSING_ROUND_BRACKET,
+                                                                   ParsingConext::IN_ROUND_BRACKETS));
             std::vector<std::shared_ptr<Instruction>> params = {in_round_brackets};
             result.params.push_back(std::make_shared<Instruction>(Operation::IN_ROUND_BRACKETS, params));
             break;

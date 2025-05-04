@@ -36,6 +36,11 @@ enum class Operation {
 
 std::string opToString(Operation op);
 
+enum class ParsingConext {
+    NORMAL,
+    IN_ROUND_BRACKETS,
+};
+
 class Scope;
 
 class Instruction {
@@ -45,7 +50,10 @@ public:
     Instruction(Variable _var);
     Instruction(const Token &_token);
     static Instruction fromTokenList(const TokenList &tokens);
-    static Instruction fromTokenRange(std::vector<Token>::const_iterator &current, std::vector<Token>::const_iterator &end, TokenType endToken);
+    static Instruction fromTokenRange(std::vector<Token>::const_iterator &current,
+                                      std::vector<Token>::const_iterator &end,
+                                      TokenType endToken,
+                                      ParsingConext context = ParsingConext::NORMAL);
 
     Variable execute(Scope *scope);
     Operation op = Operation::NONE;

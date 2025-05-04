@@ -13,6 +13,8 @@ std::string opToString(Operation op) {
         return "NONE";
     case Operation::ASSIGN:
         return "ASSIGN";
+    case Operation::KWARG:
+        return "KWARG";
     case Operation::ATTR:
         return "ATTR";
     case Operation::ADD:
@@ -298,7 +300,7 @@ Instruction Instruction::fromTokenRange(std::vector<Token>::const_iterator &curr
                      {"%", Operation::MOD}});
     groupByOperator({{"+", Operation::ADD},
                      {"-", Operation::SUB}});
-    groupByOperator({{"=", Operation::ASSIGN}});
+    groupByOperator({{"=", (context == ParsingConext::IN_ROUND_BRACKETS) ? Operation::KWARG : Operation::ASSIGN}});
 
     if (result.op == Operation::NONE && result.params.size() == 1) {
         Instruction tmp = result; // TODO: it prevents InstructionTest from corrupting memory. Check what is the root cause

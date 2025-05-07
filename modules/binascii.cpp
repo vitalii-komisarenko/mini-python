@@ -1,4 +1,5 @@
 #include "Module.h"
+#include "FunctionParamatersParsing.h"
 #include "Instruction.h"
 #include "Utils.h"
 
@@ -28,11 +29,20 @@ std::string binascii::helper_hexlify(const std::string &data, const std::string 
 }
 
 static Variable hexlify(const InstructionParams &params, Scope *scope) {
-    auto data = PARAM(0);
-    auto sep = PARAM_DEFAULT(1, NEW_BYTES(""));
-    auto bytes_per_sep = PARAM_DEFAULT(2, NEW_INT(1));
+    FunctionParameterSchema schema = {
+        {"data", "sep", "bytes_per_sep"},
+        {
+            {"sep", NEW_BYTES("")},
+            {"bytes_per_sep", NEW_INT(1)},
+        }
+    };
 
-    return NEW_BYTES(binascii::helper_hexlify(VAR_TO_BYTES(data), VAR_TO_STR(sep), VAR_TO_INT(bytes_per_sep)));
+    auto parsed_params = ParsedFunctionParamaters::parse(params, scope, schema);
+    auto data = VAR_TO_BYTES(parsed_params.vars["data"]);
+    auto sep = VAR_TO_STR(parsed_params.vars["sep"]);
+    auto bytes_per_sep = VAR_TO_INT(parsed_params.vars["bytes_per_sep"]);
+
+    return NEW_BYTES(binascii::helper_hexlify(data, sep, bytes_per_sep));
 }
 
 static Variable unhexlify(const InstructionParams &params, Scope *scope) {

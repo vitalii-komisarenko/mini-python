@@ -3,6 +3,9 @@ import binascii
 # hexlify / b2a_hex
 
 print(binascii.hexlify(b"abcdef"))
+print(binascii.hexlify(data=b"abcdef"))
+print(binascii.hexlify(bytes_per_sep=2, data=b"abcdefh"))
+print(binascii.hexlify(bytes_per_sep=2, sep=':', data=b"abcdefh"))
 print(binascii.hexlify(b"abcdef", "-"))
 print(binascii.hexlify(b"abcdef", "-", 2))
 print(binascii.hexlify(b"abcdefd", "-", 2))

@@ -1,5 +1,6 @@
 #include "Utils.h"
 
+#include <algorithm>
 #include <stdexcept>
 
 namespace MiniPython {
@@ -96,11 +97,12 @@ static unsigned char base64_decode_char(unsigned char ch) {
     if (ch == '/') {
         return 63;
     }
-    throw std::runtime_error("Unexpected argument of base64_decode_char");
+    throw std::runtime_error(std::string("Unexpected argument of base64_decode_char: '") + ((char)ch) + "'");
 }
 
 std::string base64_decode(std::string input) {
-    // binascii.a2b_base64 in non-strict mode ignores leading padding
+    // binascii.a2b_base64() in non-strict mode ignores leading padding
+    // base64.decodebytes() does the same
     while(input.size() && (input[0] == '=')) {
         input = input.substr(1);
     }

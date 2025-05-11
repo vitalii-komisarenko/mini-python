@@ -11,6 +11,11 @@
 
 namespace MiniPython {
 
+class base64: public ModuleVariable {
+public:
+    base64();
+};
+
 class binascii: public ModuleVariable {
 public:
     binascii();

@@ -66,6 +66,10 @@ std::string GenericVariable::to_str() {
     return "<object>";
 }
 
+Variable GenericVariable::to_bytes_variable() {
+    throw std::runtime_error(get_class_name() + " can't be converted to bytes");
+}
+
 bool GenericVariable::equal(const Variable &other) {
     throw std::runtime_error("Operation == not supported");
 }

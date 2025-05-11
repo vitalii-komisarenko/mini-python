@@ -97,6 +97,10 @@ std::string Bytes::to_str() {
     return std::string("b") + quote_type + between_quotes + quote_type;
 }
 
+Variable Bytes::to_bytes_variable() {
+    return NEW_BYTES(value);
+}
+
 bool Bytes::equal(const Variable &other) {
     switch (other->get_type()) {
     case VariableType::BYTES: {

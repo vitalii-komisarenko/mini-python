@@ -67,6 +67,8 @@ public:
     Variable to_int_var();
     virtual std::string to_str();
 
+    virtual Variable to_bytes_variable();
+
     virtual bool equal(const Variable &other);
     virtual bool less(const Variable &other);
 
@@ -261,6 +263,7 @@ public:
     Variable mod(const Variable &other) override;
 
     std::string to_str() override;
+    Variable to_bytes_variable() override;
 
     bool equal(const Variable &other) override;
     bool less(const Variable &other) override;

@@ -13,7 +13,7 @@ bool Variables::has(const std::string &name) {
 Variable Variables::get(const std::string &name) {
     auto it = vars.find(name);
     if (it == vars.end()) {
-        throw std::runtime_error("Variable does not exist");
+        throw std::runtime_error(std::string("Variable '") + name + "' does not exist");
     }
     return it->second;
 }

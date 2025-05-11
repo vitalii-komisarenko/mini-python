@@ -20,6 +20,11 @@ public:
     static std::string base64_decode(const std::string &input);
 };
 
+class ipaddress: public ModuleVariable {
+public:
+    ipaddress();
+};
+
 class math: public ModuleVariable {
 public:
     math();

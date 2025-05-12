@@ -32,6 +32,7 @@ LIB_SOURCES = Instruction.cpp LineLevelParser.cpp MiniPython.cpp Scope.cpp Stand
 	../modules/array.cpp \
 	../modules/base64.cpp \
 	../modules/binascii.cpp \
+	../modules/gc.cpp \
 	../modules/ipaddress.cpp \
 	../modules/math.cpp \
 	../modules/os.cpp \

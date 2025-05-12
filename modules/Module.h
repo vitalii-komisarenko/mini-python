@@ -30,6 +30,12 @@ public:
     static std::string base64_decode(const std::string &input);
 };
 
+class gc: public ModuleVariable {
+public:
+    gc();
+};
+
+
 class ipaddress: public ModuleVariable {
 public:
     ipaddress();

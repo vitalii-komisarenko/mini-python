@@ -3,6 +3,8 @@
 
 #include "variable/Variable.h"
 
+#define PARSE_ARG(arg_name) Variable arg_name = parsed_params.vars[#arg_name];
+
 namespace MiniPython {
 
 struct FunctionParameterSchema {

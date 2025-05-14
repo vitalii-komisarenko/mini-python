@@ -1,5 +1,6 @@
 #include "Module.h"
 #include "Instruction.h"
+#include "FunctionParamatersParsing.h"
 
 #include <cstdio>
 #include <cstdlib>
@@ -27,8 +28,15 @@ void os::make_environ() {
 }
 
 static Variable getenv(const InstructionParams &params, Scope *scope) {
-    auto key = PARAM(0);
-    auto default_value = PARAM_DEFAULT(1, NONE);
+    FunctionParameterSchema schema = {
+        {"key", "default"},
+        {{"default", NONE}}
+    };
+
+    auto parsed_params = ParsedFunctionParamaters::parse(params, scope, schema);
+
+    PARSE_ARG(key);
+    auto default_value = parsed_params.vars["default"];
 
     char *value = std::getenv(std::dynamic_pointer_cast<StringVariable>(key)->value.c_str());
     if (!value) {
@@ -38,8 +46,15 @@ static Variable getenv(const InstructionParams &params, Scope *scope) {
 }
 
 static Variable putenv(const InstructionParams &params, Scope *scope) {
-    auto key = PARAM(0);
-    auto value = PARAM(1);
+    FunctionParameterSchema schema = {
+        {"key", "value"},
+        {}
+    };
+
+    auto parsed_params = ParsedFunctionParamaters::parse(params, scope, schema);
+
+    PARSE_ARG(key);
+    PARSE_ARG(value);
 
     setenv(std::dynamic_pointer_cast<StringVariable>(key)->value.c_str(),
            std::dynamic_pointer_cast<StringVariable>(value)->value.c_str(),
@@ -48,7 +63,15 @@ static Variable putenv(const InstructionParams &params, Scope *scope) {
 }
 
 static Variable unsetenv(const InstructionParams &params, Scope *scope) {
-    auto key = PARAM(0);
+    FunctionParameterSchema schema = {
+        {"key", "value"},
+        {}
+    };
+
+    auto parsed_params = ParsedFunctionParamaters::parse(params, scope, schema);
+
+    PARSE_ARG(key);
+
     ::unsetenv(std::dynamic_pointer_cast<StringVariable>(key)->value.c_str());
     return NONE;
 }
@@ -58,13 +81,28 @@ static Variable getcwd(const InstructionParams &params, Scope *scope) {
 }
 
 static Variable chdir(const InstructionParams &params, Scope *scope) {
-    auto path = PARAM(0);
+    FunctionParameterSchema schema = {
+        {"path"},
+        {}
+    };
+
+    auto parsed_params = ParsedFunctionParamaters::parse(params, scope, schema);
+
+    PARSE_ARG(path);
+
     std::filesystem::current_path(VAR_TO_STR(path));
     return NONE;
 }
 
 static Variable listdir(const InstructionParams &params, Scope *scope) {
-    auto path = PARAM_DEFAULT(0, NEW_STRING("."));
+    FunctionParameterSchema schema = {
+        {"path"},
+        {{"path", NEW_STRING(".")}}
+    };
+
+    auto parsed_params = ParsedFunctionParamaters::parse(params, scope, schema);
+
+    PARSE_ARG(path);
 
     std::vector<Variable> list;
     for (const auto & entry : std::filesystem::directory_iterator(VAR_TO_STR(path))) {
@@ -76,8 +114,15 @@ static Variable listdir(const InstructionParams &params, Scope *scope) {
 }
 
 static Variable mkdir(const InstructionParams &params, Scope *scope) {
-    auto path = PARAM(0);
-    auto mode = PARAM_DEFAULT(1, NEW_INT(0777));
+    FunctionParameterSchema schema = {
+        {"path", "mode"},
+        {{"mode", NEW_INT(0777)}}
+    };
+
+    auto parsed_params = ParsedFunctionParamaters::parse(params, scope, schema);
+
+    PARSE_ARG(path);
+    PARSE_ARG(mode);
 
     if (fs::exists(VAR_TO_STR(path))) {
         throw std::runtime_error("FileExistsError");
@@ -87,9 +132,19 @@ static Variable mkdir(const InstructionParams &params, Scope *scope) {
 }
 
 static Variable makedirs(const InstructionParams &params, Scope *scope) {
-    auto path = PARAM(0);
-    auto mode = PARAM_DEFAULT(1, NEW_INT(0777));
-    auto exists_ok = PARAM_DEFAULT(2, FALSE);
+    FunctionParameterSchema schema = {
+        {"path", "mode", "exists_ok"},
+        {
+            {"mode", NEW_INT(0777)},
+            {"exists_ok", FALSE},
+        }
+    };
+
+    auto parsed_params = ParsedFunctionParamaters::parse(params, scope, schema);
+
+    PARSE_ARG(path);
+    PARSE_ARG(mode);
+    PARSE_ARG(exists_ok);
 
     if (fs::exists(VAR_TO_STR(path))) {
         throw std::runtime_error("FileExistsError");
@@ -99,7 +154,13 @@ static Variable makedirs(const InstructionParams &params, Scope *scope) {
 }
 
 static Variable readlink(const InstructionParams &params, Scope *scope) {
-    auto path = PARAM(0);
+    FunctionParameterSchema schema = {
+        {"path"},
+        {}
+    };
+
+    auto parsed_params = ParsedFunctionParamaters::parse(params, scope, schema);
+    PARSE_ARG(path);
 
     auto p = VAR_TO_STR(path);
     if (fs::is_symlink(p)) {
@@ -109,7 +170,14 @@ static Variable readlink(const InstructionParams &params, Scope *scope) {
 }
 
 static Variable remove(const InstructionParams &params, Scope *scope) {
-    auto path = PARAM(0);
+    FunctionParameterSchema schema = {
+        {"path"},
+        {}
+    };
+
+    auto parsed_params = ParsedFunctionParamaters::parse(params, scope, schema);
+
+    PARSE_ARG(path);
 
     auto p = VAR_TO_STR(path);
     if (!fs::exists(p)) {
@@ -123,33 +191,67 @@ static Variable remove(const InstructionParams &params, Scope *scope) {
 }
 
 static Variable rmdir(const InstructionParams &params, Scope *scope) {
-    auto path = PARAM(0);
+    FunctionParameterSchema schema = {
+        {"path"},
+        {}
+    };
+
+    auto parsed_params = ParsedFunctionParamaters::parse(params, scope, schema);
+
+    PARSE_ARG(path);
     fs::remove(VAR_TO_STR(path));
     return NONE;
 }
 
 static Variable removedirs(const InstructionParams &params, Scope *scope) {
-    auto path = PARAM(0);
+    FunctionParameterSchema schema = {
+        {"path"},
+        {}
+    };
+
+    auto parsed_params = ParsedFunctionParamaters::parse(params, scope, schema);
+
+    PARSE_ARG(path);
     fs::remove_all(VAR_TO_STR(path));
     return NONE;
 }
 
 static Variable rename(const InstructionParams &params, Scope *scope) {
-    auto src = PARAM(0);
-    auto dst = PARAM(1);
+    FunctionParameterSchema schema = {
+        {"src", "dst"},
+        {}
+    };
+
+    auto parsed_params = ParsedFunctionParamaters::parse(params, scope, schema);
+
+    PARSE_ARG(src);
+    PARSE_ARG(dst);
 
     std::rename(VAR_TO_STR(src).c_str(), VAR_TO_STR(dst).c_str());
     return NONE;
 }
 
 static Variable system(const InstructionParams &params, Scope *scope) {
-    auto cmd = PARAM(0);
+    FunctionParameterSchema schema = {
+        {"cmd"},
+        {}
+    };
+
+    auto parsed_params = ParsedFunctionParamaters::parse(params, scope, schema);
+    PARSE_ARG(cmd);
+
     int res = std::system(VAR_TO_STR(cmd).c_str());
     return NEW_INT(res);
 }
 
 static Variable urandom(const InstructionParams &params, Scope *scope) {
-    auto size = PARAM(0);
+    FunctionParameterSchema schema = {
+        {"cmd"},
+        {}
+    };
+
+    auto parsed_params = ParsedFunctionParamaters::parse(params, scope, schema);
+    PARSE_ARG(size);
 
     std::string res;
     for (size_t i = 0; i < VAR_TO_INT(size); ++i) {

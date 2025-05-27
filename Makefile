@@ -28,7 +28,20 @@ pre-build:
 mini_python_lib:
 	make do_mini_python
 
-LIB_SOURCES = Instruction.cpp LineLevelParser.cpp MiniPython.cpp Scope.cpp StandardFunctions.cpp Token.cpp TokenToVariable.cpp StringFormatting.cpp RaiseException.cpp Parser.cpp Utils.cpp  FunctionParamatersParsing.cpp \
+LIB_SOURCES = \
+	CallContext.cpp \
+	FunctionParamatersParsing.cpp \
+	Instruction.cpp \
+	LineLevelParser.cpp \
+	MiniPython.cpp \
+	Parser.cpp \
+	RaiseException.cpp \
+	Scope.cpp \
+	StandardFunctions.cpp \
+	StringFormatting.cpp \
+	Token.cpp \
+	TokenToVariable.cpp \
+	Utils.cpp \
 	../modules/array.cpp \
 	../modules/base64.cpp \
 	../modules/binascii.cpp \

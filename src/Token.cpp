@@ -3,6 +3,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <string_view>
+#include <vector>
 
 namespace MiniPython {
 
@@ -282,32 +283,6 @@ static Token tokenizeIdentifier(std::stringstream &ss) {
     return Token(TokenType::IDENTIFIER, result);
 }
 
-static Token tokenizeOperator(std::stringstream &ss) {
-    std::string result;
-
-    while (ss) {
-        switch (ss.peek()) {
-        case '+':
-        case '-':
-        case '*':
-        case '/':
-        case '%':
-        case '=':
-        case '<':
-        case '>':
-            result += ss.get();
-            break;
-        case std::char_traits<char>::eof():
-            goto exit;
-        default:
-            goto exit;
-        }
-    }
-
-    exit:
-    return Token(TokenType::OPERATOR, result);
-}
-
 static char hexDigit(int ch) {
     switch (ch) {
     case 0: return '0';
@@ -330,20 +305,94 @@ static char hexDigit(int ch) {
     }
 }
 
+static const std::vector<Token> PREDEFINED_TOKENS = {
+    {TokenType::OPERATOR, "+="},
+    {TokenType::OPERATOR, "+"},
+
+    {TokenType::OPERATOR, "-="},
+    {TokenType::OPERATOR, "-"},
+
+    {TokenType::OPERATOR, "**="},
+    {TokenType::OPERATOR, "**"},
+
+    {TokenType::OPERATOR, "*="},
+    {TokenType::OPERATOR, "*"},
+
+    {TokenType::OPERATOR, "@="},
+    {TokenType::OPERATOR, "@"},
+
+    {TokenType::OPERATOR, "//="},
+    {TokenType::OPERATOR, "//"},
+
+    {TokenType::OPERATOR, "/="},
+    {TokenType::OPERATOR, "/"},
+
+    {TokenType::OPERATOR, "%="},
+    {TokenType::OPERATOR, "%"},
+
+    {TokenType::OPERATOR, "&="},
+    {TokenType::OPERATOR, "&"},
+
+    {TokenType::OPERATOR, "|="},
+    {TokenType::OPERATOR, "|"},
+
+    {TokenType::OPERATOR, "^="},
+    {TokenType::OPERATOR, "^"},
+
+    {TokenType::OPERATOR, "=="},
+    {TokenType::OPERATOR, "="},
+
+    {TokenType::OPERATOR, ">>="},
+    {TokenType::OPERATOR, ">>"},
+
+    {TokenType::OPERATOR, ">="},
+    {TokenType::OPERATOR, ">"},
+
+    {TokenType::OPERATOR, "<<="},
+    {TokenType::OPERATOR, "<<"},
+
+    {TokenType::OPERATOR, "<="},
+    {TokenType::OPERATOR, "<"},
+
+    {TokenType::OPERATOR, "is"},
+
+    {TokenType::COLON, ":"},
+    {TokenType::COMMA, ","},
+    {TokenType::OPENING_ROUND_BRACKET, "("},
+    {TokenType::CLOSING_ROUND_BRACKET, ")"},
+    {TokenType::OPENING_SQUARE_BRACKET, "["},
+    {TokenType::CLOSING_SQUARE_BRACKET, "]"},
+    {TokenType::OPENING_CURLY_BRACKET, "{"},
+    {TokenType::CLOSING_CURLY_BRACKET, "}"},
+};
+
 TokenList tokenizeLine(const std::string &line) {
     TokenList result;
 
     std::string_view sv(line);
 
     while (!sv.empty()) {
-        std::string error = "Unexpected character: '";
-        char ch = sv[0];
-        error += ch;
-        error += "' (0x";
-        error += hexDigit((ch & 0xF0) >> 4);
-        error += hexDigit(ch & 0x0f);
-        error += ")";
-        throw std::runtime_error(error);
+        for (const auto &predefined_token: PREDEFINED_TOKENS) {
+            if (sv.starts_with(predefined_token.value)) {
+                result.push_back(predefined_token);
+                sv.remove_prefix(predefined_token.value.size());
+                goto outer_loop_end;
+            }
+        }
+
+        {
+            std::string error = "Unexpected character: '";
+            char ch = sv[0];
+            error += ch;
+            error += "' (0x";
+            error += hexDigit((ch & 0xF0) >> 4);
+            error += hexDigit(ch & 0x0f);
+            error += ")";
+            throw std::runtime_error(error);
+        }
+
+        outer_loop_end:
+        ;
     }
 
     std::stringstream ss(line);
@@ -400,48 +449,6 @@ TokenList tokenizeLine(const std::string &line) {
         case 'A' ... 'Z':
         case '_':
             result.push_back(tokenizeIdentifier(ss));
-            break;
-        case '+':
-        case '-':
-        case '*':
-        case '/':
-        case '%':
-        case '=':
-        case '<':
-        case '>':
-            result.push_back(tokenizeOperator(ss));
-            break;
-        case ':':
-            result.push_back(Token(TokenType::COLON));
-            discardCharacter(ss);
-            break;
-        case ',':
-            result.push_back(Token(TokenType::COMMA));
-            discardCharacter(ss);
-            break;
-        case '(':
-            result.push_back(Token(TokenType::OPENING_ROUND_BRACKET));
-            discardCharacter(ss);
-            break;
-        case ')':
-            result.push_back(Token(TokenType::CLOSING_ROUND_BRACKET));
-            discardCharacter(ss);
-            break;
-        case '[':
-            result.push_back(Token(TokenType::OPENING_SQUARE_BRACKET));
-            discardCharacter(ss);
-            break;
-        case ']':
-            result.push_back(Token(TokenType::CLOSING_SQUARE_BRACKET));
-            discardCharacter(ss);
-            break;
-        case '{':
-            result.push_back(Token(TokenType::OPENING_CURLY_BRACKET));
-            discardCharacter(ss);
-            break;
-        case '}':
-            result.push_back(Token(TokenType::CLOSING_CURLY_BRACKET));
-            discardCharacter(ss);
             break;
         default:
             std::string error = "Unexpected character: '";

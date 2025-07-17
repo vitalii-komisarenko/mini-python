@@ -1,6 +1,5 @@
 #include "Token.h"
 
-#include <sstream>
 #include <stdexcept>
 #include <string_view>
 #include <vector>
@@ -19,10 +18,6 @@ bool Token::operator==(const Token &other) const {
     return type == other.type && value == other.value;
 }
 
-static inline void discardCharacter(std::stringstream &ss) {
-    ss.get();
-}
-
 static int decodeHexDigit(char ch) {
     if (('0' <= ch) && (ch <= '9')) {
         return ch - '0';
@@ -36,17 +31,22 @@ static int decodeHexDigit(char ch) {
     throw std::runtime_error("Not a hex digit");
 }
 
-static char tokenizeHexEncodedChar(std::stringstream &ss) {
-    char ch1 = ss.get();
-    char ch2 = ss.get();
+static char tokenizeHexEncodedChar(std::string_view &sv) {
+    if (sv.size() < 2) {
+        throw std::runtime_error("Not enough characters for tokenizeHexEncodedChar");
+    }
+    char ch1 = sv[0];
+    char ch2 = sv[1];
+    sv.remove_prefix(2);
     return 16 * decodeHexDigit(ch1) + decodeHexDigit(ch2);
 }
 
-static std::string tokenizeEscapedCharacter(std::stringstream &ss) {
+static std::string tokenizeEscapedCharacter(std::string_view &sv) {
     std::string result;
     char ch2;
 
-    char ch = ss.get();
+    char ch = sv[0];
+    sv.remove_prefix(1);
     switch(ch) {
         case 't': return "\t";
         case 'n': return "\n";
@@ -56,14 +56,14 @@ static std::string tokenizeEscapedCharacter(std::stringstream &ss) {
         case '\\': return "\\";
         case 'u':
         case 'U':
-            ch2 = tokenizeHexEncodedChar(ss);
+            ch2 = tokenizeHexEncodedChar(sv);
             if (ch2) {
                 result += ch2;
             }
             // fall through
         case 'x':
         case 'X':
-            result += tokenizeHexEncodedChar(ss);
+            result += tokenizeHexEncodedChar(sv);
             return result;
         default: {
             return std::string() + ch;
@@ -71,13 +71,16 @@ static std::string tokenizeEscapedCharacter(std::stringstream &ss) {
     }
 }
 
-static Token tokenizeStringMultiline(std::stringstream &ss) {
-    char quote = ss.get();
+static Token tokenizeStringMultiline(std::string_view &sv) {
+    char quote = sv[0];
+    sv.remove_prefix(3);
     int quote_count = 0;
     std::string result;
-    char ch;
 
-    while (ss && (ch = ss.get())) {
+    while (!sv.empty()) {
+        char ch;
+        sv.remove_prefix(1);
+
         if (ch == quote) {
             if (++quote_count == 3) {
                 break;
@@ -88,10 +91,7 @@ static Token tokenizeStringMultiline(std::stringstream &ss) {
         }
 
         if (ch == '\\') {
-            if (ss.eof()) {
-                throw std::runtime_error("End of stream after backslash when reading string");
-            }
-            result += tokenizeEscapedCharacter(ss);
+            result += tokenizeEscapedCharacter(sv);
         }
         else {
             result += ch;
@@ -104,28 +104,26 @@ static Token tokenizeStringMultiline(std::stringstream &ss) {
     return Token(TokenType::STRING, result.substr(0, result.size() - 2));
 }
 
-static Token tokenizeString(std::stringstream &ss) {
+static Token tokenizeString(std::string_view &sv) {
+    if ((sv.starts_with("\"\"\"")) || (sv.starts_with("'''"))) {
+        return tokenizeStringMultiline(sv);
+    }
+
     std::string result;
 
-    char quote = ss.get();
+    char quote = sv[0];
+    sv.remove_prefix(1);
 
-    char char2 = ss.get();
-    if ((char2 == quote) && (ss.peek() == quote)) {
-        return tokenizeStringMultiline(ss);
-    }
-    ss.putback(char2);
+    while (!sv.empty()) {
+        char ch = sv[0];
+        sv.remove_prefix(1);
 
-    char ch;
-    while (ss && (ch = ss.get())) {
         if (ch == quote) {
             return Token(TokenType::STRING, result);
         }
 
         if (ch == '\\') {
-            if (ss.eof()) {
-                throw std::runtime_error("End of stream after backslash when reading string");
-            }
-            result += tokenizeEscapedCharacter(ss);
+            result += tokenizeEscapedCharacter(sv);
         }
         else {
             result += ch;
@@ -261,7 +259,7 @@ static Token tokenizeIdentifier(std::string_view &sv) {
         case '0' ... '9':
         case '_':
             result += sv[0];
-            sv.remove_prefix(0);
+            sv.remove_prefix(1);
             break;
         default:
             goto exit;
@@ -403,6 +401,32 @@ TokenList tokenizeLine(const std::string &line) {
             case '0' ... '9':
                 result.push_back(tokenizeNumber(sv));
                 break;
+            case '\'':
+            case '"': {
+                Token token_candidate = tokenizeString(sv);
+                bool is_fstring = false;
+                bool is_bytes = false;
+                if (result.size()) {
+                    auto prev_token = result[result.size() - 1];
+                    if (prev_token.type == TokenType::IDENTIFIER) {
+                        is_fstring = prev_token.value.contains('f') || prev_token.value.contains('F');
+                        is_bytes = prev_token.value.contains('b') || prev_token.value.contains('B');
+                    }
+                }
+
+                if (is_fstring) {
+                    result[result.size() - 1].type = TokenType::FSTRING;
+                    result[result.size() - 1].value = token_candidate.value;
+                }
+                else if (is_bytes) {
+                    result[result.size() - 1].type = TokenType::BYTES;
+                    result[result.size() - 1].value = token_candidate.value;
+                }
+                else {
+                    result.push_back(token_candidate);
+                }
+                break;
+            }
             // Unexpected character
             default: {
                 std::string error = "Unexpected character: '";
@@ -418,47 +442,6 @@ TokenList tokenizeLine(const std::string &line) {
 
         outer_loop_end:
         ;
-    }
-
-    std::stringstream ss(line);
-    while (ss) {
-        switch (ss.peek()) {
-        case '\'':
-        case '"': {
-            Token token_candidate = tokenizeString(ss);
-            bool is_fstring = false;
-            bool is_bytes = false;
-            if (result.size()) {
-                auto prev_token = result[result.size() - 1];
-                if (prev_token.type == TokenType::IDENTIFIER) {
-                    is_fstring = prev_token.value.contains('f') || prev_token.value.contains('F');
-                    is_bytes = prev_token.value.contains('b') || prev_token.value.contains('B');
-                }
-            }
-
-            if (is_fstring) {
-                result[result.size() - 1].type = TokenType::FSTRING;
-                result[result.size() - 1].value = token_candidate.value;
-            }
-            else if (is_bytes) {
-                result[result.size() - 1].type = TokenType::BYTES;
-                result[result.size() - 1].value = token_candidate.value;
-            }
-            else {
-                result.push_back(token_candidate);
-            }
-            break;
-        }
-        default:
-            std::string error = "Unexpected character: '";
-            char ch = ss.peek();
-            error += ch;
-            error += "' (0x";
-            error += hexDigit((ch & 0xF0) >> 4);
-            error += hexDigit(ch & 0x0f);
-            error += ")";
-            throw std::runtime_error(error);
-        }
     }
 
     return result;

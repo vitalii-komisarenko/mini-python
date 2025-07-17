@@ -135,34 +135,22 @@ static Token tokenizeString(std::stringstream &ss) {
     throw std::runtime_error("Missing quote to terminate string");
 }
 
-static std::string readUnsignedInteger(std::stringstream &ss) {
-    std::string result;
-
-    char ch;
-    while (ss && (ch = ss.get())) {
-        switch(ch) {
-        case '0' ... '9': {
-            result += ch;
-            break;
-        }
-        case '_':
-            break;
-        default: {
-            ss.putback(ch);
-            goto exit;
-        }
-        }
+static std::string readUnsignedInteger(std::string_view &sv) {
+    size_t pos = sv.find_first_not_of("_0123456789");
+    if (pos == std::string_view::npos) {
+        pos = sv.size();
     }
 
-    exit:
+    std::string result = std::string(sv.substr(pos));
+    sv.remove_prefix(pos);
     return result;
 }
 
-static Token tokenizeNumberHexOrOct(std::stringstream &ss) {
+static Token tokenizeNumberHexOrOct(std::string_view &sv) {
     std::string result;
 
-    char ch;
-    while (ss && (ch = ss.get())) {
+    while (!sv.empty()) {
+        char ch = sv[0];
         switch (ch  ) {
         case '0' ... '9':
         case 'a' ... 'f':
@@ -172,42 +160,32 @@ static Token tokenizeNumberHexOrOct(std::stringstream &ss) {
         case 'o':
         case 'O':
             result += ch;
-            break;
-        case '_':
+            sv.remove_prefix(1);
             break;
         default:
-            goto exit;
+            break;
         }
     }
 
-    exit:
     return Token(TokenType::NUMBER, result);
 }
 
-static Token tokenizeNumber(std::stringstream &ss) {
+static Token tokenizeNumber(std::string_view &sv) {
     std::string result;
 
-    switch (ss.peek()) {
-    case '0': {
-        char ch = ss.get();
-        switch (ss.peek()) {
-        case 'x':
-        case 'X':
-        case 'o':
-        case 'O':
-            ss.putback(ch);
-            return tokenizeNumberHexOrOct(ss);
-        case std::char_traits<char>::eof():
-            return Token(TokenType::NUMBER, "0");
-        default:
-            ss.putback(ch);
-            goto read_integer_part;
-        }
+    if (sv.empty()) {
+        throw std::runtime_error("The number cannot be empty");
     }
-    case '1' ... '9':
+
+    if ((sv.starts_with("0x")) && (sv.starts_with("0X")) && (sv.starts_with("0o")) && (sv.starts_with("0O"))) {
+        return tokenizeNumberHexOrOct(sv);
+    }
+
+    switch (sv[0]) {
+    case '0' ... '9':
         goto read_integer_part;
     case '.':
-        result += ss.get();
+        result += '.';
         goto read_fractional_part;
     default:
         throw std::runtime_error("Bad first character of the number");
@@ -215,15 +193,19 @@ static Token tokenizeNumber(std::stringstream &ss) {
 
     read_integer_part:
 
-    result += readUnsignedInteger(ss);
+    result += readUnsignedInteger(sv);
 
-    switch (ss.peek()) {
+    if (sv.empty()) {
+        goto exit;
+    }
+
+    switch (sv[0]) {
     case '.':
-        result += ss.get();
+        result += '.';
         goto read_fractional_part;
     case 'e':
     case 'E':
-        result += ss.get();
+        result += sv[0];
         goto read_exponent;
     default:
         goto exit;
@@ -231,12 +213,16 @@ static Token tokenizeNumber(std::stringstream &ss) {
 
     read_fractional_part:
 
-    result += readUnsignedInteger(ss);
+    result += readUnsignedInteger(sv);
 
-    switch (ss.peek()) {
+    if (sv.empty()) {
+        goto exit;
+    }
+
+    switch (sv[0]) {
     case 'e':
     case 'E':
-        result += ss.get();
+        result += sv[0];
         goto read_exponent;
     default:
         goto exit;
@@ -244,13 +230,17 @@ static Token tokenizeNumber(std::stringstream &ss) {
 
     read_exponent:
 
-    switch (ss.peek()) {
+    if (sv.empty()) {
+        goto exit;
+    }
+
+    switch (sv[0]) {
     case '+':
     case '-':
-        result += ss.get();
+        result += sv[0];
         // fallthrough
     case '0' ... '9':
-        result += readUnsignedInteger(ss);
+        result += readUnsignedInteger(sv);
         goto exit;
     default:
         throw std::runtime_error("Can't read exponent");
@@ -372,7 +362,7 @@ TokenList tokenizeLine(const std::string &line) {
 
     while (!sv.empty()) {
         // Remove leading whitespace
-        size_t first_non_space_index = sv.find_last_not_of(" \t");
+        size_t first_non_space_index = sv.find_first_not_of(" \t");
         if (first_non_space_index == std::string_view::npos) {
             break;
         }
@@ -398,7 +388,21 @@ TokenList tokenizeLine(const std::string &line) {
             case '_':
                 result.push_back(tokenizeIdentifier(sv));
                 break;
-
+            case '.':
+                if (sv.size() == 1) {
+                    throw std::runtime_error("Expected a character after dot (.)");
+                }
+                else if (('0' <= sv[1]) && (sv[1] <= '9')) {
+                    result.push_back(tokenizeNumber(sv));
+                }
+                else {
+                    result.push_back(Token(TokenType::OPERATOR, "."));
+                    sv.remove_prefix(1);
+                }
+                break;
+            case '0' ... '9':
+                result.push_back(tokenizeNumber(sv));
+                break;
             // Unexpected character
             default: {
                 std::string error = "Unexpected character: '";
@@ -445,20 +449,6 @@ TokenList tokenizeLine(const std::string &line) {
             }
             break;
         }
-        case '0' ... '9':
-            result.push_back(tokenizeNumber(ss));
-            break;
-        case '.':
-            discardCharacter(ss);
-            switch (ss.peek()) {
-            case '0' ... '9':
-                ss.putback('.');
-                result.push_back(tokenizeNumber(ss));
-                break;
-            default:
-                result.push_back(Token(TokenType::OPERATOR, "."));
-            }
-            break;
         default:
             std::string error = "Unexpected character: '";
             char ch = ss.peek();

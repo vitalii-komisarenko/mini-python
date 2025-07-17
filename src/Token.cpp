@@ -71,7 +71,7 @@ static std::string tokenizeEscapedCharacter(std::string_view &sv) {
     }
 }
 
-static Token tokenizeStringMultiline(std::string_view &sv, const char *triple_quotes) {
+static std::string tokenizeStringMultilineValue(std::string_view &sv, const char *triple_quotes, bool is_rstring) {
     char quote = sv[0];
     sv.remove_prefix(3);
     std::string result;
@@ -79,9 +79,32 @@ static Token tokenizeStringMultiline(std::string_view &sv, const char *triple_qu
     while (!sv.empty()) {
         if (sv.starts_with(triple_quotes)) {
             sv.remove_prefix(3);
-            return Token(TokenType::STRING, result);
+            return result;
         }
 
+        // R-string
+        if (is_rstring) {
+            std::string escaped_tripple_quotes = std::string("\\") + triple_quotes;
+            if (sv.starts_with(escaped_tripple_quotes)) {
+                result += escaped_tripple_quotes;
+                sv.remove_prefix(4);
+            }
+            else if (sv.starts_with("\\")) {
+                if (sv.size() < 2) {
+                    throw std::runtime_error("trailing \\ in string");
+                }
+                result += sv[0];
+                result += sv[1];
+                sv.remove_prefix(2);
+            }
+            else {
+                result += sv[0];
+                sv.remove_prefix(1);
+            }
+            continue;
+        }
+
+        // non-R-string
         char ch = sv[0];
         sv.remove_prefix(1);
 
@@ -96,13 +119,13 @@ static Token tokenizeStringMultiline(std::string_view &sv, const char *triple_qu
     throw std::runtime_error("End of stream when looking for \"\"\" or '''");
 }
 
-static Token tokenizeString(std::string_view &sv) {
+static std::string tokenizeStringValue(std::string_view &sv, bool is_rstring) {
     if (sv.starts_with("\"\"\"")) {
-        return tokenizeStringMultiline(sv, "\"\"\"");
+        return tokenizeStringMultilineValue(sv, "\"\"\"", is_rstring);
     }
 
     if (sv.starts_with("'''")) {
-        return tokenizeStringMultiline(sv, "'''");
+        return tokenizeStringMultilineValue(sv, "'''", is_rstring);
     }
 
     std::string result;
@@ -115,7 +138,7 @@ static Token tokenizeString(std::string_view &sv) {
         sv.remove_prefix(1);
 
         if (ch == quote) {
-            return Token(TokenType::STRING, result);
+            return result;
         }
 
         if (ch == '\\') {
@@ -281,6 +304,23 @@ static Token tokenizeIdentifier(std::string_view &sv) {
     }
 
     exit:
+
+    if (sv.starts_with('\'') || sv.starts_with('"')) {
+        bool is_fstring = result.contains('F') || result.contains('f');
+        bool is_rstring = result.contains('R') || result.contains('r');
+        bool is_bytes = result.contains('B') || result.contains('b');
+
+        if (is_fstring && is_bytes) {
+            throw std::runtime_error("SyntaxError: invalid syntax (Strings can't have both 'b' and 'f' prefixes)");
+        }
+
+        auto token_type = is_fstring ? TokenType::FSTRING
+                       : is_bytes ? TokenType::BYTES
+                       : TokenType::STRING;
+
+        return Token(token_type, tokenizeStringValue(sv, is_rstring));
+    }
+
     return Token(TokenType::IDENTIFIER, result);
 }
 
@@ -417,28 +457,7 @@ TokenList tokenizeLine(const std::string &line) {
                 break;
             case '\'':
             case '"': {
-                Token token_candidate = tokenizeString(sv);
-                bool is_fstring = false;
-                bool is_bytes = false;
-                if (result.size()) {
-                    auto prev_token = result[result.size() - 1];
-                    if (prev_token.type == TokenType::IDENTIFIER) {
-                        is_fstring = prev_token.value.contains('f') || prev_token.value.contains('F');
-                        is_bytes = prev_token.value.contains('b') || prev_token.value.contains('B');
-                    }
-                }
-
-                if (is_fstring) {
-                    result[result.size() - 1].type = TokenType::FSTRING;
-                    result[result.size() - 1].value = token_candidate.value;
-                }
-                else if (is_bytes) {
-                    result[result.size() - 1].type = TokenType::BYTES;
-                    result[result.size() - 1].value = token_candidate.value;
-                }
-                else {
-                    result.push_back(token_candidate);
-                }
+                result.emplace_back(TokenType::STRING, tokenizeStringValue(sv, false));
                 break;
             }
             // Unexpected character

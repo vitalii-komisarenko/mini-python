@@ -261,19 +261,18 @@ static Token tokenizeNumber(std::stringstream &ss) {
     return {TokenType::NUMBER, result};
 }
 
-static Token tokenizeIdentifier(std::stringstream &ss) {
+static Token tokenizeIdentifier(std::string_view &sv) {
     std::string result;
 
-    while (ss) {
-        switch (ss.peek()) {
+    while (!sv.empty()) {
+        switch (sv[0]) {
         case 'a' ... 'z':
         case 'A' ... 'Z':
         case '0' ... '9':
         case '_':
-            result += ss.get();
+            result += sv[0];
+            sv.remove_prefix(0);
             break;
-        case std::char_traits<char>::eof():
-            goto exit;
         default:
             goto exit;
         }
@@ -393,16 +392,24 @@ TokenList tokenizeLine(const std::string &line) {
             }
         }
 
-        // Unexpected character
-        {
-            std::string error = "Unexpected character: '";
-            char ch = sv[0];
-            error += ch;
-            error += "' (0x";
-            error += hexDigit((ch & 0xF0) >> 4);
-            error += hexDigit(ch & 0x0f);
-            error += ")";
-            throw std::runtime_error(error);
+        switch (sv[0]) {
+            case 'a' ... 'z':
+            case 'A' ... 'Z':
+            case '_':
+                result.push_back(tokenizeIdentifier(sv));
+                break;
+
+            // Unexpected character
+            default: {
+                std::string error = "Unexpected character: '";
+                char ch = sv[0];
+                error += ch;
+                error += "' (0x";
+                error += hexDigit((ch & 0xF0) >> 4);
+                error += hexDigit(ch & 0x0f);
+                error += ")";
+                throw std::runtime_error(error);
+            }
         }
 
         outer_loop_end:
@@ -451,11 +458,6 @@ TokenList tokenizeLine(const std::string &line) {
             default:
                 result.push_back(Token(TokenType::OPERATOR, "."));
             }
-            break;
-        case 'a' ... 'z':
-        case 'A' ... 'Z':
-        case '_':
-            result.push_back(tokenizeIdentifier(ss));
             break;
         default:
             std::string error = "Unexpected character: '";

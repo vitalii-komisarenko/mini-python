@@ -290,6 +290,7 @@ static Token tokenizeOperator(std::stringstream &ss) {
         case '-':
         case '*':
         case '/':
+        case '%':
         case '=':
         case '<':
         case '>':
@@ -390,6 +391,7 @@ TokenList tokenizeLine(const std::string &line) {
         case '-':
         case '*':
         case '/':
+        case '%':
         case '=':
         case '<':
         case '>':

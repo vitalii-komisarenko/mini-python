@@ -177,6 +177,6 @@ TEST_F(TokentTest, attribute_access) {
     ASSERT_THAT(tokenizeLine("a.b()"), ElementsAre(Token(TokenType::IDENTIFIER, "a"),
                                                    Token(TokenType::OPERATOR, "."),
                                                    Token(TokenType::IDENTIFIER, "b"),
-                                                   Token(TokenType::OPENING_ROUND_BRACKET),
-                                                   Token(TokenType::CLOSING_ROUND_BRACKET)));
+                                                   Token(TokenType::OPENING_ROUND_BRACKET, "("),
+                                                   Token(TokenType::CLOSING_ROUND_BRACKET, ")")));
 }

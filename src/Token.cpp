@@ -134,13 +134,23 @@ static Token tokenizeString(std::string_view &sv) {
 }
 
 static std::string readUnsignedInteger(std::string_view &sv) {
-    size_t pos = sv.find_first_not_of("_0123456789");
-    if (pos == std::string_view::npos) {
-        pos = sv.size();
+    std::string result;
+
+    while (!sv.empty()) {
+        switch (sv[0]) {
+        case '0' ... '9': {
+            result += sv[0];
+            sv.remove_prefix(1);
+            break;
+        }
+        case '_':
+            sv.remove_prefix(1);
+            break;
+        default:
+            return result;
+        }
     }
 
-    std::string result = std::string(sv.substr(pos));
-    sv.remove_prefix(pos);
     return result;
 }
 

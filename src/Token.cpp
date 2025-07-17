@@ -372,6 +372,19 @@ TokenList tokenizeLine(const std::string &line) {
     std::string_view sv(line);
 
     while (!sv.empty()) {
+        // Remove leading whitespace
+        size_t first_non_space_index = sv.find_last_not_of(" \t");
+        if (first_non_space_index == std::string_view::npos) {
+            break;
+        }
+        sv.remove_prefix(first_non_space_index);
+
+        // Check for comments
+        if (sv[0] == '#') {
+            break;
+        }
+
+        // Check for predefined tokens (such as +, -=, << etc.)
         for (const auto &predefined_token: PREDEFINED_TOKENS) {
             if (sv.starts_with(predefined_token.value)) {
                 result.push_back(predefined_token);
@@ -380,6 +393,7 @@ TokenList tokenizeLine(const std::string &line) {
             }
         }
 
+        // Unexpected character
         {
             std::string error = "Unexpected character: '";
             char ch = sv[0];
@@ -398,13 +412,6 @@ TokenList tokenizeLine(const std::string &line) {
     std::stringstream ss(line);
     while (ss) {
         switch (ss.peek()) {
-        case ' ':
-        case '\t':
-            discardCharacter(ss);
-            break;
-        case '#':
-        case std::char_traits<char>::eof():
-            return result;
         case '\'':
         case '"': {
             Token token_candidate = tokenizeString(ss);

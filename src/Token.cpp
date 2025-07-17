@@ -2,6 +2,7 @@
 
 #include <sstream>
 #include <stdexcept>
+#include <string_view>
 
 namespace MiniPython {
 
@@ -331,6 +332,19 @@ static char hexDigit(int ch) {
 
 TokenList tokenizeLine(const std::string &line) {
     TokenList result;
+
+    std::string_view sv(line);
+
+    while (!sv.empty()) {
+        std::string error = "Unexpected character: '";
+        char ch = sv[0];
+        error += ch;
+        error += "' (0x";
+        error += hexDigit((ch & 0xF0) >> 4);
+        error += hexDigit(ch & 0x0f);
+        error += ")";
+        throw std::runtime_error(error);
+    }
 
     std::stringstream ss(line);
     while (ss) {

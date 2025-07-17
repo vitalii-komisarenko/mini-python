@@ -197,6 +197,7 @@ static Token tokenizeNumber(std::string_view &sv) {
         goto read_integer_part;
     case '.':
         result += '.';
+        sv.remove_prefix(1);
         goto read_fractional_part;
     default:
         throw std::runtime_error("Bad first character of the number");

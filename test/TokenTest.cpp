@@ -57,7 +57,7 @@ TEST_F(TokentTest, misc_code) {
         Token(TokenType::NUMBER,     "1"),
         Token(TokenType::OPERATOR,   "+"),
         Token(TokenType::NUMBER,     "1"),
-        Token(TokenType::COLON,      "")
+        Token(TokenType::COLON,      ":")
     ));
 
     ASSERT_THAT(tokenizeLine("myVarialbe123+=\"some string\""), ElementsAre(
@@ -74,39 +74,39 @@ TEST_F(TokentTest, misc_code) {
 
     ASSERT_THAT(tokenizeLine("print('Hello, World!')"), ElementsAre(
         Token(TokenType::IDENTIFIER, "print"),
-        Token(TokenType::OPENING_ROUND_BRACKET, ""),
+        Token(TokenType::OPENING_ROUND_BRACKET, "("),
         Token(TokenType::STRING, "Hello, World!"),
-        Token(TokenType::CLOSING_ROUND_BRACKET, "")
+        Token(TokenType::CLOSING_ROUND_BRACKET, ")")
     ));
 
     ASSERT_THAT(tokenizeLine("print(1 + 2)"), ElementsAre(
         Token(TokenType::IDENTIFIER, "print"),
-        Token(TokenType::OPENING_ROUND_BRACKET, ""),
+        Token(TokenType::OPENING_ROUND_BRACKET, "("),
         Token(TokenType::NUMBER,     "1"),
         Token(TokenType::OPERATOR,   "+"),
         Token(TokenType::NUMBER,     "2"),
-        Token(TokenType::CLOSING_ROUND_BRACKET, "")
+        Token(TokenType::CLOSING_ROUND_BRACKET, ")")
     ));
 
     ASSERT_THAT(tokenizeLine("var = ((2+4)-(35-func(5)))//8"), ElementsAre(
         Token(TokenType::IDENTIFIER, "var"),
         Token(TokenType::OPERATOR,   "="),
-        Token(TokenType::OPENING_ROUND_BRACKET, ""),
-        Token(TokenType::OPENING_ROUND_BRACKET, ""),
+        Token(TokenType::OPENING_ROUND_BRACKET, "("),
+        Token(TokenType::OPENING_ROUND_BRACKET, "("),
         Token(TokenType::NUMBER,     "2"),
         Token(TokenType::OPERATOR,   "+"),
         Token(TokenType::NUMBER,     "4"),
-        Token(TokenType::CLOSING_ROUND_BRACKET, ""),
+        Token(TokenType::CLOSING_ROUND_BRACKET, ")"),
         Token(TokenType::OPERATOR,   "-"),
-        Token(TokenType::OPENING_ROUND_BRACKET, ""),
+        Token(TokenType::OPENING_ROUND_BRACKET, "("),
         Token(TokenType::NUMBER,     "35"),
         Token(TokenType::OPERATOR,   "-"),
         Token(TokenType::IDENTIFIER, "func"),
-        Token(TokenType::OPENING_ROUND_BRACKET, ""),
+        Token(TokenType::OPENING_ROUND_BRACKET, "("),
         Token(TokenType::NUMBER,     "5"),
-        Token(TokenType::CLOSING_ROUND_BRACKET, ""),
-        Token(TokenType::CLOSING_ROUND_BRACKET, ""),
-        Token(TokenType::CLOSING_ROUND_BRACKET, ""),
+        Token(TokenType::CLOSING_ROUND_BRACKET, ")"),
+        Token(TokenType::CLOSING_ROUND_BRACKET, ")"),
+        Token(TokenType::CLOSING_ROUND_BRACKET, ")"),
         Token(TokenType::OPERATOR,   "//"),
         Token(TokenType::NUMBER,     "8")
     ));

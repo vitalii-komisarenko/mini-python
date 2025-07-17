@@ -189,4 +189,10 @@ TEST_F(TokentTest, attribute_access) {
 TEST_F(TokentTest, triple_quotes) {
     ASSERT_THAT(tokenizeLine(Q1 Q1), ElementsAre(Token(TokenType::STRING, "")));
     ASSERT_THAT(tokenizeLine(Q2 Q2), ElementsAre(Token(TokenType::STRING, "")));
+
+    ASSERT_THAT(tokenizeLine(Q1 "a" Q1), ElementsAre(Token(TokenType::STRING, "a")));
+    ASSERT_THAT(tokenizeLine(Q2 "a" Q2), ElementsAre(Token(TokenType::STRING, "a")));
+
+    ASSERT_THAT(tokenizeLine(Q1 Q2 Q1), ElementsAre(Token(TokenType::STRING, Q2)));
+    ASSERT_THAT(tokenizeLine(Q2 Q1 Q2), ElementsAre(Token(TokenType::STRING, Q1)));
 }

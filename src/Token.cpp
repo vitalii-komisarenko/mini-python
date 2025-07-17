@@ -82,7 +82,7 @@ static Token tokenizeStringMultiline(std::string_view &sv, const char *triple_qu
             return Token(TokenType::STRING, result);
         }
 
-        char ch;
+        char ch = sv[0];
         sv.remove_prefix(1);
 
         if (ch == '\\') {

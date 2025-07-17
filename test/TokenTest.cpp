@@ -180,3 +180,13 @@ TEST_F(TokentTest, attribute_access) {
                                                    Token(TokenType::OPENING_ROUND_BRACKET, "("),
                                                    Token(TokenType::CLOSING_ROUND_BRACKET, ")")));
 }
+
+// Put quotes in #define to avoid quote escaping issues
+
+#define Q1 "'''"
+#define Q2 "\"\"\""
+
+TEST_F(TokentTest, triple_quotes) {
+    ASSERT_THAT(tokenizeLine(Q1 Q1), ElementsAre(Token(TokenType::STRING, "")));
+    ASSERT_THAT(tokenizeLine(Q2 Q2), ElementsAre(Token(TokenType::STRING, "")));
+}

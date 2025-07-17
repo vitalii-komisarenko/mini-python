@@ -71,24 +71,19 @@ static std::string tokenizeEscapedCharacter(std::string_view &sv) {
     }
 }
 
-static Token tokenizeStringMultiline(std::string_view &sv) {
+static Token tokenizeStringMultiline(std::string_view &sv, const char *triple_quotes) {
     char quote = sv[0];
     sv.remove_prefix(3);
-    int quote_count = 0;
     std::string result;
 
     while (!sv.empty()) {
+        if (sv.starts_with(triple_quotes)) {
+            sv.remove_prefix(3);
+            return Token(TokenType::STRING, result);
+        }
+
         char ch;
         sv.remove_prefix(1);
-
-        if (ch == quote) {
-            if (++quote_count == 3) {
-                break;
-            }
-        }
-        else {
-            quote_count = 0;
-        }
 
         if (ch == '\\') {
             result += tokenizeEscapedCharacter(sv);
@@ -98,15 +93,16 @@ static Token tokenizeStringMultiline(std::string_view &sv) {
         }
     }
 
-    if (quote_count != 3) {
-        throw std::runtime_error("End of stream when looking for \"\"\" or '''");
-    }
-    return Token(TokenType::STRING, result.substr(0, result.size() - 2));
+    throw std::runtime_error("End of stream when looking for \"\"\" or '''");
 }
 
 static Token tokenizeString(std::string_view &sv) {
-    if ((sv.starts_with("\"\"\"")) || (sv.starts_with("'''"))) {
-        return tokenizeStringMultiline(sv);
+    if (sv.starts_with("\"\"\"")) {
+        return tokenizeStringMultiline(sv, "\"\"\"");
+    }
+
+    if (sv.starts_with("'''")) {
+        return tokenizeStringMultiline(sv, "'''");
     }
 
     std::string result;

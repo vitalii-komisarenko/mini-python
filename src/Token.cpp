@@ -170,8 +170,11 @@ static Token tokenizeNumberHexOrOct(std::string_view &sv) {
             result += ch;
             sv.remove_prefix(1);
             break;
-        default:
+        case '_':
+            sv.remove_prefix(1);
             break;
+        default:
+            return Token(TokenType::NUMBER, result);
         }
     }
 
@@ -185,7 +188,7 @@ static Token tokenizeNumber(std::string_view &sv) {
         throw std::runtime_error("The number cannot be empty");
     }
 
-    if ((sv.starts_with("0x")) && (sv.starts_with("0X")) && (sv.starts_with("0o")) && (sv.starts_with("0O"))) {
+    if ((sv.starts_with("0x")) || (sv.starts_with("0X")) || (sv.starts_with("0o")) || (sv.starts_with("0O"))) {
         return tokenizeNumberHexOrOct(sv);
     }
 
@@ -210,10 +213,12 @@ static Token tokenizeNumber(std::string_view &sv) {
     switch (sv[0]) {
     case '.':
         result += '.';
+        sv.remove_prefix(1);
         goto read_fractional_part;
     case 'e':
     case 'E':
         result += sv[0];
+        sv.remove_prefix(1);
         goto read_exponent;
     default:
         goto exit;
@@ -231,6 +236,7 @@ static Token tokenizeNumber(std::string_view &sv) {
     case 'e':
     case 'E':
         result += sv[0];
+        sv.remove_prefix(1);
         goto read_exponent;
     default:
         goto exit;
@@ -246,6 +252,7 @@ static Token tokenizeNumber(std::string_view &sv) {
     case '+':
     case '-':
         result += sv[0];
+        sv.remove_prefix(1);
         // fallthrough
     case '0' ... '9':
         result += readUnsignedInteger(sv);

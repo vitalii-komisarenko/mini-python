@@ -1,6 +1,7 @@
 #include "Module.h"
 #include "FunctionParamatersParsing.h"
 #include "Instruction.h"
+#include "RaiseException.h"
 #include "Utils.h"
 
 namespace MiniPython {
@@ -77,16 +78,16 @@ static Variable a2b_base64(const InstructionParams &params, Scope *scope) {
 
     if (strict_mode) {
         if (string.size() && (string[0] == '=')) {
-            RAISE("binascii.Error", "Leading padding not allowed");
+            raise_exception("binascii.Error", "Leading padding not allowed");
         }
 
         if (string.size() % 4) {
-            RAISE("binascii.Error", "Incorrect padding");
+            raise_exception("binascii.Error", "Incorrect padding");
         }
 
         size_t last_padding_pos = string.rfind('=');
         if ((last_padding_pos != std::string::npos) && (last_padding_pos != string.size() - 1)) {
-            RAISE("binascii.Error", "Discontinuous padding not allowed");
+            raise_exception("binascii.Error", "Discontinuous padding not allowed");
         }
     }
 

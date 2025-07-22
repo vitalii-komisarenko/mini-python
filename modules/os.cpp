@@ -1,6 +1,7 @@
 #include "Module.h"
 #include "Instruction.h"
 #include "FunctionParamatersParsing.h"
+#include "RaiseException.h"
 
 #include <cstdio>
 #include <cstdlib>
@@ -181,10 +182,10 @@ static Variable remove(const InstructionParams &params, Scope *scope) {
 
     auto p = VAR_TO_STR(path);
     if (!fs::exists(p)) {
-        RAISE(FileNotFoundError, p + " does not exist");
+        raise_exception("FileNotFoundError", p + " does not exist");
     }
     if (fs::is_directory(p)) {
-        RAISE(OSError, p + " is a directory");
+        raise_exception("OSError", p + " is a directory");
     }
     fs::remove(p);
     return NONE;

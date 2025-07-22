@@ -1,5 +1,6 @@
 #include "Module.h"
 #include "Instruction.h"
+#include "RaiseException.h"
 
 #include <cmath>
 
@@ -16,7 +17,7 @@ double to_float(Variable x) {
         return std::dynamic_pointer_cast<FloatVariable>(x)->value;
     }
     else {
-        RAISE("TypeError", "Must be real number");
+        raise_exception("TypeError", "Must be real number");
     }
 }
 

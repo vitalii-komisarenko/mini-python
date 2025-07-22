@@ -1,5 +1,6 @@
 #include "Module.h"
 #include "Instruction.h"
+#include "RaiseException.h"
 
 #include <chrono>
 #include <thread>
@@ -30,7 +31,7 @@ static Variable sleep(const InstructionParams &params, Scope *scope) {
         seconds = VAR_TO_BOOL(seconds_var) ? 1 : 0;
     }
     else {
-        RAISE("TypeError", "time.sleep: a number expected");
+        raise_exception("TypeError", "time.sleep: a number expected");
     }
 
     long nanoseconds = 1000 * 1000 * 1000 * seconds;

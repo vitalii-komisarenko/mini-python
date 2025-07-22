@@ -1,7 +1,5 @@
 #include "Variable.h"
 
-#include <stdexcept>
-
 namespace MiniPython {
 
 VariableType NoneVariable::get_type() {

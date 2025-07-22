@@ -2,7 +2,6 @@
 
 #include <memory>
 #include <string>
-#include <stdexcept>
 #include <vector>
 #include <unordered_map>
 
@@ -40,8 +39,6 @@ enum class VariableType {
 #define VAR_TO_STR(var) ((var->get_type() == VariableType::BYTES) ? VAR_TO_BYTES(var) : std::dynamic_pointer_cast<StringVariable>(var)->value)
 #define VAR_TO_BYTES(var) std::dynamic_pointer_cast<Bytes>(var)->value
 #define VAR_TO_LIST(var) std::dynamic_pointer_cast<ListVariable>(var)->list
-
-#define RAISE(exception, description) throw std::runtime_error(std::string(#exception) + ": " + description)
 
 class GenericVariable;
 

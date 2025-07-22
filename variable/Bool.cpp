@@ -1,7 +1,5 @@
 #include "Variable.h"
 
-#include <stdexcept>
-
 namespace MiniPython {
 
 static const Variable Zero = std::make_shared<IntVariable>(0);

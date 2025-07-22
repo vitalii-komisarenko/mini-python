@@ -1,4 +1,5 @@
 #include "Variable.h"
+#include "RaiseException.h"
 
 #include <map>
 
@@ -25,7 +26,7 @@ ArrayVariable::ArrayVariable(Variable typecode, ListType _list)
     : ListVariable(_list)
 {
     if (!typecode_sizes.contains(typecode->to_str())) {
-        RAISE("ValueError", "bad typecode (must be b, B, u, h, H, i, I, l, L, q, Q, f or d)");
+        raise_exception("ValueError", "bad typecode (must be b, B, u, h, H, i, I, l, L, q, Q, f or d)");
     }
 
     set_attr("typecode", typecode);

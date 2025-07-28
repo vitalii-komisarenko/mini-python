@@ -79,13 +79,16 @@ public:
     virtual bool strictly_equal(const Variable &other);
 };
 
-class IterableVariable: public GenericVariable {
+class GenericVariableImpl: public GenericVariable {
+};
+
+class IterableVariable: public GenericVariableImpl {
 public:
     virtual ListType to_list() = 0;
     bool contains(const Variable &item);
 };
 
-class NoneVariable: public GenericVariable {
+class NoneVariable: public GenericVariableImpl {
 public:
     VariableType get_type() override;
 
@@ -98,7 +101,7 @@ public:
 
 static Variable NONE = std::make_shared<NoneVariable>();
 
-class ObjectNotFoundVariable: public GenericVariable {
+class ObjectNotFoundVariable: public GenericVariableImpl {
 public:
     VariableType get_type() override;
     bool equal(const Variable &other) override;
@@ -106,7 +109,7 @@ public:
 
 static Variable OBJECT_NOT_FOUND = std::make_shared<ObjectNotFoundVariable>();
 
-class IntVariable: public GenericVariable {
+class IntVariable: public GenericVariableImpl {
 public:
     IntVariable(IntType _value);
 
@@ -135,7 +138,7 @@ public:
     IntType value;
 };
 
-class BoolVariable: public GenericVariable {
+class BoolVariable: public GenericVariableImpl {
 public:
     BoolVariable(bool _value);
 
@@ -167,7 +170,7 @@ public:
 static auto TRUE = std::make_shared<BoolVariable>(true);
 static auto FALSE = std::make_shared<BoolVariable>(false);
 
-class FloatVariable: public GenericVariable {
+class FloatVariable: public GenericVariableImpl {
 public:
     using FloatType = double;
 
@@ -197,7 +200,7 @@ public:
     FloatType value;
 };
 
-class ComplexVariable: public GenericVariable {
+class ComplexVariable: public GenericVariableImpl {
 public:
     ComplexVariable(FloatType _real, FloatType _imag = 0);
 
@@ -378,7 +381,7 @@ using InstructionParams = std::vector<std::shared_ptr<Instruction>>;
 
 using FunctionType = Variable(const InstructionParams&, Scope *scope);
 
-class FunctionVariable: public GenericVariable {
+class FunctionVariable: public GenericVariableImpl {
 public:
     FunctionVariable(FunctionType& function);
 
@@ -400,7 +403,7 @@ private:
     FunctionType& value;
 };
 
-class ModuleVariable: public GenericVariable {
+class ModuleVariable: public GenericVariableImpl {
 public:
     VariableType get_type() override { return VariableType::MODULE; }
     std::string to_str() override { return "<module>"; }

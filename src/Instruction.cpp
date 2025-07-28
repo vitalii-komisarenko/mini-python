@@ -3,6 +3,7 @@
 #include "StringFormatting.h"
 #include "TokenToVariable.h"
 
+#include <functional>
 #include <stdexcept>
 
 namespace MiniPython {

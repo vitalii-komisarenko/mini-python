@@ -1,6 +1,7 @@
 #include "Scope.h"
 #include "LineLevelParser.h"
 
+#include <algorithm>
 #include <array>
 #include <stdexcept>
 

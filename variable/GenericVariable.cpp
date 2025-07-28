@@ -85,15 +85,15 @@ bool GenericVariable::strictly_equal(const Variable &other) {
 }
 
 Variable GenericVariable::get_attr(const std::string &name) {
-    return attr[name];
+    throw std::runtime_error("get_attr() should not be called from GenericVariable");
 }
 
 void GenericVariable::set_attr(const std::string &name, Variable attr_value) {
-    attr[name] = attr_value;
+    throw std::runtime_error("set_attr() should not be called from GenericVariable");
 }
 
 bool GenericVariable::has_attr(const std::string &name) {
-    return attr.find(name) != attr.end();
+    throw std::runtime_error("has_attr() should not be called from GenericVariable");
 }
 
 } // namespace MiniPython

@@ -70,16 +70,22 @@ public:
     virtual bool equal(const Variable &other);
     virtual bool less(const Variable &other);
 
-    std::unordered_map<std::string, Variable> attr;
-    Variable get_attr(const std::string &name);
-    void set_attr(const std::string &name, Variable attr_value);
-    bool has_attr(const std::string &name);
+    virtual Variable get_attr(const std::string &name);
+    virtual void set_attr(const std::string &name, Variable attr_value);
+    virtual bool has_attr(const std::string &name);
 
     // for test purposes
     virtual bool strictly_equal(const Variable &other);
 };
 
 class GenericVariableImpl: public GenericVariable {
+public:
+    virtual Variable get_attr(const std::string &name) override;
+    virtual void set_attr(const std::string &name, Variable attr_value) override;
+    virtual bool has_attr(const std::string &name) override;
+
+private:
+    std::unordered_map<std::string, Variable> attr;
 };
 
 class IterableVariable: public GenericVariableImpl {

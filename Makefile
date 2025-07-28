@@ -54,7 +54,25 @@ LIB_SOURCES = \
 
 LIB_OBJECTS = $(LIB_SOURCES:%.cpp=build/common/%.o)
 
-LIB_VARIABLE_SOURCES = Bool.cpp Float.cpp Function.cpp Int.cpp List.cpp Array.cpp None.cpp String.cpp GenericVariable.cpp File.cpp Set.cpp Dict.cpp Complex.cpp Iterable.cpp ObjectNotFound.cpp Bytes.cpp
+LIB_VARIABLE_SOURCES = \
+    Array.cpp \
+    Bool.cpp \
+    Bytes.cpp \
+    Complex.cpp \
+    Dict.cpp \
+    File.cpp \
+    Float.cpp \
+    Function.cpp \
+    GenericVariable.cpp \
+    GenericVariableImpl.cpp \
+    Int.cpp \
+    Iterable.cpp \
+    List.cpp \
+    None.cpp \
+    ObjectNotFound.cpp \
+    Set.cpp \
+    String.cpp
+
 LIB_VARIABLE_OBJECTS = $(LIB_VARIABLE_SOURCES:%.cpp=build/common/%.o)
 
 app_files: $(LIB_OBJECTS) $(LIB_VARIABLE_OBJECTS)
